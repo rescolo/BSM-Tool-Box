@@ -24,7 +24,7 @@ export FFLAGS
 LIBTOOLS=$(CURDIR)/../../../Packages/LoopTools-2.1
 
 lGamma.exe : main.f nngg.a $(LIBTOOLS)/libooptools.a 
-	$(FC) $(FFLAGS) -o lGamma.exe  $^ ../../../CalcHEP_src/lib/libSLHAplus.a ../../../CalcHEP_src/lib/faux.o
+	$(FC) $(FFLAGS) -o lGamma.exe  $^ ../../../CalcHEP_src/lib/libSLHAplus.a 
 
 $(LIBTOOLS)/libooptools.a:
 	$(MAKE) -C $(LIBTOOLS)

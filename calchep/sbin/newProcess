@@ -106,11 +106,9 @@ fi
 
 ### compilation
 
-  LIBS="$CALCHEP/lib/sqme_aux.$SO"
+ LIBS="$CALCHEP/lib/sqme_aux.$SO"
 
-#  $CALCHEP/sbin/make-j $nParProc
-
-  $CC -c $CFLAGS  *.c
+  $CC -c $CFLAGS  *.c 
   err=$? 
   if(test $err -eq 0) then
     $CC $CFLAGS  $SHARED  -o  $1.so *.o $LIBS -lm

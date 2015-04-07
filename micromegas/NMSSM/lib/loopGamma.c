@@ -29,18 +29,18 @@ int loopGamma(double * csAA, double *csAZ)
   } 
   if(access( buff,X_OK)) 
   {  
-    printf("Cannot find/compile executable %s\n",buff);
+    printf("Can not found/compile executable %s\n",buff);
     return 10;
   }  
 
-  sprintf(buff+strlen(buff)," %E", Vrot/299792.*1.5957691);
+  if(GI)  sprintf(buff+strlen(buff)," GI ");
   err=System(buff);   
-
+  
   if(err>=0) 
   {  err=slhaRead(FOUT,1);
      if(err) return err;
-     *csAZ=slhaVal("Lgamma",0.,1,1)*2.9979E-26*0.9117;
-     *csAA=slhaVal("Lgamma",0.,1,2)*2.9979E-26*0.9117*0.9117;
+     *csAZ=slhaVal("Lgamma",0.,1,1)*2.9979E-26;
+     *csAA=slhaVal("Lgamma",0.,1,2)*2.9979E-26;
   }  
 
 //  if(!access(FOUT,R_OK)) unlink(FOUT);
@@ -48,6 +48,6 @@ int loopGamma(double * csAA, double *csAZ)
   return err;
 }  
 
-extern int  loopgamma_( double * cs1, double *cs2); /* fortran */
+extern int  loopgamma_(double * cs1, double *cs2); /* fortran */
 int  loopgamma_(double * cs1, double *cs2){ return loopGamma(cs1,cs2); }
  

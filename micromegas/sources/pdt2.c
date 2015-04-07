@@ -83,8 +83,12 @@ static pdtStr * checkdata(int pc)
 double parton_x( int pNum, double  Q)
 {
   double x1;
-  q_=Q;
 
+  if(Q<1.3) return 0;
+  if(Q<4.5 &&   abs(pNum)==5) return 0; 
+
+  q_=Q;
+  
   data_=checkdata(pNum); 
   if(data_ == NULL || q_< data_->q_min ) return 0;
   

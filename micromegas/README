@@ -16,7 +16,7 @@ I. General  installation.
 
    Possible problems are discussed in Section VII below. 
 
-   micromegas_3.1 was tested for  Linux, and  Darwin
+   micromegas_3.3 was tested for  Linux, and  Darwin
  
 II. To work with MSSM, NMSSM, CPVMSSM, IDM, LHM, RHNM, SM4, Z3M  models
     go to the corresponding directory. 
@@ -133,22 +133,22 @@ VIII. Citation and information
   arXiv:1305.0237 [hep-ph].
   %%CITATION = ARXIV:1305.0237;%%
 
-
-1.%\cite{Belanger:2010pz}
-  \bibitem{Belanger:2010pz}
-  G.~Belanger, F.~Boudjema, A.~Pukhov and A.~Semenov,
-  %``micrOMEGAs : a tool for dark matter studies,''
-  arXiv:1005.4133 [hep-ph].
-  %%CITATION = ARXIV:1005.4133;%%
+2. %\cite{Belanger:2010gh}
+\bibitem{Belanger:2010gh}
+    G.~Belanger, F.~Boudjema, P.~Brun, A.~Pukhov, S.~Rosier-Lees, P.~Salati and A.~Semenov,
+    %``Indirect search for dark matter with micrOMEGAs2.4,''
+    Comput.\ Phys.\ Commun.\  {\bf 182} (2011) 842
+    [arXiv:1004.1092 [hep-ph]].
+    %%CITATION = ARXIV:1004.1092;%%
   
-2.%\cite{Belanger:2008sj}
+3.%\cite{Belanger:2008sj}
   \bibitem{Belanger:2008sj}
   G.~Belanger, F.~Boudjema, A.~Pukhov and A.~Semenov,
   %`Dark matter direct detection rate in a generic model with micrOMEGAs2.1,''
   arXiv:0803.2360 [hep-ph].
   %%CITATION = ARXIV:0803.2360;%%
 
-3.%\cite{Belanger:2006is}
+4.%\cite{Belanger:2006is}
   \bibitem{Belanger:2006is}
   G.~Belanger, F.~Boudjema, A.~Pukhov and A.~Semenov,
   %`micrOMEGAs2.0: A program to calculate the relic density of dark matter  in

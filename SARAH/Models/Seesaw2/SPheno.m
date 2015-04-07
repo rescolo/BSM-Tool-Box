@@ -40,12 +40,12 @@ BoundaryHighScale={
 {MassB, m12},
 {MassWB,m12},
 {MassG,m12},
-{MTT, MTScaleIN},
-{MZZ,MTT},
-{MSS,MTT},
-{B[MZZ],MTT},
-{B[MSS],MTT},
-{B[MTT],MTT},
+{MT, MTScaleIN},
+{MZ,MT},
+{MS,MT},
+{B[MZ],MT},
+{B[MS],MT},
+{B[MT],MT},
 {Yt, LHInput[Yt]},
 {L1, Lambda1IN},
 {L2, Lambda2IN},
@@ -88,7 +88,7 @@ BoundaryConditionsUp[[1]] = {
 *) 
 
 BoundaryConditionsDown[[1]] = {
-{WOp, -L2 Yt/MTT }
+{WOp, -L2 Yt/MT }
 }; 
 
 

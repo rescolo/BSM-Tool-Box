@@ -38,16 +38,8 @@ MOcommonSTR mocommon_=
    0       , /* 32     deltaY  (abandence asymmtry) */
    0       , /* 33     dmAsymm (log(dm/dm_bar)) */
    600     , /* 34     Vesc         */
-   220     , /* 35     Vrot         */
-   0       , /* 36     FracCDM2     */
-   100     , /* 37 Mcdm1            */
-   100     , /* 38 Mcd2             */ 
-   0.001   , /* 39 Tstatrt          */
-   0.001     /* 40 Tend             */
-//   225       /* 37    Vearth       */
+   220      /* 35     Vrot         */
+//   225       /* 36     Vearth       */
 }};
-                              
-
-MoCommonCH mocommonch_;
 
 void forceug_(int * key) { ForceUG=*key;}

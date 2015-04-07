@@ -81,9 +81,7 @@ c Quark Sudakov
       else
          write (*,*) 'ERROR in reweight.f: do not know'/
      $        /' which Sudakov to compute',iipdg
-         write (*,*) 'FxFx is not supported for models'/
-     $        /' with coloured BSM particles'
-         stop 1
+         stop
       endif
 c Integration is over dq^2/q^2 = 2*dq/q, so factor 2. Also, include
 c already the minus sign here

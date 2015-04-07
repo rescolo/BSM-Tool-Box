@@ -3,8 +3,7 @@ OnlyLowEnergySPheno = True;
 
 MINPAR={{1,Lambda1IN},
         {2,LamSHIN},
-        {3,LamSIN},
-        {4,MSinput}
+        {3,LamSIN}
         };
 
 
@@ -14,8 +13,7 @@ BoundaryLowScaleInput={
   (* { v,Sqrt[4 mz2/(g1^2+g2^2)]}, *) 
   {Lambda1,Lambda1IN},
   {LamSH,LamSHIN},
-  {LamS,LamSIN},
-  {MS2, MSInput}
+  {LamS,LamSIN}
 };
 
 

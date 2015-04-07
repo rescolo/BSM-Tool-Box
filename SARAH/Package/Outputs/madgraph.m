@@ -23,9 +23,7 @@ Options[MakeUFO]={Exclude->{SSSS,GGS,GGV}};
 
 MakeUFO[opt___ ]:=GenerateUFO[Exclude/.{opt}/.Options[MakeUFO]];
 
-GenerateUFO[Exclude_]:=Block[{i,j,k,temp,res,exclude= Join[Exclude,{ASS}],factor,startedtime},
-Print[StyleForm["Generate UFO model files","Section"]];
-startedtime=TimeUsed[];
+GenerateUFO[Exclude_]:=Block[{i,j,k,temp,res,exclude= Join[Exclude,{ASS}],factor},
 CurrentEigenstates=Last[NameOfStates];
 
 SA`CurrentStates=CurrentEigenstates;
@@ -115,8 +113,7 @@ WriteString[DirectoryNamesFile,"UFOdir="<>ToString[$sarahCurrentUfoDir] <>"\n"];
 UfoActive=False;
 
 Print[""];
-Print["Done. UFO files generated in ",TimeUsed[]-startedtime, "s"];
-Print["Output is saved in ",StyleForm[$sarahCurrentUfoDir,"Section",FontSize->10]];
+Print["Done. Output is in ", $sarahCurrentUfoDir];
 
 (* ]; *)
 ];
@@ -169,7 +166,7 @@ WriteUfoHeadersCV;
 
 For[i=1,i<=Length[ITypes],
 If[FreeQ[Exclude,ITypes[[i,1]]],
-(* Print["   ...  writing ",ITypes[[i,1]]]; *)
+Print["   ...  writing ",ITypes[[i,1]]];
 WriteUfoVertexList[resUfo[ITypes[[i,1]]],ITypes[[i,1]] ];
 ];
 i++;];
@@ -180,13 +177,9 @@ Close[UfoCF];
 ];
 
 
-WriteUfoVertexList[list_,type_]:=Block[{i,j,k,startedtime},
-startedtime=TimeUsed[];
-Print["   ... Generic class: ",StyleForm[type,"Section",FontSize->10],". Writing: ",Dynamic[progressNrUFO[type]] ,"/",Length[list]". (",Dynamic[progressCoupUFO[type]],")"];
+WriteUfoVertexList[list_,type_]:=Block[{i,j,k},
 
 For[i=1,i<=Length[list],
-progressNrUFO[type]=i;
-progressCoupUFO[type]=list[[i,1]];
 If[UfoLorentz[list[[i,2]],type]=!="",
 WriteString[UfoVF,"V_"<>ToString[SA`UfoVertexNr]<>" = Vertex(name = 'V_"<>ToString[SA`UfoVertexNr]<>"', \n"];
 WriteString[UfoVF,"\t particles = ["<>UfoPartList[list[[i,1]]]<>"], \n"];
@@ -203,7 +196,6 @@ k++;];
 j++;];
 ];
 i++;];
-progressCoupUFO[type]="All done in "<>ToString[TimeUsed[]-startedtime]<>"s";
 ];
 
 UfoPartList[fields_]:=Block[{i,res=""},
@@ -420,8 +412,7 @@ WriteString[UfoPF,"# -----------------------------------------------------------
 
 
 WriteString[UfoPF,"from __future__ import division \n"];
-WriteString[UfoPF,"from object_library import all_particles,Particle \n"];
-WriteString[UfoPF,"import parameters as Param \n\n\n"];
+WriteString[UfoPF,"from object_library import all_particles,Particle \n \n \n"];
 
 For[i=1,i<=Length[PartListFR],
 For[j=1,j<=Length[PartListFR[[i,2]]],
@@ -431,14 +422,8 @@ WriteString[UfoPF,"\t name = '"<>entry[[1]] <>"' ,\n"];
 WriteString[UfoPF,"\t antiname = '"<>entry[[2]] <>"' ,\n"];
 WriteString[UfoPF,"\t spin = "<>ToString[entry[[3]] /. {S->1 , F->2 , V->3, G->-1}] <>" ,\n"];
  WriteString[UfoPF,"\t color = " <> ToString[entry[[7]] /. {S->1,T->3,Six->6,O->8}] <>" ,\n"]; 
-(* WriteString[UfoPF,"\t mass = '"<>ToString[entry[[5]]] <>"' ,\n"];
-WriteString[UfoPF,"\t width = '"<>ToString[entry[[6]]] <>"' ,\n"]; *)
-If[entry[[13]]=!=NoGS,
-WriteString[UfoPF,"\t mass = Param.ZERO ,\n"];
-WriteString[UfoPF,"\t width = Param.ZERO ,\n"];,
-WriteString[UfoPF,"\t mass = Param."<>ToString[entry[[5]]] <>" ,\n"];
-WriteString[UfoPF,"\t width = Param."<>ToString[entry[[6]]] <>" ,\n"];
-];
+WriteString[UfoPF,"\t mass = '"<>ToString[entry[[5]]] <>"' ,\n"];
+WriteString[UfoPF,"\t width = '"<>ToString[entry[[6]]] <>"' ,\n"];
 If[entry[[3]]===G, 
 WriteString[UfoPF,"\t GhostNumber = 1, \n"];,
 WriteString[UfoPF,"\t GhostNumber = 0, \n"];
@@ -477,7 +462,7 @@ Close[UfoPF];
 
 ];
 
-UfoForm[x_]:=Return[StringReplace[ToString[CForm[x  /. ReplacementsWO /. strongCoupling->G /. subGreek/. Mass[A_[{b_,c___}]]:>getMassW[A,b] /. Mass[A_]:>getMassW[A]]],{"^"->"**","conj"->"complexconjugate"}]]; 
+UfoForm[x_]:=Return[StringReplace[ToString[CForm[x  /. ReplacementsWO /. strongCoupling->G /. subGreek]],{"^"->"**","conj"->"complexconjugate"}]]; 
 (* UfoForm[x_]:=Return[StringReplace[ToString[CForm[x  /. ReplacementsWO /. strongCoupling->G /. subGreek]],{"^"->"**"}]]; *)
 
 
@@ -615,11 +600,6 @@ fstart3=1;
 ];
 ];
 
-(*
-conj[CG[SU[3],{r1_,{1,1},r2_}]][a_,b_,c_]:=CG[SU[3],{r1,{1,1},r2}][c,b,a];
-conj[CG[SU[3],{{1,1},r1_,r2_}]][a_,b_,c_]:=CG[SU[3],{{1,1},r1,r2}][a,c,b];
-conj[CG[SU[3],{r1_,r2_,{1,1}}]][a_,b_,c_]:=CG[SU[3],{{1,1},r1,r2}][b,a,c];
-*)
 conj[LamHlf[a_,b_,c_]]=LamHlf[a,b,c];
 conj[fSU3[a__]]=fSU3[a];
 conj[T6[a__]]=T6[a];
@@ -674,25 +654,10 @@ CG[SU[3],{{0,2},{1,0},{1,0}}][a_,b_,c_]->K6Bar[a,b,c],
 CG[SU[3],{{1,0},{1,0},{0,2}}][a_,b_,c_]->K6Bar[c,a,b],
 
 
-conj[CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]]->2LamHlf[b,a,c],
-conj[CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]]->2LamHlf[b,c,a],
-conj[CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]]->2LamHlf[a,b,c],
-conj[CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]]->2LamHlf[a,c,b],
-conj[CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]]->2LamHlf[c,a,b],
-conj[CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]]->2LamHlf[c,b,a],
-
-CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]->2LamHlf[b,c,a],
-CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]->2LamHlf[b,a,c],
-CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]->2LamHlf[a,c,b],
-CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]->2LamHlf[a,b,c],
-CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]->2LamHlf[c,b,a],
-CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]->2LamHlf[c,a,b],
-
-Generator[SU[3],{2,0}][a_,b_,c_]->T6[a,c,b]
+Generator[SU[3],{2,0}][a_,b_,c_]->T6[a,b,c]
 
 };
 
-(*
 subUfoLorentz = {
 fSU3[a__]->f[a],
 fSU2[a__]->Eps[a],
@@ -743,64 +708,6 @@ LorentzProduct[A_[b___,c_],B_[d_,e__]]-> A[b,-1] B[-1,e],
 PR->ProjP[2,1],
 PL->ProjM[2,1],   
 lt1->1, lt2->2, lt3->3, lt4->4
-};*)
-
-subUfoLorentz = {
-LorentzProduct[a__]->LorP[a],
-fSU3[a__]->f[a],
-fSU2[a__]->Eps[a],
-
-Mom[a_Symbol,b_]->P[b,1],
-Mom[conj[a_Symbol],b_]->P[b,2],
-
-Mom[a_[{gt1,c___}],b_]->P[b,1],
-Mom[a_[{gt2,c___}],b_]->P[b,2],
-Mom[a_[{gt3,c___}],b_]->P[b,3],
-Mom[a_[{gt4,c___}],b_]->P[b,4],
-
-Mom[a_[{ct1,c___}],b_]->P[b,1],
-Mom[a_[{ct2,c___}],b_]->P[b,2],
-Mom[a_[{ct3,c___}],b_]->P[b,3],
-Mom[a_[{ct4,c___}],b_]->P[b,4],
-
-Mom[conj[a_[{gt1,c___}]],b_]->P[b,1],
-Mom[conj[a_[{gt2,c___}]],b_]->P[b,2],
-Mom[conj[a_[{gt3,c___}]],b_]->P[b,3],
-Mom[conj[a_[{gt4,c___}]],b_]->P[b,4],
-
-Mom[conj[a_[{ct1,c___}]],b_]->P[b,1],
-Mom[conj[a_[{ct2,c___}]],b_]->P[b,2],
-Mom[conj[a_[{ct3,c___}]],b_]->P[b,3],
-Mom[conj[a_[{ct4,c___}]],b_]->P[b,4],
-
-Mom[a_[{lt1,c___}],b_]->P[b,1],
-Mom[a_[{lt2,c___}],b_]->P[b,2],
-Mom[a_[{lt3,c___}],b_]->P[b,3],
-Mom[a_[{lt4,c___}],b_]->P[b,4],
-
-Mom[a_[{ct1,c___}],b_]->P[b,1],
-Mom[a_[{ct2,c___}],b_]->P[b,2],
-Mom[a_[{ct3,c___}],b_]->P[b,3],
-Mom[a_[{ct4,c___}],b_]->P[b,4],
-
-Mom[conj[a_[{lt1,c___}]],b_]->P[b,1],
-Mom[conj[a_[{lt2,c___}]],b_]->P[b,2],
-Mom[conj[a_[{lt3,c___}]],b_]->P[b,3],
-Mom[conj[a_[{lt4,c___}]],b_]->P[b,4],
-
-Mom[a_?AtomQ,b_]->P[b,2],
-
-ThetaStep[a__]->1,
-g[a__]->Metric[a],
-gamma[a_]-> Gamma[a,2,1],  
-Lam[a_,b_,c_]->2 T[a,c,b],
-LorP[Gamma[a1_,a2_,a3_] ,Gamma[b1_,b2_,b3_],C___]:>If[a2<0,Gamma[a1,a2,a2-1] LorP[Gamma[b1,a2-1,b3],C],Gamma[a1,a2,-1] LorP[Gamma[b1,-1,b3],C]],
-LorP[Gamma[a1_,a2_,a3_],B_[b1_,b2_]]:>If[a2<0,Gamma[a1,a2,a2-1] B[a2-1,b2],Gamma[a1,a2,-1] B[-1,b2]],
-LorentzProduct[A_[b___,c_],B_[d_,e__]]-> A[b,-1] B[-1,e],
-PR->ProjP[2,1],
-PL->ProjM[2,1],   
-lt1->1, lt2->2, lt3->3, lt4->4,
-A_Symbol[a1___Integer,a2_Symbol,a3___Integer] B_Symbol[b1___Integer,a2_Symbol,b3___] C___:>C A[a1,Min[{a1,a3,b1,b3}]-1 /. z_Integer:>-1 /; z>=0  ,a3]B[b1,Min[{a1,a3,b1,b3}]-1/. z_Integer:>-1 /; z>=0,b3] /; FreeQ[FullForm[C],LorP] 
 };
 
 

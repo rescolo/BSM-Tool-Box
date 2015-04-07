@@ -3,9 +3,7 @@ Off[General::spell]
 Model`Name = "THDM";
 Model`NameLaTeX ="Two Higgs Doublet Model";
 Model`Authors = "F.Staub";
-Model`Date = "2014-11-06";
-
-(* 2014-11-06: Changed sign in Lagrangian *)
+Model`Date = "2013-09-03";
 
 
 (*-------------------------------------------*)
@@ -27,8 +25,8 @@ FermionFields[[3]] = {d, 3, conj[dR],   1/3, 1, -3};
 FermionFields[[4]] = {u, 3, conj[uR],  -2/3, 1, -3};
 FermionFields[[5]] = {e, 3, conj[eR],     1, 1,  1};
 
-ScalarFields[[1]] =  {H1, 1, {H1p, H10},     1/2, 2,  1};
-ScalarFields[[2]] =  {H2, 1, {H2p, H20},     1/2, 2,  1};
+ScalarFields[[1]] =  {Hd, 1, {Hd0, Hdm},    -1/2, 2,  1};
+ScalarFields[[2]] =  {Hu, 1, {Hup, Hu0},     1/2, 2,  1};
 
 
      
@@ -48,11 +46,11 @@ DEFINITION[GaugeES][Additional]= {
 };
 
 
-LagNoHC = -(M112 conj[H1].H1 + M222 conj[H2].H2 + Lambda1 conj[H1].H1.conj[H1].H1 + \
-		Lambda2 conj[H2].H2.conj[H2].H2 + Lambda3 conj[H2].H2.conj[H1].H1 + Lambda4 conj[H2].H1.conj[H1].H2 );
+LagNoHC = -(MHD2 conj[Hd].Hd + MHU2 conj[Hu].Hu + Lambda1 conj[Hd].Hd.conj[Hd].Hd + \
+		Lambda2 conj[Hu].Hu.conj[Hu].Hu + Lambda3 conj[Hu].Hu.conj[Hd].Hd + Lambda4 conj[Hu].Hd.conj[Hd].Hu );
 
 
-LagHC = -(Lambda5/2 conj[H2].H1.conj[H2].H1 + Yd conj[H2].d.q + Ye conj[H2].e.l + Yu H2.u.q);
+LagHC = -(Lambda5/2 Hu.Hd.Hu.Hd - Yd Hd.d.q - Ye Hd.e.l - Yu conj[Hd].u.q);
 
 (* Gauge Sector *)
 
@@ -68,14 +66,14 @@ DEFINITION[EWSB][GaugeSector] =
 (* ----- VEVs ---- *)
 
 DEFINITION[EWSB][VEVs]= 
-{    {H10, {v1, 1/Sqrt[2]}, {sigma1, \[ImaginaryI]/Sqrt[2]},{phi1, 1/Sqrt[2]}},
-     {H20, {v2, 1/Sqrt[2]}, {sigma2, \[ImaginaryI]/Sqrt[2]},{phi2, 1/Sqrt[2]}}     };
+{    {Hd0, {vd, 1/Sqrt[2]}, {sigmad, \[ImaginaryI]/Sqrt[2]},{phid, 1/Sqrt[2]}},
+     {Hu0, {vu, 1/Sqrt[2]}, {sigmau, \[ImaginaryI]/Sqrt[2]},{phiu, 1/Sqrt[2]}}     };
  
 
 DEFINITION[EWSB][MatterSector]=   
-    { {{phi1, phi2}, {hh, ZH}},
-      {{sigma1, sigma2}, {Ah, ZA}},
-      {{conj[H1p],conj[H2p]},{Hm,ZP}},
+    { {{phid, phiu}, {hh, ZH}},
+      {{sigmad, sigmau}, {Ah, ZA}},
+      {{Hdm,conj[Hup]},{Hpm,ZP}},
       {{{dL}, {conj[dR]}}, {{DL,Vd}, {DR,Ud}}},
       {{{uL}, {conj[uR]}}, {{UL,Vu}, {UR,Uu}}},
       {{{eL}, {conj[eR]}}, {{EL,Ve}, {ER,Ue}}}       };  

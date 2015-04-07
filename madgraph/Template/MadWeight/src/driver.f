@@ -36,7 +36,6 @@ C
       double precision order_value(nb_channel)
       double precision order_error(nb_channel)
       double precision xi_by_channel(100, 20, nb_channel)
-      integer ndo_by_channel(nb_channel)
 
       double precision normalize_perm
 c
@@ -227,7 +226,6 @@ c
                 enddo
 
              else
-                ndo = ndo_by_channel(integral_index)
                 do i = 1, ndo
                     do j = 1, NDIM
                         xi(i,j) = xi_by_channel(i, j, integral_index)
@@ -332,7 +330,6 @@ c                NCALL = NCALL * nb_sol_perm
                         xi_by_channel(i, j, integral_index) = xi(i,j)
                     enddo
                 enddo
-                ndo_by_channel(integral_index) = ndo
              else
                 order_value(integral_index)=0d0
              endif

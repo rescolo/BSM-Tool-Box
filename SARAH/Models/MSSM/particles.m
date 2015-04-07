@@ -57,9 +57,7 @@ ParticleDefinitions[GaugeES] = {
       {Fv,   { Description -> "Neutrinos" }},                                                                     
       {Glu,  { Description -> "Gluino" }},
       {Chi,  { Description -> "Neutralinos"}},
-      {Cha,  { Description -> "Charginos"}},
-      {GOL,  { Description -> "Goldstino"}},                                                                                               
-      {GMU,  { Description -> "Gravitino"}}
+      {Cha,  { Description -> "Charginos"}}                                                                                               
         };    
         
         
@@ -113,9 +111,5 @@ ParticleDefinitions[GaugeES] = {
        {Hu,   { Description -> "Up-Higgs Superfield" }},                 
        {G,    { Description -> "Gluon Superfield" }},                 
        {B,    { Description -> "B Superfield" }},                 
-       {WB,   { Description -> "W Superfield" }},
-     
-       {Gol,  { Description -> "Weyl Goldstino"}},
-       {GMu,  { Description -> "Weyl Gravitino"}}
-
+       {WB,   { Description -> "W Superfield" }}
     };                 

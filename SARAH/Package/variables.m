@@ -99,7 +99,7 @@ SA`ListAllFieldsInit={};
 
 InitArrays:=Block[{},
 
-Print["Preparing arrays"];
+Print["Initialization"];
 
 Clear[DEFINITION];
 Clear[Fields];
@@ -214,14 +214,7 @@ SA`CheckSameVertices=True;
 SA`KnonwCG={CG[SU[2],{{1},{1}}], (* CG[SU[2],{{2},{2}}],  *)  CG[SU[2],{{-1},{-1}}],CG[SU[2],{{-1},{1}}],CG[SU[2],{{1},{-1}}],(* CG[SU[3],{{1,1},{1,0},{0,1}}],CG[SU[3],{{1,1},{1,0},{0,1}}], *)CG[SU[3],{{0,1},{0,1},{0,1}}],CG[SU[3],{{1,0},{1,0},{1,0}}],CG[SU[3],{{1,0},{0,1}}],CG[SU[3],{{0,1},{1,0}}],CG[SU[3],{{1,0},{1,0},{1,0}}]};
 
 SA`ChargeGlobal[p_,x_]:=SA`ChargeGlobal[DeleteCases[p/.diracSub[ALL],0][[1]],x]/;MemberQ[diracFermions[ALL],p];
-(* SA`ChargeGlobal[conj[p_],x_]:=SA`ChargeGlobal[p,x]; *)
-SA`ChargeGlobal[conj[p_],x_]:=Block[{pos},
-pos=Position[Global,x][[1,1]];
-If[Global[[pos,1]]===U[1],
-Return[-SA`ChargeGlobal[p,x]];,
-Return[SA`ChargeGlobal[p,x]];
-];
-];
+SA`ChargeGlobal[conj[p_],x_]:=SA`ChargeGlobal[p,x];
 
 subFieldsOne = {};
 
@@ -234,25 +227,6 @@ IncludeOldObservables=False;
 
 HiggsBosonPresent=False;
 PseudoScalarBosonPresent=False;
-
-AllowDecaysMasslessVectors={};
-
-UseBoundarySUSYatEWSB = False;
-
-{
- {LgravFFS = 0;},
- {LgravFFV = 0;}
-}
-LgravFFSV = 0;
-LgravFFVV = 0;
-
-SA`listFIU1={};
-
-PrintAll[x_]:=Block[{},Print[x]; If[WriteDebugInformation,Write[LogFile,x]; WriteString[LogFile,"\n"];];];
-PrintDebug[x_]:=Block[{},
-If[WriteDebugInformation,Write[LogFile,x]; WriteString[LogFile,"\n"];];
- If[ShowDebugInformation,Print[x];]; 
-];
 
 
 

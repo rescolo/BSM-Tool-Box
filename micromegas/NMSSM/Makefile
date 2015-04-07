@@ -23,7 +23,7 @@ cLib = $(CALCHEP)/lib
  
 SSS = $(wildcard lib/*.a) ../sources/micromegas.a  $(cLib)/dynamic_me.a  \
  work/work_aux.a $(cLib)/sqme_aux.$(SO) $(cLib)/libSLHAplus.a   \
- $(cLib)/num_c.a  $(cLib)/ntools.a   $(cLib)/serv.a $(LX11)
+ $(cLib)/num_c.a  $(cLib)/ntools.a   $(cLib)/serv.a $(LX11) 
        
 
 all: $(main) libs
@@ -40,7 +40,7 @@ else
         ifeq ($(FC), )
 	$(error  Fortran compiler was not detected.)
         else 
-	$(FC) $(FFLAGS)  -ffixed-line-length-none  -o $(main:.F=) $(main) $(cLib)/faux.o   $(SSS)   $(lDL)  -lm
+	$(FC) $(FFLAGS)  -ffixed-line-length-none  -o $(main:.F=) $(main) $(cLib)/faux.o  $(SSS)   $(lDL)  -lm
         endif
       else
 	$(error Only .c, .cpp, and .F  main programs  are supported).

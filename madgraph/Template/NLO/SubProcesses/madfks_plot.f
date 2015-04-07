@@ -10,10 +10,6 @@ c Wrapper routines for the fixed order analyses
       double precision xsecScale_acc(maxscales,maxscales)
      $     ,xsecPDFr_acc(0:maxPDFs)
       common /scale_pdf_print/xsecScale_acc,xsecPDFr_acc
-      integer iappl
-      common /for_applgrid/ iappl
-      include "appl_common.inc"
-
       nwgt=1
       weights_info(nwgt)="central value  "
       if (do_rwgt_scale) then
@@ -54,17 +50,6 @@ c Wrapper routines for the fixed order analyses
          enddo
          nwgt=nwgt+npdfs
       endif
-      if(iappl.ne.0)then
-c Initialize grid parameters to negative values.
-         appl_Q2min   = -1d0
-         appl_Q2max   = -1d0
-         appl_xmin    = -1d0
-         appl_xmax    = -1d0
-         appl_nQ2     = -1
-         appl_Q2order = -1
-         appl_nx      = -1
-         appl_xorder  = -1
-      endif
       call analysis_begin(nwgt,weights_info)
 c To keep track of the accumulated results:
       do ii=1,numscales
@@ -94,9 +79,6 @@ c To keep track of the accumulated results:
       double precision xsecScale_acc(maxscales,maxscales)
      $     ,xsecPDFr_acc(0:maxPDFs)
       common /scale_pdf_print/xsecScale_acc,xsecPDFr_acc
-      integer iappl
-      common /for_applgrid/ iappl
-      include "appl_common.inc"
 c
       if(usexinteg.and..not.mint) then
          xnorm=1.d0/float(itmax)
@@ -106,8 +88,6 @@ c
          xnorm=1d0
       endif
       if(useitmax)xnorm=xnorm/float(itmax)
-c Normalization factor for the APPLgrid grids
-      if(iappl.ne.0) appl_norm_histo = 1d0 / dble(ncall*itmax)
       call analysis_end(xnorm)
 c Write the accumulated results to a file
       open (unit=34,file='scale_pdf_dependence.dat',status='unknown')
@@ -131,7 +111,7 @@ c Write the accumulated results to a file
       end
 
 
-      subroutine outfun(pp,ybst_til_tolab,www,iPDG,itype)
+      subroutine outfun(pp,ybst_til_tolab,www,itype)
 C
 C *WARNING**WARNING**WARNING**WARNING**WARNING**WARNING**WARNING**WARNING*
 C
@@ -156,11 +136,11 @@ C *WARNING**WARNING**WARNING**WARNING**WARNING**WARNING**WARNING**WARNING*
       include 'genps.inc'
       include 'reweight.inc'
       include 'reweightNLO.inc'
-      double precision pp(0:3,nexternal),ybst_til_tolab
+      double precision pp(0:3,nexternal),ybst_til_tolab,www
       integer itype
       double precision p(0:4,nexternal),pplab(0:3,nexternal),chybst
      $     ,shybst,chybstmo
-      integer i,j,ibody,i_wgt
+      integer i,j,ibody
       double precision xd(3)
       data (xd(i),i=1,3) /0d0,0d0,1d0/
       integer istatus(nexternal),iPDG(nexternal)
@@ -173,20 +153,20 @@ C *WARNING**WARNING**WARNING**WARNING**WARNING**WARNING**WARNING**WARNING*
       common /c_leshouche_inc/idup,mothup,icolup
       integer nwgt,max_weight
       parameter (max_weight=maxscales*maxscales+maxpdfs+1)
-      double precision www(max_weight),wgtden,ratio
+      double precision wgts(max_weight),wgtden,ratio
       double precision xsecScale_acc(maxscales,maxscales)
      $     ,xsecPDFr_acc(0:maxPDFs)
       common /scale_pdf_print/xsecScale_acc,xsecPDFr_acc
-      integer iappl
-      common /for_applgrid/ iappl
-      include "appl_common.inc"
 c Born, n-body or (n+1)-body contribution:
       if(itype.eq.11) then
          ibody=1 ! (n+1)-body
+         wgtden=wgtrefNLO11
       elseif(itype.eq.12)then
          ibody=2 ! n-body
+         wgtden=wgtrefNLO12
       elseif(itype.eq.20)then
          ibody=3 ! Born
+         wgtden=wgtrefNLO20
       else
          write(*,*)'Error in outfun: unknown itype',itype
          stop
@@ -196,7 +176,8 @@ c Boost the momenta to the lab frame:
       shybst=sinh(ybst_til_tolab)
       chybstmo=chybst-1.d0
       do i=3,nexternal
-         call boostwdir2(chybst,shybst,chybstmo,xd,pp(0,i),pplab(0,i))
+        call boostwdir2(chybst,shybst,chybstmo,xd,
+     #                  pp(0,i),pplab(0,i))
       enddo
 c Fill the arrays (momenta, status and PDG):
       do i=1,nexternal
@@ -209,27 +190,53 @@ c Fill the arrays (momenta, status and PDG):
             p(j,i)=pplab(j,i)
          enddo
          p(4,i)=pmass(i)
+         ipdg(i)=idup(i,1)
       enddo
-      if(iappl.ne.0)then
-         appl_itype     = ibody
-         appl_www_histo = www(1)
+c The weights comming from reweighting:
+      nwgt=1
+      wgts(1)=www
+      if (wgtden.eq.0d0) then
+         if (www.eq.0d0) then
+            ratio=0d0
+         else
+            if (doreweight) then
+               write (*,*) 'ERROR in madfks_plot.f', wgtden,www
+            else
+               ratio=1d0
+            endif
+         endif
+      else
+c this ratio should essentially be the weight from vegas
+         ratio=www/wgtden
       endif
-      call analysis_fill(p,istatus,ipdg,www,ibody)
-c Fill the accumulated results
-      i_wgt=1
       if (do_rwgt_scale) then
          do i=1,numscales
             do j=1,numscales
-               i_wgt=i_wgt+1
-               xsecScale_acc(i,j)=xsecScale_acc(i,j)+www(i_wgt)
+               nwgt=nwgt+1
+               wgts(nwgt)=wgtNLOxsecmu(ibody,i,j)*ratio
             enddo
          enddo
       endif
       if (do_rwgt_pdf) then
-         xsecPDFr_acc(0)=xsecPDFr_acc(0)+www(1)
+         do i=1,numPDFs-1 ! exclude the central set, so 'numPDFs-1'
+            nwgt=nwgt+1
+            wgts(nwgt)=wgtNLOxsecPDF(ibody,i)*ratio
+         enddo
+      endif
+      call analysis_fill(p,istatus,ipdg,wgts,ibody)
+c Fill the accumulated results
+      if (do_rwgt_scale) then
+         do i=1,numscales
+            do j=1,numscales
+               xsecScale_acc(i,j)=xsecScale_acc(i,j)+
+     &              wgtNLOxsecmu(ibody,i,j)*ratio
+            enddo
+         enddo
+      endif
+      if (do_rwgt_pdf) then
+         xsecPDFr_acc(0)=xsecPDFr_acc(0)+www
          do i=1,numPDFs-1
-            i_wgt=i_wgt+1
-            xsecPDFr_acc(i)=xsecPDFr_acc(i)+www(i_wgt)
+            xsecPDFr_acc(i)=xsecPDFr_acc(i)+wgtNLOxsecPDF(ibody,i)*ratio
          enddo
       endif
  999  return      

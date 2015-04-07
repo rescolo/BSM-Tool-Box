@@ -1,7 +1,7 @@
 
 
 ParticleDefinitions[GaugeES] = {
-      {H0,  { 
+      {H0,  { RParity -> 1,  
                  PDG -> 0,
                  Width -> 0, 
                  Mass -> Automatic,
@@ -10,7 +10,7 @@ ParticleDefinitions[GaugeES] = {
                  OutputName -> "H0" }},                         
       
       
-      {Hp,  {   
+      {Hp,  { RParity -> 1,  
                  PDG -> 0,
                  Width -> 0, 
                  Mass -> Automatic,
@@ -46,18 +46,25 @@ ParticleDefinitions[GaugeES] = {
                  Width -> {0} }},                       
       
       
-     {Hpm,     { Description -> "Charged Higgs", 
-                 PDG -> {0,37,47},
-                 PDG.IX ->{0, 100000601,100000602},
-                 Width -> {0, External,External}, 
-                 Mass -> {0, LesHouches,LesHouches},
+     {Hp,     { Description -> "Charged Higgs", 
+                 PDG -> {0},
+                 PDG.IX ->{0},
+                 Width -> {0}, 
+                 Mass -> {0},
                  LaTeX -> {"H^+","H^-"},
                  OutputName -> {"Hp","Hm"}
                  }},                                                   
       
+     {Oc,     { Description -> "Color Octet", 
+                 PDG -> {95},
+                 LaTeX -> {"O","O^*"},
+                 OutputName -> {"O","Oc"}
+                 }},                                                  
+
+
       {VP,   { Description -> "Photon"}}, 
       {VZ,   { Description -> "Z-Boson",
-      			 Goldstone -> Ah }}, 
+      			 Goldstone -> Ah[{1}] }}, 
       {VG,   { Description -> "Gluon" }},          
       {VWp,  { Description -> "W+ - Boson",
       			Goldstone -> Hpm[{1}] }},         
@@ -79,7 +86,7 @@ ParticleDefinitions[GaugeES] = {
         
  WeylFermionAndIndermediate = {
      
-    {H,      { 
+    {H,      { RParity -> 1,  
                  PDG -> 0,
                  Width -> 0, 
                  Mass -> Automatic,

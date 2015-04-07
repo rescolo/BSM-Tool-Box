@@ -112,7 +112,7 @@ ParameterDefinitions = {
 {\[Lambda]N,   { OutputName -> lamN,
 	         LesHouches -> LAMN,
 	         LaTeX -> "\\lambda_N"   }},                               
-{T[\[Lambda]N],  { OutputName -> TLN,
+{T[\[Lambda]N],  { OutputName -> TlamN,
                    LesHouches -> TLAMN,
                    LaTeX -> "T_{\\lambda_N}"}},                 
 {ms2,       { Description -> "Softbreaking Singlet Mass" }},

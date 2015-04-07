@@ -20,13 +20,9 @@
 
 
 GenerateSPhenoCouplingList:=Block[{i,currentRegime,readRegime},
-(*
 Print["--------------------------------------"];
 Print["Writing Couplings-File for SPheno "];
 Print["--------------------------------------"];
-*)
-
-Print[StyleForm["Write Couplings","Section",FontSize->12]];
 
 $sarahCurrentSPhenoDir=ToFileName[{$sarahCurrentOutputDir,"SPheno"}];
 sphenoCoup=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"Couplings_"<>ModelName<>".f90"]];
@@ -45,33 +41,33 @@ If[IntermediateScale =!=True,
 WriteCouplingHeader;
 
 
-(* Print["Writing Subroutine for All Coupling"]; *)
-Print["Creating couplings for tree-level calculations"]; 
-DynamicCouplings["AllCouplingsReallyAll"]="";
-Print["  Processing couplings for all calculations: ",Dynamic[DynamicCouplingsTreeAll]," ",Dynamic[DynamicCouplings["AllCouplingsReallyAll"]]];
+Print["Writing Subroutine for All Coupling"];
 
-DynamicCouplingsTreeAll="building couplings";
 temp=SPhenoCouplingList[Select[VertexListNonCC,FreeQ[#,ASS]&] //. RXi[_]->1];
 SPhenoCouplingsAllreallyAll=temp[[1]];
 parametersAllreallyAll=temp[[2]];
 namesAllreallyAll=temp[[3]];
-DynamicCouplingsTreeAll="writing couplings";
-WriteSPhenoAllCouplings[SPhenoCouplingsAllreallyAll,parametersAllreallyAll,namesAllreallyAll,"AllCouplingsReallyAll","T"]; 
 
-DynamicCouplings["AllCouplings"]="";
-Print["  Processing couplings for tree-level calculations: ",Dynamic[DynamicCouplingsTree]," ",Dynamic[DynamicCouplings["AllCouplings"]]];
-DynamicCouplingsTree="building couplings";
 AllRelevant=getAllRelevantCouplings[VertexListNonCC];
 temp=SPhenoCouplingList[AllRelevant];
 SPhenoCouplingsAll=temp[[1]];
 parametersAll=temp[[2]];
 namesAll=temp[[3]];
-DynamicCouplingsTree="writing couplings";
+
+
 WriteSPhenoAllCouplings[SPhenoCouplingsAll,parametersAll,namesAll,"AllCouplings","T"]; 
-
-
-
-(* ]; *)
+WriteSPhenoAllCouplings[SPhenoCouplingsAllreallyAll,parametersAllreallyAll,namesAllreallyAll,"AllCouplingsReallyAll","T"]; 
+If[SA`Include2LoopEffPot===True,
+temp=Select[VertexListNonCC,(#[[-1]]===SSSS || #[[-1]]===SSVV)&]; (* extract all 4-vertices with scalars *)
+temp=Select[temp,Length[Intersection[RE/@(#[[1,1]]/. A_[{b__}]->A)]]<3&]; (*take only those vertices which have 2 pairs of identical fields *)
+CouplingUsedForEffPot=True; (* in order to apply the correct color sum *)
+temp=SPhenoCouplingList[temp];
+CouplingUsedForEffPot=False;
+SPhenoCouplings4P=temp[[1]];
+parametersAll4P=temp[[2]];
+namesAll4P=temp[[3]];
+WriteSPhenoAllCouplings[SPhenoCouplings4P,parametersAll4P,namesAll4P,"CouplingsForEffPot","2L"]; 
+];
 
 AllRelevant=getAllRelevantCouplings[VertexListNonCC];
 temp=SPhenoCouplingList[AllRelevant];
@@ -81,95 +77,14 @@ namesAll=temp[[3]];
 
 
 (* WriteSPhenoCouplings[SPhenoCouplingsAll,False,"T"];  *)
-
 WriteSPhenoCouplings[SPhenoCouplingsAllreallyAll,False,"T"];
-
-(* If[SA`Include2LoopEffPot===True, *)
-
-(* If[SA`Include2LoopEffPot===True, *)
-Print["Creating couplings for 2-loop effective Potential"]; 
-DynamicCouplingsEffpot="";
-Print["  Processing couplings for 2-loop effective potential: ",Dynamic[DynamicCouplingsEffpot]];
-DynamicCouplingsEffpot="4 point vertices";
-temp=Select[VertexListNonCC,(#[[-1]]===SSSS || #[[-1]]===SSVV)&]; (* extract all 4-vertices with scalars *)
-temp=Select[temp,((Length[Intersection[RE/@(#[[1,1]]/. A_[{b__}]->A)]]<3) && (Mod[Count[RE/@(#[[1,1]]/. A_[{b__}]->A),RE[(#[[1,1,1]]/. A_[{b__}]->A)]],2] =!=1) )&];  (*take only those vertices which have 2 pairs of identical fields *)
-CouplingUsedForEffPot=True; (* in order to apply the correct color sum *)
-
-(*Remove the couplings which are zero in gaugeless limit *)
-listBrokenGaugeCouplings=DeleteCases[Transpose[BetaGauge][[1]],strongCoupling];
-subZeroGaugeLess=Table[listBrokenGaugeCouplings[[i]]->0,{i,1,Length[listBrokenGaugeCouplings]}];
-temp = Select[temp /. subZeroGaugeLess,#[[1,2,1]]=!=0&];
-
-temp=SPhenoCouplingList[temp];
-CouplingUsedForEffPot=False;
-SPhenoCouplings4P=temp[[1]];
-parametersAll4P=temp[[2]];
-namesAll4P=temp[[3]];
-WriteSPhenoAllCouplings[SPhenoCouplings4P,parametersAll4P,namesAll4P,"CouplingsForEffPot4","2L"]; 
-
-DynamicCouplingsEffpot="3 point vertices";
-AllRelevant=getAllRelevantCouplings[VertexListNonCC];
-AllRelevant =  Select[AllRelevant /. subZeroGaugeLess,If[Length[#[[1]]]===3,(#[[1,2,1]]=!=0) ||( #[[1,3,1]]=!=0),#[[1,2,1]]=!=0]&];
-temp=SPhenoCouplingList[AllRelevant];
-SPhenoCouplings3P=temp[[1]];
-parametersAll3P=temp[[2]];
-namesAll3P=temp[[3]];
-WriteSPhenoAllCouplings[SPhenoCouplings3P,parametersAll3P,namesAll3P,"CouplingsForEffPot3","2L"]; 
-
+If[SA`Include2LoopEffPot===True,
 WriteSPhenoCouplings[SPhenoCouplings4P,False,"2L"];
-WriteSPhenoCouplings[SPhenoCouplings3P,False,"2L"];
-(* ]; *)
+];
 ];
 
-(*-----------------------------------*)
-(*------TWO LOOP POLE COUPLINGS------*)
-(* by M.D. Goodsell *)
-(*-----------------------------------*)
-DynamicCouplings2LPole="";
-Print["Creating couplings for 2-loop pole mass: ",Dynamic[DynamicCouplings2LPole]];
-
-DynamicCouplings2LPole="3 point vertices";
-
-(*These are the same as for the effective potential...*)
-WriteSPhenoAllCouplings[SPhenoCouplings3P,parametersAll3P,namesAll3P,"CouplingsFor2LPole3","2LP"];
-WriteSPhenoCouplings[SPhenoCouplings3P,False,"2LP"];
-
-DynamicCouplings2LPole="4 point vertices";
-
-temp=Select[VertexListNonCC,(#[[-1]]===SSSS)&];(*extract all 4-vertices with scalars only,drop the ones with vectors*)temp=Select[temp/.subZeroGaugeLess,#[[1,2,1]]=!=0&];
-
-specialPOLEvertices={};
-
-Block[{tt,i},
-For[i=1,i<=Length[temp],i++,tt=ExtractStructure[temp[[i,1,2,1]],color];
-tt2=Select[tt,#[[2,1]]=!=0&];
-POLEstructures=Table[tt2[[i,1]],{i,1,Length[tt2]}];
-AppendTo[specialPOLEvertices,{{temp[[i,1,1]],POLEstructures}}];
-];
-specialPOLEverticesorg=Table[C@@specialPOLEvertices[[i,1,1]]/.{A_[{___}]->A},{i,1,Length[specialPOLEvertices]}];
-];
-
-
-CouplingsFor2LPole=True;
-
-temp2=SPhenoCouplingList4ptPOLE[temp];
-
-CouplingUsedFor2LPole=False;
-SPhenoCouplings4Pole=temp2[[1]];
-parametersAll4Pole=temp2[[2]];
-namesAll4Pole=temp2[[3]];
-WriteSPhenoAllCouplings[SPhenoCouplings4Pole,parametersAll4Pole,namesAll4Pole,"CouplingsFor2LPole4","2LP"];
-WriteSPhenoCouplings[SPhenoCouplings4Pole,False,"2LP"];
-
-(*--------END TWO LOOP POLE COUPLINGS-------------*)
-(*------------------------------------------------*)
-
-(*
 Print["Writing Couplings for Loop Calculations"];
-*)
-Print["Creating couplings for loop calculations"];
-DynamicCouplings["CouplingsForLoopMasses"]="";
-Print["  Processing couplings for loop calculations: ",Dynamic[DynamicCouplingsLoop]," ",Dynamic[DynamicCouplings["CouplingsForLoopMasses"]]];
+
 
 sum[a_,b_,c_,d_]:=Block[{res,j},
 deltas=Cases[d,x:(Delta[a+s_,y_]),10];
@@ -179,13 +94,12 @@ res =res /. Flatten[Table[{deltas[[j,2]]-summand->deltas[[j,1]]-summand},{j,1,Le
 Return[res];
 ] /; (FreeQ[d,Delta[a+s_,_]]==False && FreeQ[d,StillCalcSum]==True);
 
-DynamicCouplingsLoop="building couplings";
+
 CouplingsForLoops=True;
 temp=SPhenoCouplingList[VerticesGaugeMassES];
 SPhenoCouplingsLoop=temp[[1]];
 parametersLoop=temp[[2]];
 namesLoop=temp[[3]];
-DynamicCouplingsLoop="writing couplings";
 If[IntermediateScale ===True,
 WriteSPhenoAllCouplings[SPhenoCouplingsLoop,parametersLoop,namesLoop,"CouplingsForLoopMassesRegime"<>ToString[RegimeNr],"L"];,
 WriteSPhenoAllCouplings[SPhenoCouplingsLoop,parametersLoop,namesLoop,"CouplingsForLoopMasses","L"]; 
@@ -197,42 +111,32 @@ CouplingsForLoops=False;
 
 If[IntermediateScale =!=True,
 
-(* Print["Writing Couplings Loop Corrections of W and Z"]; *)
+Print["Writing Couplings Loop Corrections of W and Z"];
 
-DynamicCouplings["CouplingsForVectorBosons"]="";
-Print["  Processing couplings for W/Z calculations: ",Dynamic[DynamicCouplingsWZ]," ",Dynamic[DynamicCouplings["CouplingsForVectorBosons"]]];
 
-DynamicCouplingsWZ="building couplings";
 temp = SPhenoCouplingList[Cases[VerticesGaugeMassES,x_?FreeQZW]]; 
 SPhenoCouplingsZW=temp[[1]];
 parametersZW=temp[[2]];
 namesZW=temp[[3]];
-DynamicCouplingsWZ="writing couplings";
 WriteSPhenoAllCouplings[SPhenoCouplingsZW,parametersZW,namesZW,"CouplingsForVectorBosons","L"]; 
 
 
-(* Print["Writing Couplings for Loop Corrections of SM Fermions"]; *)
+Print["Writing Couplings for Loop Corrections of SM Fermions"];
 
-DynamicCouplings["CouplingsForSMfermions"]="";
-Print["  Processing couplings for SM-loop calculations: ",Dynamic[DynamicCouplingsSM]," ",Dynamic[DynamicCouplings["CouplingsForSMfermions"]]];
-DynamicCouplingsSM="building couplings";
+
 temp = SPhenoCouplingList[Cases[VerticesGaugeMassES,x_?FreeQebt]]; 
 SPhenoCouplingsEBT=temp[[1]];
 parametersEBT=temp[[2]];
 namesEBT=temp[[3]];
-DynamicCouplingsSM="writing couplings";
 WriteSPhenoAllCouplings[SPhenoCouplingsEBT,parametersEBT,namesEBT,"CouplingsForSMfermions","L"]; 
 
-(* Print["Writing Couplings for effective Higgs Interactions"]; *)
+Print["Writing Couplings for effective Higgs Interactions"];
 
-DynamicCouplings["CouplingsForTadpoles"]="";
-Print["  Processing couplings for one-loop tadpoles: ",Dynamic[DynamicCouplingsTad]," ",Dynamic[DynamicCouplings["CouplingsForTadpoles"]]];
-DynamicCouplingsTad="building couplings";
+
 temp =SPhenoCouplingList[Cases[VerticesGaugeMassES,x_?FreeQUHiggs]];
 SPhenoCouplingsTadpoles=temp[[1]];
 parametersTadpoles=temp[[2]];
 namesTadpoles=temp[[3]];
-DynamicCouplingsTad="writing couplings";
 WriteSPhenoAllCouplings[SPhenoCouplingsTadpoles,parametersTadpoles,namesTadpoles,"CouplingsForTadpoles","L"];  
 
 (*
@@ -315,14 +219,14 @@ Return[Intersection[parameters]];
 
 SPhenoCouplingList[listCouplings_]:=Block[{n1,i2,i,SPhenoCouplings, parameterNames,couplingNames, factor},
 
-(* Print["Building Coupling List"]; *)
+Print["Building Coupling List"];
 
 coupNr=1;
 
 couplingNames = {};
 parameterNames ={};
 
-subCouplingsSPheno={Lam[a__]->2,Sig[a__]->2, fSU3[a__]->1, fSU2[a__]->1, epsTensor[a__]->1,CG[SU[n_],a__][b__]->1,Generator[SU[3],___][b___]->2};
+subCouplingsSPheno={Lam[a__]->2,Sig[a__]->2, fSU3[a__]->1, fSU2[a__]->1, epsTensor[a__]->1,CG[SU[n_],a__][b__]->1};
 
 For[i2=1,i2<=4,
 subCouplingsSPheno=Join[subCouplingsSPheno,(subValue[i2,1] /. subIndFinal[i2,i2])];
@@ -343,8 +247,8 @@ If[listCouplings[[n1,2]]===SSSS || listCouplings[[n1,2]]===SSVV || listCouplings
 value=sumOverNonAbelianIndizesEffPot[listCouplings[[n1]]];,
 value=listCouplings[[n1,1,2,1]] ;
 ];
-value=value/. Delta[a_,conj[b_]]->Delta[a,b]/. Delta[conj[a_],b_]->Delta[a,b];
 ];
+
 
 If[listCouplings[[n1,2]]===SSV,factor=-1;,factor=1;];
 SPhenoCouplings= Join[SPhenoCouplings,{{{Apply[C,listCouplings[[n1,1,1]] /. A_[{a__}]-> A]},{CouplingName[listCouplings[[n1,1,1]]], SPhenoCoupling[listCouplings[[n1,1,1]]]},{},{},factor*value /. subCouplingsSPheno,listCouplings[[n1,1,1]]}}];
@@ -433,13 +337,10 @@ Return[{SPhenoCouplings //. Mass[x_]:>SPhenoMass[x] //. RXi[_]->1,parameterNames
 
 WriteSPhenoCouplings[SPhenoCouplings_, Check_,end_]:=Block[{i,i2,InvPart},
 
-Print["  writing routine for each coupling: ",Dynamic[DynamicCurrentCouplingNr[end]],"/",Length[SPhenoCouplings]," (",Dynamic[DynamicCurrentCouplingName[end]],")"];
-(* Print["   Write Routine for each Coupling"]; *)
-
+Print["   Write Routine for each Coupling"];
 
 For[i=1,i<=Length[SPhenoCouplings],
-DynamicCurrentCouplingNr[end]=i;
-DynamicCurrentCouplingName[end]=SPhenoCouplings[[i,2,1]];
+
 If[Check==True,
 If[FreeQ[SPhenoCouplingsAll,SPhenoCouplings[[i,2,1]]]==False,
 WriteCouplings=False;,
@@ -579,7 +480,6 @@ WriteString[sphenoCoup, "End Subroutine "<>SPhenoCouplings[[i,2,1]] <>end<>"  \n
 ];
 
 i++;];
-DynamicCurrentCouplingName[end]="All Done";
 ];
 
 
@@ -640,7 +540,7 @@ WriteString[sphenoCoup, "Contains \n \n "];
 
 WriteSPhenoAllCouplings[SPhenoCouplings_,parameterNames_,couplingNames_,RoutineName_,end_] :=Block[{i1,i2,i},
 
-(* Print["   Writing Function for all Couplings"]; *)
+Print["   Writing Function for all Couplings"];
 
 MakeSubroutineTitle[RoutineName, Join[parameterNames,couplingNames],{},{},sphenoCoup];
 
@@ -657,7 +557,6 @@ WriteString[sphenoCoup, "NameOfUnit(Iname) = '"<>RoutineName<>"'\n \n"];
 
 
 For[i=1,i<=Length[SPhenoCouplings],
-DynamicCouplings[RoutineName]="("<>ToString[i]<>"/"<>ToString[Length[SPhenoCouplings]]<>")";
 (* If[Length[SPhenoCouplings[[i,2]]]==2, *)
 Switch[Length[SPhenoCouplings[[i,2]]],
 2, WriteString[sphenoCoup, ToString[SPhenoCouplings[[i,2,2]]] <> " = 0._dp \n"];,
@@ -720,11 +619,6 @@ For[i=1,i<=Length[tosum],
 temp=ReleaseHold[Hold[Sum[temp,IND]] /. IND->{tosum[[i,1]],1,tosum[[i,2]]}];
 i++;];
 
-If[FreeQ[temp,fSU3]==False|| FreeQ[temp,Lam]==False,
-temp=temp //. sum[a_,b_,c_,d___ fSU3[e___] ]:>Sum[d fSU3[e],{a,b,c}]//. sum[a_,b_,c_,fSU3[e___]^d_ ]:>Sum[fSU3[e]^d,{a,b,c}];
-temp=temp //. sum[a_,b_,c_,d___ Lam[e___] ]:>Sum[d Lam[e],{a,b,c}]//. sum[a_,b_,c_, Lam[e___]^d_ ]:>Sum[Lam[e]^d,{a,b,c}];
-];
-
 Return[temp];
 
 ];
@@ -745,8 +639,8 @@ i++;];
 
 If[Length[posToSum]===4 && CouplingsForLoops===True,
 If[Length[Intersection[RE/@(coup[[1,1]] /. A_[{b__}]->A)]]===1,
-posNotToSum={posToSum[[1]],posToSum[[3]]};
-posToSum={posToSum[[2]],posToSum[[4]]};,
+posNotToSum={posToSum[[1]],posToSum[[2]]};
+posToSum={posToSum[[3]],posToSum[[4]]};,
 If[getGen[coup[[1,1,1]]]>1,
 posNotToSum={posToSum[[2]],posToSum[[4]]};
 posToSum={posToSum[[1]],posToSum[[3]]};,
@@ -755,6 +649,7 @@ posToSum={posToSum[[2]],posToSum[[4]]};
 ];
 ];
 ];
+
 
 If[Length[posToSum]==2 && Length[posNotToSum]==2 ,
 p1=posToSum[[1]];
@@ -782,10 +677,6 @@ i++;];,
 temp=coup[[1,2,1]];
 ];
 
-If[FreeQ[temp,fSU3]==False|| FreeQ[temp,Lam]==False,
-temp=temp //. sum[a_,b_,c_,d___ fSU3[e___] ]:>Sum[d fSU3[e],{a,b,c}]//. sum[a_,b_,c_,fSU3[e___]^d_ ]:>Sum[fSU3[e]^d,{a,b,c}];
-temp=temp //. sum[a_,b_,c_,d___ Lam[e___] ]:>Sum[d Lam[e],{a,b,c}]//. sum[a_,b_,c_, Lam[e___]^d_ ]:>Sum[Lam[e]^d,{a,b,c}];
-];
 
 Return[temp];
 
@@ -833,92 +724,4 @@ WriteString[file, "Else\n"];
 WriteString[file, "  e=0.\n"];
 WriteString[file, "End If\n"];
 WriteString[file, "End Function epsTensor\n"];
-];
-
-
-(*-----------------------------------*)
-(*-----TWO LOOP POLE COUPLINGS-------*)
-(* Code provided by M.D. Goodsell    *)
-(*-----------------------------------*)
-
-SPhenoCouplingList4ptPOLE[listCouplings_]:=Block[{n1,i2,i,SPhenoCouplings,parameterNames,couplingNames,factor,tempname1,tempname2,mytempstringname1,mytempstringname2,POLEstructures,manycolourstructures,numberofcouplings},
-fourptcouplingstatus="";
-Print["Building Coupling List 4pt pole: ",Dynamic[fourptcouplingstatus]];
-coupNr=1;
-couplingNames={};
-parameterNames={};
-numberofcouplings=Length[listCouplings];
-SPhenoCouplings={};
-
-For[n1=1,n1<=numberofcouplings,n1++,manycolourstructures=0;
-fourptcouplingstatus=CouplingName[listCouplings[[n1,1,1]]]<>" ("<>ToString[n1]<>"/"<>ToString[numberofcouplings]<>")";
-vertexval=listCouplings[[n1,1,2,1]];
-tempcolourfunc=ExtractStructure[vertexval,color];
-If[tempcolourfunc[[1,1]]===1,(*not coloured!*)value=listCouplings[[n1,1,2,1]];
-SPhenoCouplings=Join[SPhenoCouplings,{{{Apply[C,listCouplings[[n1,1,1]]/.A_[{a__}]->A]},{CouplingName[listCouplings[[n1,1,1]]],SPhenoCoupling[listCouplings[[n1,1,1]]]},{},{},value/.subCouplingsSPheno,listCouplings[[n1,1,1]]}}];
-couplingNames=Join[couplingNames,{SPhenoCoupling[listCouplings[[n1,1,1]]]}];,(*coloured!*)newcolourfuncs=Select[tempcolourfunc,#[[2,1]]=!=0&];(*select the bits with nonzero colour structure*)If[Length[newcolourfuncs]>1,(*more than one colour structure->sum over the colour indices*)(*but first discard vertices which do not have two pairs of identical vertices*)If[((Length[Intersection[RE/@(listCouplings[[n1,1,1]]/.A_[{b__}]->A)]]>=3)||(Mod[Count[RE/@(listCouplings[[n1,1,1]]/.A_[{b__}]->A),RE[(listCouplings[[n1,1,1,1]]/.A_[{b__}]->A)]],2]==1)),Continue[];];
-value=sumOverNonAbelianIndicesPOLE[listCouplings[[n1]]];
-SPhenoCouplings=Join[SPhenoCouplings,{{{Apply[C,listCouplings[[n1,1,1]]/.A_[{a__}]->A]},{CouplingName[listCouplings[[n1,1,1]]],SPhenoCoupling[listCouplings[[n1,1,1]]]},{},{},value/.subCouplingsSPheno,listCouplings[[n1,1,1]]}}];
-couplingNames=Join[couplingNames,{SPhenoCoupling[listCouplings[[n1,1,1]]]}];,(*just the regular case here,a single colour factor*)value=newcolourfuncs[[1,2]];
-SPhenoCouplings=Join[SPhenoCouplings,{{{Apply[C,listCouplings[[n1,1,1]]/.A_[{a__}]->A]},{CouplingName[listCouplings[[n1,1,1]]],SPhenoCoupling[listCouplings[[n1,1,1]]]},{},{},value/.subCouplingsSPheno,listCouplings[[n1,1,1]]}}];
-couplingNames=Join[couplingNames,{SPhenoCoupling[listCouplings[[n1,1,1]]]}];];];
-NewParameters={};
-NewParametersSplit={};
-For[i2=1,i2<=Length[listCouplings[[n1,1,1]]],
-If[getGenSPheno[listCouplings[[n1,1,1,i2]]]==1,
-indRange={};,
-indRange={{generation,getGenSPheno[listCouplings[[n1,1,1,i2]]]}}/.subGC[i2]/.subIndFinal[i2,i2];
-];
-If[indRange=!={},
-SPhenoCouplings[[coupNr,3]]=Join[SPhenoCouplings[[coupNr,3]],Transpose[indRange][[1]]];
-];
-NewParameters=Join[NewParameters,indRange];
-NewParametersSplit=Join[NewParametersSplit,indRange];
-i2++;];
-If[NewParameters==={},
-NewP1={};
-NewP2={};,
-NewP1=Transpose[NewParameters][[1]];
-NewP2=Transpose[NewParameters][[2]];
-];
-SPhenoParameters=Join[SPhenoParameters,{{SPhenoCoupling[listCouplings[[n1,1,1]]],NewP1,NewP2,NewParametersSplit}}];
-(*Add couplings to the list of parameters*)
-For[i2=1,i2<=Length[parameters],
-If[FreeQ[listCouplings[[n1]],
-parameters[[i2,1]]]==False&&FreeQ[UnfixedCharges,parameters[[i2,1]]]==True&&Head[parameters[[i2,1]]]=!=Mass&&NumericQ[parameters[[i2,1]]]==False&&parameters[[i2,1]]=!=0.,SPhenoCouplings[[coupNr,4]]=Join[SPhenoCouplings[[coupNr,4]],{parameters[[i2,1]]}];
-If[FreeQ[parameterNames,parameters[[i2,1]]]==True&&FreeQ[UnfixedCharges,parameters[[i2,1]]]==True,parameterNames=Join[parameterNames,{parameters[[i2,1]]}]];];
-i2++;];
-(*Add gauge couplings to the list of parameters*)
-For[i2=1,i2<=Length[PART[V]],
-If[FreeQ[listCouplings[[n1]],
-Mass[PART[V][[i2,1]]]]==False&&NumericQ[SPhenoMass[PART[V][[i2,1]]]]==False&&SPhenoMass[PART[V][[i2,1]]]=!=0.,SPhenoCouplings[[coupNr,4]]=Join[SPhenoCouplings[[coupNr,4]],{SPhenoMass[PART[V][[i2,1]]]}];
-If[FreeQ[parameterNames,SPhenoMass[PART[V][[i2,1]]]]==True,
-parameterNames=Join[parameterNames,{SPhenoMass[PART[V][[i2,1]]]}]];
-];
-i2++;];
-coupNr++;];
-fourptcouplingstatus="Complete ("<>ToString[numberofcouplings]<>"/"<>ToString[numberofcouplings]<>") processed, "<>ToString[coupNr-1]<>" unique couplings found";
-Return[{SPhenoCouplings//.Mass[x_]:>SPhenoMass[x]//.RXi[_]->1,parameterNames,couplingNames}];
-];
-
-
-sumOverNonAbelianIndicesPOLE[coup_]:=Block[{i,p1,p2,ind,temp,index1,index2,index1b,index2b,p1b,p2b,tosum,subind,delta},tosum=Flatten[Table[DeleteCases[DeleteCases[getIndizesWI[coup[[1,1,i]]],{generation,_}],{lorentz,4}]/.subGC[i]/.subIndFinal[i,i],{i,1,4}],1];
-setsofindices={{},{},{},{}};
-For[i=1,i<=4,i++,ind=getIndizesWI[getBlank[coup[[1,1,i]]]];
-For[j=1,j<=Length[ind],j++,
-If[ind[[j,1]]=!=generation,AppendTo[setsofindices[[i]],ind[[j,1]]/.subGC[i]/.subIndFinal[i,i]];];
-];
-];
-delta=1;
-If[(coup[[1,1,1]]/.A_[{b__}]->A)===conj[(coup[[1,1,2]]/.A_[{b__}]->A)],If[FreeQ[coup[[1,1,1]],List]===False,delta=delta*(setsofindices[[1]].setsofindices[[2]]/.Times->Delta);];
-If[FreeQ[coup[[1,1,3]],List]===False,delta=delta*(setsofindices[[3]].setsofindices[[4]]/.Times->Delta);];,If[(coup[[1,1,1]]/.A_[{b__}]->A)===conj[(coup[[1,1,3]]/.A_[{b__}]->A)],If[FreeQ[coup[[1,1,1]],List]===False,delta=delta*(setsofindices[[1]].setsofindices[[3]]/.Times->Delta);];
-If[FreeQ[coup[[1,1,2]],List]===False,delta=delta*(setsofindices[[2]].setsofindices[[4]]/.Times->Delta);];,If[FreeQ[coup[[1,1,1]],List]===False,delta=delta*(setsofindices[[1]].setsofindices[[4]]/.Times->Delta);];
-If[FreeQ[coup[[1,1,2]],List]===False,delta=delta*(setsofindices[[2]].setsofindices[[3]]/.Times->Delta);];];];
-delta=delta/.Plus->Times/.{Delta[lt1,__]->1,Delta[lt2,__]->1,Delta[lt3,__]->1,Delta[lt4,__]->1};
-temp=delta*coup[[1,2,1]];
-For[i=1,i<=Length[tosum],temp=ReleaseHold[Hold[Sum[temp,IND]]/.IND->{tosum[[i,1]],1,tosum[[i,2]]}];
-i++;];
-If[FreeQ[temp,fSU3]==False||FreeQ[temp,Lam]==False,temp=temp//.sum[a_,b_,c_,d___ fSU3[e___]]:>Sum[d fSU3[e],{a,b,c}]//.sum[a_,b_,c_,fSU3[e___]^d_]:>Sum[fSU3[e]^d,{a,b,c}];
-temp=temp//.sum[a_,b_,c_,d___ Lam[e___]]:>Sum[d Lam[e],{a,b,c}]//.sum[a_,b_,c_,Lam[e___]^d_]:>Sum[Lam[e]^d,{a,b,c}];];
-Return[temp];
 ];

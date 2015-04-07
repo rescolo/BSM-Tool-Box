@@ -12,7 +12,7 @@
      > Fermi_a,Fermi_b,Fermi_c,Rsun,
      > rhoDM,Vearth,
      > K_dif,L_dif,Delta_dif,Tau_dif,Vc_dif,Rdisk,
-     > deltaY,dmAsymm,Vesc,Vrot,FracCDM2,Mcdm1,Mcdm2,Tstart,Tend
+     > deltaY,dmAsymm,Vesc,Vrot
        COMMON/MOCOMMON/ NULL,Mcdm,ScalarFFPd,ScalarFFPu,ScalarFFPs,
      > pVectorFFPd,pVectorFFPu,pVectorFFPs,
      > SigmaFFPd,SigmaFFPu,SigmaFFPs,
@@ -22,10 +22,8 @@
      > Fermi_a,Fermi_b,Fermi_c,Rsun,
      > rhoDM,Vearth,
      > K_dif,L_dif,Delta_dif,Tau_dif,Vc_dif,Rdisk,
-     > deltaY,dmAsymm,Vesc,Vrot,FracCDM2,Mcdm1,Mcdm2,Tstart,Tend
+     > deltaY,dmAsymm,Vesc,Vrot
 
-       character CDM1*20, CDM2*20
-       COMMON/MOCOMMONCH/CDM1,CDM2 
        
        real*8  r8Null
        integer iNull
@@ -47,19 +45,13 @@ c!      integer iargc
      >         zInterp, spectdnde, darkOmega,printChannels,
      >         gammaFlux,pbarFlux,posiFlux, pwidth,findbr,
      >         hProfileABG, hProfileEinasto,noClamps,pMass,
-     >         darkOmegaFO,oneChannel, vSigma,captureAux,
-     >         darkOmega2, 
-     >         vs1120F,vs2200F,vs1100F,vs1210F,vs1122F,vs2211F,vs1110F,
-     >         vs2220F,vs1112F,vs1222F,vs1220F,vs2210F,vs2221F,vs1211F
+     >         darkOmegaFO,oneChannel, vSigma,captureAux
       real*8   cs22,pWidth2,decay2Info,findValW,calcSpectrum,
      >         HaloFactor,RhoQisotermic,RhoMO,RhoMOSq,
      >         zInterp,spectdnde, darkOmega,printChannels,
      >         gammaFlux,pbarFlux,posiFlux,pwidth,findbr,
      >         hProfileABG, hProfileEinasto,noClamps,pMass,
-     >         darkOmegaFO, oneChannel, vSigma,captureAux,
-     >         darkOmega2,
-     >         vs1120F,vs2200F,vs1100F,vs1210F,vs1122F,vs2211F,vs1110F,
-     >         vs2220F,vs1112F,vs1222F,vs1220F,vs2210F,vs2221F,vs1211F
+     >         darkOmegaFO, oneChannel, vSigma,captureAux
 C subroutines: newProcess,assignValW,printVar,printMasses,spectrInfo,
 C              procInfo1,procInfo2
 *--------------------- 

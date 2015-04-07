@@ -232,27 +232,6 @@ Return["1"];
 ];
 ];
 
-getScalarToVEV[vev_]:=Block[{i,j,temp,pos},
-For[i=1,i<=Length[NameOfStates],
-If[FreeQ[DEFINITION[NameOfStates[[i]]][VEVs],vev]==False,
-temp=DEFINITION[NameOfStates[[i]]][VEVs];
-];
-i++;];
-pos=Position[temp,vev][[1,1]];
-Return[temp[[pos,4,1]]];
-];
-
-getBasisToVEV[vev_]:=Block[{i,j,temp,scalar},
-scalar=getScalarToVEV[vev];
-For[i=1,i<=Length[NameOfStates],
-If[FreeQ[DEFINITION[NameOfStates[[i]]][MatterSector],scalar]==False,
-temp=DEFINITION[NameOfStates[[i]]][MatterSector];
-];
-i++;];
-pos=Position[temp,scalar][[1,1]];
-Return[temp[[pos,1]]];
-];
-
 TransposeChecked[x_]:=Block[{},
 If[Depth[x]<3,
 Return[{{}}];,

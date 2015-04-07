@@ -45,56 +45,12 @@
       If (Int(wert).Ne.0) FermionMassResummation = .False.
 
      Case(7)
-       If (wert.eq.1) then
-         CalculateTwoLoopHiggsMasses=.False.
-       Else
-         CalculateTwoLoopHiggsMasses=.True.
-       End if
-
-     Case(8)
-        SELECT CASE (int(WERT))
-        CASE ( 1 )
-           PurelyNumericalEffPot = .true.
-           CalculateMSSM2Loop = .false.
-           TwoLoopMethod=1
-        CASE ( 2 )
-           PurelyNumericalEffPot = .false.
-           CalculateMSSM2Loop = .false.
-           TwoLoopMethod=2
-        CASE ( 3 )
-           CalculateMSSM2Loop = .false.
-           TwoLoopMethod=3
-        CASE ( 8 )
-           CalculateMSSM2Loop = .True.
-           TwoLoopMethod=8
-        CASE ( 9 )
-           CalculateMSSM2Loop = .True.
-           TwoLoopMethod=9
-        CASE DEFAULT 
-           Write(*,*) "Unknown option for two-loop mass calculation"
-           CalculateTwoLoopHiggsMasses=.False.
-        END SELECT
-
-
- 
-     Case(9)
        If (wert.Ne.0) Then
-        GaugelessLimit=.true.
+        CalculateTwoLoopHiggsMasses=.False.
        Else
-        GaugelessLimit=.false.
+        CalculateTwoLoopHiggsMasses=.True.
        End If
 
-     Case(400)
-       hstep_pn = wert
-     Case(401)
-       hstep_sa = wert
-
-     Case(10)
-       If (wert.Ne.1) Then
-        TwoLoopSafeMode=.false.
-       Else
-        TwoLoopSafeMode=.true.
-       End If
 
      Case(11)  ! whether to calculate  branching ratios or not
       If (Int(wert).Eq.1) L_BR = .True.
@@ -104,86 +60,68 @@
       Call SetWriteMinBR(wert)
 
      Case(13) ! minimal value such that a branching ratio is written out
-      If (wert.Eq.0) Then
-           Enable3BDecaysF = .False.
-           Enable3BDecaysS = .False.        
-      Elseif (wert.Eq.1) Then
-           Enable3BDecaysF = .True.
-           Enable3BDecaysS = .False.        
-      Elseif (wert.Eq.2) Then
-           Enable3BDecaysS = .True.
-           Enable3BDecaysF = .False.        
-      Elseif (wert.Eq.3) Then
-           Enable3BDecaysF = .True.
-           Enable3BDecaysS = .True.        
-      Else 
-          Write(*,*) "Unknown option for flag 13 (three-body decays): ",wert
-      End if
-
+      If (wert.Eq.0) Enable3BDecays = .False.    
 
      Case(14) ! run SUSY couplings to scale of decaying particle
       If (wert.Eq.0) RunningCouplingsDecays = .False.    
 
-     Case(15) ! run SUSY couplings to scale of decaying particle
-      MinWidth = wert    
+     Case(21)  ! whether to calculate cross sections or not
+      If (Int(wert).Eq.1) L_CS = .True.
+      If (Int(wert).Eq.0) L_CS = .False.
 
-!      Case(21)  ! whether to calculate cross sections or not
-!       If (Int(wert).Eq.1) L_CS = .True.
-!       If (Int(wert).Eq.0) L_CS = .False.
-! 
-!      Case(22) ! cms energy
-!       p_act = p_act + 1
-!       ! this test is necessary to avoid a memory violation
-!       If (p_act.Le.p_max) Then
-!        Ecms(p_act) = wert
-!       Else
-!        If (output_screen) &
-!            & Write(*,*) "The number of required points for the calculation"// &
-!            &  " of cross sections exceeds",p_max
-!        If (output_screen) &
-!            & Write(*,*) "Ignoring this information"
-!        If (output_screen) &
-!      &  Write(*,*) "Please enlarge the corresponding arrays in the main program."
-!        Write(ErrCan,*) "The number of required points for the calculation"// &
-!                &   " of cross sections exceeds",p_max
-!        Write(ErrCan,*) "Ignoring this information"
-!        Write(ErrCan,*) &
-!          &"Please enlarge the corresponding arrays in the main program."
-!       End If
+     Case(22) ! cms energy
+      p_act = p_act + 1
+      ! this test is necessary to avoid a memory violation
+      If (p_act.Le.p_max) Then
+       Ecms(p_act) = wert
+      Else
+       If (output_screen) &
+           & Write(*,*) "The number of required points for the calculation"// &
+           &  " of cross sections exceeds",p_max
+       If (output_screen) &
+           & Write(*,*) "Ignoring this information"
+       If (output_screen) &
+     &  Write(*,*) "Please enlarge the corresponding arrays in the main program."
+       Write(ErrCan,*) "The number of required points for the calculation"// &
+               &   " of cross sections exceeds",p_max
+       Write(ErrCan,*) "Ignoring this information"
+       Write(ErrCan,*) &
+         &"Please enlarge the corresponding arrays in the main program."
+      End If
 
-!      Case (23) ! polarisation of incoming e- beam
-!       If (Abs(wert).Gt.1._dp) Then
-!        If (output_screen) Write(*,*) &
-!            & "e- beam polarisation has to between -1 and 1 and not",wert
-!        If (output_screen) &
-!            & Write(*,*) "using now unpolarised e- beam"
-!        Write(ErrCan,*) &
-!           & "e- beam polarisation has to between -1 and 1 and not",wert
-!        Write(ErrCan,*) "using now unpolarised e- beam"
-!        If (p_act.Le.p_max) Pm(p_act) = 0
-!       Else
-!        If (p_act.Le.p_max) Pm(p_act) = wert
-!       End If
-! 
-!      Case (24) ! polarisation of incoming e+ beam
-!       If (Abs(wert).Gt.1._dp) Then
-!        If (output_screen) Write(*,*) &
-!            & "e+ beam polarisation has to between -1 and 1 and not",wert
-!        If (output_screen) &
-!            & Write(*,*) "using now unpolarised e+ beam"
-!        Write(ErrCan,*) &
-!           & "e+ beam polarisation has to between -1 and 1 and not",wert
-!        Write(ErrCan,*) "using now unpolarised e+ beam"
-!        If (p_act.Le.p_max) Pp(p_act) = 0
-!       Else
-!        If (p_act.Le.p_max) Pp(p_act) = wert
-!       End If
+     Case (23) ! polarisation of incoming e- beam
+      If (Abs(wert).Gt.1._dp) Then
+       If (output_screen) Write(*,*) &
+           & "e- beam polarisation has to between -1 and 1 and not",wert
+       If (output_screen) &
+           & Write(*,*) "using now unpolarised e- beam"
+       Write(ErrCan,*) &
+          & "e- beam polarisation has to between -1 and 1 and not",wert
+       Write(ErrCan,*) "using now unpolarised e- beam"
+       If (p_act.Le.p_max) Pm(p_act) = 0
+      Else
+       If (p_act.Le.p_max) Pm(p_act) = wert
+      End If
 
-!      Case(25)
-!       If ((wert.Eq.1._dp).And.(p_act.Le.p_max)) L_ISR(p_act) = .True.
-! 
-!      Case(26) ! minimal value such that a cross section is written out
-!       Call SetWriteMinSig(wert)
+     Case (24) ! polarisation of incoming e+ beam
+      If (Abs(wert).Gt.1._dp) Then
+       If (output_screen) Write(*,*) &
+           & "e+ beam polarisation has to between -1 and 1 and not",wert
+       If (output_screen) &
+           & Write(*,*) "using now unpolarised e+ beam"
+       Write(ErrCan,*) &
+          & "e+ beam polarisation has to between -1 and 1 and not",wert
+       Write(ErrCan,*) "using now unpolarised e+ beam"
+       If (p_act.Le.p_max) Pp(p_act) = 0
+      Else
+       If (p_act.Le.p_max) Pp(p_act) = wert
+      End If
+
+     Case(25)
+      If ((wert.Eq.1._dp).And.(p_act.Le.p_max)) L_ISR(p_act) = .True.
+
+     Case(26) ! minimal value such that a cross section is written out
+      Call SetWriteMinSig(wert)
 
      Case(31) ! setting a fixed GUT scale if wert > 0
       If (wert.Gt.0._dp) Call SetGUTScale(wert)
@@ -200,15 +138,12 @@
      Case(35) ! maximal number of iterations
       n_run = Int(wert)
 
-     Case(36) ! minimal number of iterations
-      MinimalNumberIterations = Int(wert)
-
-!      Case(36) ! write out debug information
-!       If (wert.Eq.0) Then
-!        WriteOut = .False.
-!       Else
-!        WriteOut = .True.
-!       End If
+     Case(36) ! write out debug information
+      If (wert.Eq.0) Then
+       WriteOut = .False.
+      Else
+       WriteOut = .True.
+      End If
 
      Case(37) ! if =1 -> CKM thourgh V_u, if =2 CKM through V_d 
       If ((wert.Eq.1._dp).Or.(wert.Eq.2._dp)) i1 =  SetYukawaScheme(Int(wert))
@@ -336,12 +271,6 @@
        WriteParametersAtQ=.False.
       End If
 
-     Case(70)
-      If (wert.Ne.0._dp) Then
-       SUSYrunningFromMZ=.True.
-      Else
-       SUSYrunningFromMZ=.False.
-      End If
 
      Case(65)
       If (wert.gt.0) SolutionTadpoleNr = wert 
@@ -357,30 +286,20 @@
      Case(80) ! exit for sure with non-zero value if a problem occurs
       If (wert.Eq.1) Non_Zero_Exit = .True.      
 
-     Case(86) ! width to be counted as inivisble in HiggsBounds output
-      WidthToBeInvisible = wert   
+     Case(86) ! Writes input files for HiggsBounfs
+      WidthToBeInvisible = wert      
 
-     Case(88) ! maximal mass allowed in loops
-      MaxMassLoop = wert**2
-   
-     Case(89) ! maximal mass counted as numerical zero
-      MaxMassNumericalZero = wert
+     Case(90) ! add R-parity at low energies
+      If (wert.Eq.1) Add_Rparity = .True.      
 
-     Case(95) ! Force mass matrices at 1-loop to be real
-      If (wert.Eq.1) ForceRealMatrices  = .True.
+     Case(91) ! fit RP parameters such, that neutrino data are o.k.
+      If (wert.Eq.1) l_fit_RP_parameters = .True.      
 
+     Case(92) ! for Pythia input
+      If (wert.Eq.1) l_RP_Pythia = .True.      
 
-!      Case(90) ! add R-parity at low energies
-!       If (wert.Eq.1) Add_Rparity = .True.      
-! 
-!      Case(91) ! fit RP parameters such, that neutrino data are o.k.
-!       If (wert.Eq.1) l_fit_RP_parameters = .True.      
-! 
-!      Case(92) ! for Pythia input
-!       If (wert.Eq.1) l_RP_Pythia = .True.      
-! 
-!      Case(97) ! for Pythia input
-!       If (wert.Eq.1) PrintPartialContributions = .True.     
+     Case(97) ! for Pythia input
+      If (wert.Eq.1) PrintPartialContributions = .True.     
 
 
      Case(510)

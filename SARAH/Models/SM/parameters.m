@@ -34,7 +34,7 @@ ParameterDefinitions = {
 {mH2,        { Description -> "SM Higgs Mass Parameter"}},
 
 {ThetaW,    { Description -> "Weinberg-Angle",
-              DependenceNum -> ArcSin[Sqrt[1 - Mass[VWp]^2/Mass[VZ]^2]]  }},
+              DependenceNum -> ArcSin[Sqrt[1 - Mass[VWp]^2/Mass[VZ]^2]]}},
 
 {ZZ, {Description -> "Photon-Z Mixing Matrix"}},
 {ZW, {Description -> "W Mixing Matrix",

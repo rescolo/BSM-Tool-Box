@@ -138,17 +138,14 @@ void  messanykey(int x1,int y1,char* txtstr)
 }
 
 
-
-int infoLine(double rate)
+int informline(long curent, long total)
 {  int  xx;
    int res=0;
    static int Y;
    static int X;
-//   static void*dump=NULL;
-   
    int xm=where_x(), ym=where_y(), fc=fColor,bc=bColor;
   
-   if (rate == 0)
+   if (curent == 0)
    {
       Y=maxRow();
       X=15;
@@ -156,10 +153,8 @@ int infoLine(double rate)
       memset(b,' ',50); b[50] = '\0';
 */
      goto_xy(15,Y); scrcolor(White,Red);
-//     if(dump) del_text(&dump);     
-//     get_text(15,Y,15+50, Y,&dump);     
      print(" Calculation in progress. Calculation in progress.");                                                                     
-/*          12345678901234567890123456789012345678901234567890 */
+/*            12345678901234567890123456789012345678901234567890 */
 /*      print("%s",b); */
       goto_xy(15,Y);
       scrcolor(fc,bc);
@@ -169,27 +164,26 @@ int infoLine(double rate)
 
    if(X>65 || X<15) X=15;
    
-   xx = 15 + 50*rate;
+   xx = 15 + (50 * curent) / total;
    if (xx > 65) xx = 65;
    scrcolor(Black,Red);
    goto_xy(X,Y);
    while (where_x() < xx) print("%c",'X');
    if(xx !=X) { X=xx; res=escpressed();}
-   if (rate  >= 1)
+   if (curent >= total)
    {
-//     put_text(&dump);
       scrcolor(White,Black);
+      goto_xy(1,Y); clr_eol();
       goto exi;
    }
    
    exi:
-   scrcolor(fc,bc); goto_xy(xm,ym);  
-   return res;   
+   
+   scrcolor(fc,bc); goto_xy(xm,ym);   
+   return res;
+   
+   
 }
-
-int informline(long curent, long total) { return infoLine((double)curent/(double)total);}  
-
-
 
 
 void chepbox(int x1,int y1,int x2,int y2)
@@ -277,6 +271,7 @@ void  menu0(int col,int row,char* label, char* menstr ,
    }
 
    clearTypeAhead();
+
    if (*kk < 0) *kk = -(*kk);
       ncol=menstr[0];
       sprintf(fmt,"%%%d.%ds",ncol,ncol);
@@ -348,7 +343,6 @@ label_1:
    if (k > lastrow) k = lastrow;
    goto_xy(col + 1,row + k);
    if (lastrow) print(fmt,menstr+1+(k-1+(npage-1)*height)*ncol);
-
    while (1)
    {  int jump=1,mousePos;
 

@@ -126,8 +126,7 @@ i++;];
 ];
 
 GenerateQuadraticAndCubicDynkins:=Block[{i,j,k,reps,ggroups},
-PrintDebug["Generate cubic Dynkins"];
-DynamicCheckAnomalies="Generate cubic Dynkins"!;
+Print["Generate cubic Dynkins"];
 ggroups=Table[Gauge[[i,2]],{i,1,Length[Gauge]}];
 reps=Table[{},{Length[ggroups]}];
 
@@ -254,8 +253,7 @@ SU,
 ];
 
 InitGaugeGroups:=Block[{i,j,k,l,list,reps,groups,pos,rep,crep},
-PrintDebug["   Calculate Lie Group constants"];
-DynamicInitGaugeG="Construct gauge group constants";
+Print["   Calculate Lie Group constants"];
 For[i=1,i<=Length[Gauge],
 If[Gauge[[i,2]]=!=U[1],
 CG[Gauge[[i,2]],{{0},{0}}][a_,b_]:=1;

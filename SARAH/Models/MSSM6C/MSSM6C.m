@@ -3,12 +3,11 @@ Off[General::spell]
 Model`Name = "MSSM6C";
 Model`NameLaTeX ="MSSM with color sextets";
 Model`Authors = "F.Staub";
-Model`Date = "2014-09-05";
+Model`Date = "2012-09-01";
 
 (* 2013-09-01: changing to new conventions for Superfields, Superpotential and global symmetries *)
-(* 2014-09-05: Defined all parameters in; turned off CalcHep and WHIZARD output for MakeAll[] *)
 
-SetOptions[MakeAll,IncludeCalcHep->False,IncludeWHIZARD->False];
+
 
 (*-------------------------------------------*)
 (*   Particle Content*)

@@ -20,12 +20,10 @@
 
 
 GenerateSPhenoSusyDecays[Eigenstates_]:=Block[{i},
-(*
 Print["--------------------------------------"];
 Print["Writing Two Body Decays for SPheno "];
 Print["--------------------------------------"];
-*)
-Print[StyleForm["Write decays and branching ratios","Section",FontSize->12]];
+
 Particles[Current]=Particles[Eigenstates];
 
 MakeCouplingLists;
@@ -45,32 +43,22 @@ All3BodyWidths ={};
 
 MakeWidthList;
 
-Print["  Writing two-body decay: ",Dynamic[DynamicTBDnr],"/",Length[ListDecayParticles],"(",Dynamic[DynamicTBDpart],")"];
 For[i=1,i<=Length[ListDecayParticles],
-DynamicTBDnr=i;
-DynamicTBDpart=ListDecayParticles[[i]];
 MakeDecayLists[ListDecayParticles[[i]]];
 i++;];
-DynamicTBDpart="All Done";
 
 NeededIntegralsComplete={};
 
-(*
 Print["--------------------------------------"];
 Print["Writing Three Body Decays for SPheno "];
 Print["--------------------------------------"];
-*)
-
-Print["  Writing three-body decay: ",Dynamic[Dynamic3BDnr],"/",Length[ListDecayParticles3B],"(",Dynamic[Dynamic3BDpart],")"];
 
 If[Length[ListDecayParticles3B]>0,
 MakeListPhaseSpaceIntegrals[25000,500000,8,12,10,12,16];
  For[i=1,i<=Length[ListDecayParticles3B],
-Dynamic3BDnr=i;
-Dynamic3BDpart=ListDecayParticles3B[[i,1]];
 MakeDecayLists3Body[ListDecayParticles3B[[i,1]],ListDecayParticles3B[[i,2]]];
 i++;];
-Dynamic3BDpart="All Done";
+
 
 ];
 
@@ -133,7 +121,7 @@ WriteString[sphenoDecay, "Contains \n \n  \n"];
 
 
 MakeDecayLists[particle_]:=Block[{i,temp},
-(* Print["Decay of ", particle]; *)
+Print["Decay of ", particle];
 
 SA`SkipFields=SkipFields=Select[Transpose[PART[S]][[1]],(getGenSPhenoStart[#]>getGenSPheno[#])&];
 
@@ -188,13 +176,11 @@ NeededMasses = Intersection[Join[NeededMasses,SPhenoMass/@Transpose[coupAlphaStr
 
 savedDecayInfos = Join[savedDecayInfos,{{particle,NeededCouplings,NeededMasses,FullInformation}}];
 
-channels=CountNumberEntries[FullInformation];
-(*
 channels=0;
 For[i=1,i<=Length[FullInformation],
 channels += (1+getGenSPheno[FullInformation[[i,1]]]-getGenSPhenoStart[FullInformation[[i,1]]])*(1+getGenSPheno[FullInformation[[i,2]]]-getGenSPhenoStart[FullInformation[[i,2]]]);
 i++;];
-*)
+
 SPhenoParameters= Join[SPhenoParameters,{{ToExpression["gP"<>ToString[particle]],{generation,generation},{getGenSPheno[particle],channels}}}];
 SPhenoParameters= Join[SPhenoParameters,{{ToExpression["gT"<>ToString[particle]],{generation},{getGenSPheno[particle]}}}];
 SPhenoParameters = Join[SPhenoParameters,{{ToExpression["BR"<>ToString[particle]],{generation,generation},{getGenSPheno[particle],channels}}}];
@@ -452,10 +438,7 @@ FFS,
 FFV,
 	WriteString[sphenoDecay, "coupL = "<>ToString[processes[[i,3,1,1,1]]] <>ind <> "\n"];
 	WriteString[sphenoDecay, "coupR = "<>ToString[processes[[i,3,1,1,2]]] <>ind <> "\n"];
-	If[(FreeQ[massless,p2]==True || getType[p2]===F) && (FreeQ[massless,p1]==True || getType[p1]===F),
-	WriteString[sphenoDecay,"Call FermionToFermionVectorBoson(m_in,m1out,m2out,coupL,coupR,gam) \n"];,
-	WriteString[sphenoDecay,"Call FermionToFermionVectorBosonMassless(m_in,m1out,m2out,coupL,coupR,gam) \n"];
-		];
+	WriteString[sphenoDecay,"Call FermionToFermionVectorBoson(m_in,m1out,m2out,coupL,coupR,gam) \n"];
 ];
 factor = processes[[i,4]]*processes[[i,5]];
 If[AntiField[particle]===particle,factor = 2*factor;];,
@@ -691,17 +674,10 @@ WriteString[sphenoDecay, "End Subroutine "<>ToString[particle]<>"TwoBodyDecay"<>
 
 ];
 
-CountNumberEntries[FullInformation_]:=Block[{i,j,k,channels},
+CountNumberEntries[FullInformation_]:=Block[{i,channels},
 channels=0;
 For[i=1,i<=Length[FullInformation],
-If[FullInformation[[i,1]]===FullInformation[[i,2]],
-For[j=getGenSPhenoStart[FullInformation[[i,1]]],j<=getGenSPheno[FullInformation[[i,1]]],
-For[k=j,k<=getGenSPheno[FullInformation[[i,1]]],
-channels++;
-k++;];
-j++;];,
 channels += (1+getGenSPheno[FullInformation[[i,1]]]-getGenSPhenoStart[FullInformation[[i,1]]])*(1+getGenSPheno[FullInformation[[i,2]]]-getGenSPhenoStart[FullInformation[[i,2]]]);
-];
 i++;];
 Return[channels];
 ];

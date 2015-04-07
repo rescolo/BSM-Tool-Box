@@ -68,41 +68,7 @@ ParameterDefinitions = {
 {PhaseGlu,  { Description -> "Gluino-Phase" }},
 {ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
 {ZW, {Description -> "W Mixing Matrix" }},
-{ZfW, {Description ->    "Wino Mixing Matrix"}},
-
-{MS, {LaTeX ->"M_S",
-       OutputName-> MuS,
-       LesHouches -> {PAR6C,1}}},
-
-{B[MS], {LaTeX ->"B_S",
-       OutputName-> BS,
-       LesHouches -> {PAR6C,2}}},
-
-{msix12, {LaTeX ->"m_S^2",
-       OutputName-> mS12,
-       LesHouches -> {PAR6C,3}}},     
-
-{msix22, {LaTeX ->"m_{\\bar{S}}^2",
-       OutputName-> mS22,
-       LesHouches -> {PAR6C,4}}},     
-
-{H1, {LaTeX ->"Y_H",
-       OutputName-> YH1,
-       LesHouches -> YH1}},     
-
-{T[H1], {LaTeX ->"T_H",
-       OutputName-> TH1,
-       LesHouches -> TH1}},
-
-{H2, {LaTeX ->"Y_{\\bar{H}}",
-       OutputName-> YH2,
-       LesHouches -> YH2}},     
-
-{T[H2], {LaTeX ->"T_{\\bar{H}}",
-       OutputName-> TH2,
-       LesHouches -> TH2}}         
-
-
+{ZfW, {Description ->    "Wino Mixing Matrix"}}
                                   
  }; 
  

@@ -425,7 +425,7 @@ Contains
    Else If ( xp .Gt. xalogm ) Then
     B0 = Cmplx( Log(xp) - 2._dp, -pi, dp )
    Else
-    B0 = Huge(1._dp)
+    B0 = 0._dp
     Call WriteLFerror(2)
    End If
 
@@ -1246,9 +1246,11 @@ Contains
     Return
 
    End If
-!-------------------------
+!Write(*,*) "xpi1,xpi2,xpi3",xpi1,xpi2,xpi3
+!Write(*,*) "d12,d13,d23",d12,d13,d23
+!    -------------------------
 !    m3 = 0
-!-------------------------
+!    -------------------------
    If (xpi3.Eq.0._dp) Then
     d12 = d12 / xpi1
     If (d12.Eq.0._dp) Then ! m1 = m2
@@ -1316,8 +1318,12 @@ Contains
     End Do
     C0_3m = (1._dp + LogR + C0_3m) / xpi1
 
+    
+    
+!   Else If ( (d13.Lt.3.e-4_dp).Or.  &
+!           & ((d12.Lt.1.e-4_dp).And.(d23.Lt.1.e-4_dp)) ) Then ! all masses nearly equal
    Else If (d13.Lt.1.e-3_dp) Then ! all masses nearly equal
-
+!Write(*,*) "Am I here"
     sum = d13**9
     Do i1=1,8
      sum = sum + d12**i1 * d13**(9-i1)
@@ -1334,7 +1340,7 @@ Contains
     C0_3m = - (0.5_dp + C0_3m) / xpi1
 
    Else If (d12.Lt.1.e-4_dp) Then ! m1 nearly m2
-
+!Write(*,*) "Well, I guess, I am here",Log(xpi3/xpi1)
     LogR = Log(xpi3/xpi1)
     C0_3m = 0._dp
     Coeff(0) = -xpi1 + xpi3 - LogR*xpi3    
@@ -1362,13 +1368,16 @@ Contains
      C0_3m = Coeff(7) * d12 / d13
 
      Do i1=6,1,-1
-
+!write(*,*) Coeff(i1),C0_3m
       C0_3m = (Coeff(i1) + C0_3m) * d12 / d13
      End Do
     End If ! d12 .gt. 0._dp
-
+!Write(*,*) Coeff(0) + C0_3m
     C0_3m = (Coeff(0) + C0_3m) / d13**2
-
+!Write(*,*) "final",c0_3m, d12 / d13   
+    !    MEK: 05.07.2013
+!         m2 and m3 both much smaller than m1
+!    Else If ((xpi2.Lt.1.e-4_dp).And.((xpi2-xpi3).Lt.1.e-12_dp).And.(r13.Lt.1.e-4_dp)) Then 
    Else If ((r12.Lt.1.e-4_dp).And.(r13.Lt.1.e-4_dp)) Then 
      LogR = Log(xpi2/xpi3)
      C0_3m = 0._dp
@@ -1546,7 +1555,7 @@ Contains
  Complex(dp) Function C00_3m(a,b,c)
   Real(dp), Intent(in) :: a,b,c
   C00_3m = 0.125_dp + 0.25_dp*vertexC0tilde(a,b,c) 
-
+ ! Write(*,*) "C00", C00_3m
  End function C00_3m
 
 
@@ -2453,7 +2462,7 @@ Contains
     ci(8) = -1._dp/156._dp
     ci(9) =  1._dp/220._dp
 
-    D27_Bagger = - 1._dp/286._dp
+    D27_Bagger = - 1._dp/286_dp
 
     Do i1=9,1,-1
      D27_Bagger = D27_Bagger * x + ci(i1)
@@ -2483,7 +2492,7 @@ Contains
     ci(8) = -1._dp/156._dp
     ci(9) =  1._dp/220._dp
 
-    D27_Bagger = - 1._dp/286._dp
+    D27_Bagger = - 1._dp/286_dp
 
     Do i1=9,1,-1
      D27_Bagger = D27_Bagger * x + ci(i1)
@@ -2514,7 +2523,7 @@ Contains
     ci(8) = -1._dp/156._dp
     ci(9) =  1._dp/220._dp
 
-    D27_Bagger = - 1._dp/286._dp
+    D27_Bagger = - 1._dp/286_dp
 
     Do i1=9,1,-1
      D27_Bagger = D27_Bagger * x + ci(i1)
@@ -2545,7 +2554,7 @@ Contains
     ci(8) = -1._dp/156._dp
     ci(9) =  1._dp/220._dp
 
-    D27_Bagger = - 1._dp/286._dp
+    D27_Bagger = - 1._dp/286_dp
 
     Do i1=9,1,-1
      D27_Bagger = D27_Bagger * x + ci(i1)
@@ -10111,7 +10120,7 @@ Goto 200
    Gloop = - A0(m22) + (p2 - m22) * B0(p2,m12,m22)
 
   Else If (m22.eq.0._dp) then
-   Gloop = - A0(m12) + (p2 - m12) * B0(p2,m12,m22)
+   Gloop = - A0(m22) + (p2 - m12) * B0(p2,m12,m22)
 
   Else If (m12.eq.m22) then
    Gloop =  - 2._dp * A0(m12) + (p2 - m12 - m22) * B0(p2,m12,m22)
@@ -13211,32 +13220,6 @@ End function vertexC0tildeaux
    End If
 
  End Function vertexC12
-Logical Function SmallDifference(m1,m2)
-Implicit None
-Real(dp), Intent(in) :: m1, m2
-! avelino
-! changed eps=1E-8_dp -> eps=1E-6_dp
-Real(dp) :: eps=1E-6_dp
-
-If (Abs(m1).lt.eps) Then
- If (Abs(m2).lt.eps) Then
-   SmallDifference = .true.
- Else 
-   SmallDifference = .False.
- End if 
-Else if (Abs(m2).lt.eps) Then
-  SmallDifference = .false.
-Else 
- If ((Abs(m1-m2)/Max(m1,m2)).lt.eps) Then 
-   SmallDifference = .true.
- Else
-   SmallDifference = .False.
- End if
-End if
-
-
-End Function SmallDifference
-
 Real(dp) Function C0m(m1, m2, m3)
 Implicit None
 Real(dp), Intent(in) :: m1, m2, m3
@@ -13244,7 +13227,7 @@ Real(dp) :: eps=1E-10_dp, large = 1E+5_dp
 
 ! !    C0m  = -C0_3m(m1,m2,m3)  ! check sign
 
-If ((SmallDifference(m1,m2)).And.(SmallDifference(m1,m3))) Then ! all masse equal
+If ((Abs(m1-m2).lt.eps).And.(Abs(m1-m3).lt.eps)) Then ! all masse equal
   If (Abs(m1).lt.eps) Then
     Write(ErrCan,*) "Numerical problem in C0m"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
@@ -13253,7 +13236,7 @@ If ((SmallDifference(m1,m2)).And.(SmallDifference(m1,m3))) Then ! all masse equa
    C0m = 1/(2.*m1)
   End if
 
-Else If (SmallDifference(m1,m2)) Then ! m1 = m2
+Else If (Abs(m1-m2).lt.eps) Then ! m1 = m2
  If (Abs(m3).lt.eps) Then
    C0m = 1/m2
  Else If (Abs(m2).lt.eps) Then
@@ -13264,7 +13247,7 @@ Else If (SmallDifference(m1,m2)) Then ! m1 = m2
    C0m = (m2 - m3 + m3*Log(m3/m2))/(m2 - m3)**2
  End if
 
-Else If (SmallDifference(m1,m3)) Then ! m1 = m3
+Else If (Abs(m1-m3).lt.eps) Then ! m1 = m3
  If (Abs(m2).lt.eps) Then
    C0m = 1/m3
  Else If (Abs(m3).lt.eps) Then
@@ -13275,7 +13258,7 @@ Else If (SmallDifference(m1,m3)) Then ! m1 = m3
    C0m =   (-m2 + m3 + m2*Log(m2/m3))/(m2 - m3)**2
  End if
 
-Else If (SmallDifference(m3,m2)) Then ! m2 = m3
+Else If (Abs(m3-m2).lt.eps) Then ! m2 = m3
  If (Abs(m1).lt.eps) Then
    C0m = 1/m3
  Else If (Abs(m3).lt.eps) Then
@@ -13309,7 +13292,7 @@ Implicit None
 Real(dp), Intent(in) :: m1, m2, m3
 Real(dp) :: eps=1E-10_dp, large = 1E+5_dp
 
-If ((SmallDifference(m1,m2)).And.(SmallDifference(m1,m3))) Then ! all masse equal
+If ((Abs(m1-m2).lt.eps).And.(Abs(m1-m3).lt.eps)) Then ! all masse equal
  If (Abs(m3).lt.eps) Then
     Write(ErrCan,*) "Numerical problem in C00m"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
@@ -13318,7 +13301,7 @@ If ((SmallDifference(m1,m2)).And.(SmallDifference(m1,m3))) Then ! all masse equa
    C00m = -Log(m3)/4.
  End if
 
-Else If (SmallDifference(m1,m2)) Then ! m1 = m2
+Else If (Abs(m1-m2).lt.eps) Then ! m1 = m2
   If (Abs(m3).lt.eps) Then
    C00m = 0.125_dp - Log(m2)/4._dp
   Else if (Abs(m2).lt.eps) Then
@@ -13328,7 +13311,7 @@ Else If (SmallDifference(m1,m2)) Then ! m1 = m2
    &  2*m3**2*Log(m3/m2))/(8.*(m2 - m3)**2)
   End if
 
-Else If (SmallDifference(m1,m3)) Then ! m1 = m3
+Else If (Abs(m1-m3).lt.eps) Then ! m1 = m3
   If (Abs(m2).lt.eps) Then
    C00m = 0.125_dp - Log(m2)/4._dp
   Else if (Abs(m3).lt.eps) Then
@@ -13339,7 +13322,7 @@ Else If (SmallDifference(m1,m3)) Then ! m1 = m3
     &   (8.*(m2 - m3)**2)
   End if
 
-Else If (SmallDifference(m3,m2)) Then ! m2 = m3
+Else If (Abs(m3-m2).lt.eps) Then ! m2 = m3
   If (Abs(m1).lt.eps) Then
    C00m = 0.125_dp - Log(m2)/4._dp
   Else if (Abs(m3).lt.eps) Then
@@ -13375,7 +13358,7 @@ Implicit None
 Real(dp), Intent(in) :: m1, m2, m3
 Real(dp) :: eps=1E-10_dp, large = 1E+5_dp
 
-If ((SmallDifference(m1,m2)).And.(SmallDifference(m1,m3))) Then ! all masse equal
+If ((Abs(m1-m2).lt.eps).And.(Abs(m1-m3).lt.eps)) Then ! all masse equal
   If (Abs(m1).lt.eps) Then
     Write(ErrCan,*) "Numerical problem in C11m"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
@@ -13384,7 +13367,7 @@ If ((SmallDifference(m1,m2)).And.(SmallDifference(m1,m3))) Then ! all masse equa
    C11m = 1/(12.*m1)
   End if
 
-Else If (SmallDifference(m1,m2)) Then ! m1 = m2
+Else If (Abs(m1-m2).lt.eps) Then ! m1 = m2
   If (Abs(m1).lt.eps) Then
     Write(ErrCan,*) "Numerical problem in C11m"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
@@ -13396,7 +13379,7 @@ Else If (SmallDifference(m1,m2)) Then ! m1 = m2
    &      6*m3**3*Log(m3/m2))/(18.*(m2 - m3)**4)
   End if
 
-Else If (SmallDifference(m1,m3)) Then ! m1 = m3
+Else If (Abs(m1-m3).lt.eps) Then ! m1 = m3
  If (Abs(m1).lt.eps) Then
    C11m = -1/(6.*m2)
   Else if (Abs(m2).lt.eps) Then
@@ -13406,7 +13389,7 @@ Else If (SmallDifference(m1,m3)) Then ! m1 = m3
    &      6*m2*m3**2*Log(m2/m3))/(6.*(m2 - m3)**4)
   End if
 
-Else If (SmallDifference(m3,m2)) Then ! m2 = m3
+Else If (Abs(m3-m2).lt.eps) Then ! m2 = m3
  If (Abs(m1).lt.eps) Then
    C11m = -1/(9.*m3)
   Else if (Abs(m2).lt.eps) Then
@@ -13445,7 +13428,7 @@ Implicit None
 Real(dp), Intent(in) :: m1, m2, m3
 Real(dp) :: eps=1E-10_dp, large = 1E+5_dp
 
-If ((SmallDifference(m1,m2)).And.(SmallDifference(m1,m3))) Then ! all masse equal
+If ((Abs(m1-m2).lt.eps).And.(Abs(m1-m3).lt.eps)) Then ! all masse equal
   If (Abs(m1).lt.eps) Then
     Write(ErrCan,*) "Numerical problem in C12m"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
@@ -13454,7 +13437,7 @@ If ((SmallDifference(m1,m2)).And.(SmallDifference(m1,m3))) Then ! all masse equa
    C12m = 1/(24.*m1)
   End if
 
-Else If (SmallDifference(m1,m2)) Then ! m1 = m2
+Else If (Abs(m1-m2).lt.eps) Then ! m1 = m2
  If (Abs(m1).lt.eps) Then
     Write(ErrCan,*) "Numerical problem in C12m"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
@@ -13466,7 +13449,7 @@ Else If (SmallDifference(m1,m2)) Then ! m1 = m2
     &  - 6*m2*m3**2*Log(m3/m2))/(12.*(m2 - m3)**4)
   End if
 
-Else If (SmallDifference(m1,m3)) Then ! m1 = m3
+Else If (Abs(m1-m3).lt.eps) Then ! m1 = m3
  If (Abs(m2).lt.eps) Then
    C12m = -1/(3.*m3)
   Else if (Abs(m3).lt.eps) Then
@@ -13476,7 +13459,7 @@ Else If (SmallDifference(m1,m3)) Then ! m1 = m3
    & - 6*m2**2*m3*Log(m2/m3))/(12.*(m2 - m3)**4)
   End if
 
-Else If (SmallDifference(m3,m2)) Then ! m2 = m3
+Else If (Abs(m3-m2).lt.eps) Then ! m2 = m3
  If (Abs(m1).lt.eps) Then
    C12m = -1/(9.*m3)
   Else if (Abs(m3).lt.eps) Then
@@ -13521,7 +13504,7 @@ Real(dp) :: eps=1E-10_dp, large = 1E+5_dp
 r1 = m2/m1
 r2 = m3/m1
 
-If ((SmallDifference(m1,m2)).And.(SmallDifference(m1,m3))) Then ! all masse equal
+If ((Abs(m1-m2).lt.eps).And.(Abs(m1-m3).lt.eps)) Then ! all masse equal
   If (Abs(m1).lt.eps) Then
     Write(ErrCan,*) "Numerical problem in C22m"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
@@ -13530,7 +13513,7 @@ If ((SmallDifference(m1,m2)).And.(SmallDifference(m1,m3))) Then ! all masse equa
    C22m = -1/(12.*m1)
   End if
 
-Else If (SmallDifference(m1,m2)) Then ! m1 = m2
+Else If (Abs(m1-m2).lt.eps) Then ! m1 = m2
  If (Abs(m1).lt.eps) Then
    C22m = 1/(6.*m3)
   Else if (Abs(m3).lt.eps) Then
@@ -13540,7 +13523,7 @@ Else If (SmallDifference(m1,m2)) Then ! m1 = m2
     &       6*m2**2*m3*Log(m2/m3))/(6.*(m2 - m3)**4)
   Endif
 
-Else If (SmallDifference(m1,m3)) Then ! m1 = m3
+Else If (Abs(m1-m3).lt.eps) Then ! m1 = m3
  If (Abs(m2).lt.eps) Then
    C22m = 1/(9.*m3)
   Else if (Abs(m3).lt.eps) Then
@@ -13552,7 +13535,7 @@ Else If (SmallDifference(m1,m3)) Then ! m1 = m3
     &      6*m2**3*Log(m2/m3))/(18.*(m2 - m3)**4)
   End if
 
-Else If (SmallDifference(m3,m2)) Then ! m2 = m3
+Else If (Abs(m3-m2).lt.eps) Then ! m2 = m3
  If (Abs(m1).lt.eps) Then
    C22m = 1/(9.*m3)
   Else if (Abs(m3).lt.eps) Then
@@ -13591,10 +13574,10 @@ Implicit None
 Real(dp), Intent(in) :: m1, m2, m3
 Real(dp) :: eps=1E-10_dp, large = 1E+5_dp
 
-If ((SmallDifference(m1,m2)).And.(SmallDifference(m1,m3))) Then ! all masse equal
+If ((Abs(m1-m2).lt.eps).And.(Abs(m1-m3).lt.eps)) Then ! all masse equal
    C2m = -1/(6.*m1)
 
-Else If (SmallDifference(m1,m2)) Then ! m1 = m2
+Else If (Abs(m1-m2).lt.eps) Then ! m1 = m2
  If (Abs(m1).lt.eps) Then
    C2m =-1/(2.*m3)
   Else if (Abs(m3).lt.eps) Then
@@ -13603,7 +13586,7 @@ Else If (SmallDifference(m1,m2)) Then ! m1 = m2
    C2m = (-m2**2 + m3**2 + 2*m2*m3*Log(m2/m3))/(2.*(m2 - m3)**3)
   End if
 
-Else If (SmallDifference(m1,m3)) Then ! m1 = m3
+Else If (Abs(m1-m3).lt.eps) Then ! m1 = m3
  If (Abs(m2).lt.eps) Then
    C2m = -1/(4.*m3)
   Else if (Abs(m3).lt.eps) Then
@@ -13614,7 +13597,7 @@ Else If (SmallDifference(m1,m3)) Then ! m1 = m3
    C2m = (3*m2**2 - 4*m2*m3 + m3**2 - 2*m2**2*Log(m2/m3))/(4.*(m2 - m3)**3)
   End if
 
-Else If (SmallDifference(m3,m2)) Then ! m2 = m3
+Else If (Abs(m3-m2).lt.eps) Then ! m2 = m3
  If (Abs(m1).lt.eps) Then
    C2m = -1/(4.*m3)
   Else if (Abs(m3).lt.eps) Then
@@ -13652,7 +13635,7 @@ Implicit None
 Real(dp), Intent(in) :: m1, m2, m3
 Real(dp) :: eps=1E-10_dp, large = 1E+5_dp
 
-If ((SmallDifference(m1,m2)).And.(SmallDifference(m1,m3))) Then ! all masse equal
+If ((Abs(m1-m2).lt.eps).And.(Abs(m1-m3).lt.eps)) Then ! all masse equal
   If (Abs(m1).lt.eps) Then
     Write(ErrCan,*) "Numerical problem in C12m"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
@@ -13661,7 +13644,7 @@ If ((SmallDifference(m1,m2)).And.(SmallDifference(m1,m3))) Then ! all masse equa
    C1m = -1/(6.*m1)
   End if
 
-Else If (SmallDifference(m1,m2)) Then ! m1 = m2
+Else If (Abs(m1-m2).lt.eps) Then ! m1 = m2
  If (Abs(m2).lt.eps) Then
     Write(ErrCan,*) "Numerical problem in C12m"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
@@ -13672,7 +13655,7 @@ Else If (SmallDifference(m1,m2)) Then ! m1 = m2
    C1m = -((m2 - 3*m3)*(m2 - m3) - 2*m3**2*Log(m3/m2))/(4.*(m2 - m3)**3)
   End if
 
-Else If (SmallDifference(m1,m3)) Then ! m1 = m3
+Else If (Abs(m1-m3).lt.eps) Then ! m1 = m3
  If (Abs(m2).lt.eps) Then
    C1m = -1/(2.*m3)
   Else if (Abs(m3).lt.eps) Then
@@ -13681,7 +13664,7 @@ Else If (SmallDifference(m1,m3)) Then ! m1 = m3
    C1m = (-m2**2 + m3**2 + 2*m2*m3*Log(m2/m3))/(2.*(m2 - m3)**3)
   End if
 
-Else If (SmallDifference(m3,m2)) Then ! m2 = m3
+Else If (Abs(m3-m2).lt.eps) Then ! m2 = m3
  If (Abs(m2).lt.eps) Then
     Write(ErrCan,*) "Numerical problem in C12m"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
@@ -13717,7 +13700,7 @@ Implicit None
 Real(dp), Intent(in) :: m1, m2, m3
 Real(dp) :: eps=1E-10_dp
 
-If ((SmallDifference(m2,m3)).and.(SmallDifference(m1,m2))) Then
+If ((Abs(m2-m3).lt.eps).and.(Abs(m1-m2).lt.eps)) Then
  If (Abs(m1).lt. eps) Then
     Write(ErrCan,*) "Numerical problem in MonopoleFSS"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
@@ -13726,7 +13709,7 @@ If ((SmallDifference(m2,m3)).and.(SmallDifference(m1,m2))) Then
     MonopoleFSS = -1/(24.*m1)
  End if
 
-Else If (SmallDifference(m2,m3)) Then
+Else If (Abs(m2-m3).lt.eps) Then
   If (Abs(m1).lt.eps) Then
     MonopoleFSS = -1/(18.*m3)
   Else If (Abs(m2).lt.eps) Then
@@ -13738,7 +13721,7 @@ Else If (SmallDifference(m2,m3)) Then
          & - 6*m1**3*Log(m1) + 6*m1**3*Log(m3))/(36.*(m1 - m3)**4)
   End if
 
-Else If (SmallDifference(m1,m3)) Then
+Else If (Abs(m1-m3).lt.eps) Then
   If (Abs(m3).lt.eps) Then
     MonopoleFSS = -1/(6.*m2)
   Else If (Abs(m2).lt.eps) Then
@@ -13748,7 +13731,7 @@ Else If (SmallDifference(m1,m3)) Then
          &  + 6*m2**2*m3*Log(m3))/(12.*(m2 - m3)**4)
   End if
 
-Else If (SmallDifference(m1,m2)) Then
+Else If (Abs(m1-m2).lt.eps) Then
   If (Abs(m3).lt.eps) Then
     MonopoleFSS = -1/(12.*m2)
   Else If (Abs(m2).lt.eps) Then
@@ -13784,7 +13767,7 @@ Implicit None
 Real(dp), Intent(in) :: m1, m2, m3
 Real(dp) :: eps=1E-10_dp
 
-If ((SmallDifference(m2,m3)).and.(SmallDifference(m1,m2))) Then
+If ((Abs(m2-m3).lt.eps).and.(Abs(m1-m2).lt.eps)) Then
  If (Abs(m1).lt.eps) Then 
     Write(ErrCan,*) "Numerical problem in MonopoleSFF"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
@@ -13793,7 +13776,7 @@ If ((SmallDifference(m2,m3)).and.(SmallDifference(m1,m2))) Then
   MonopoleSFF = -1/(8.*m1)
  End if
 
-Else If (SmallDifference(m2,m3)) Then
+Else If (Abs(m2-m3).lt.eps) Then
   If (Abs(m2).lt.eps) Then 
     Write(ErrCan,*) "Numerical problem in MonopoleSFF"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
@@ -13806,12 +13789,12 @@ Else If (SmallDifference(m2,m3)) Then
    MonopoleSFF = ((m1 - m3)*(16*m1**2 - 29*m1*m3 + 7*m3**2) + 6*m1**2*(3*m3*Log(m1/m3) + 2*m1*Log(m3/m1)))/(36.*(m1 - m3)**4)
   End if
 
-Else If (SmallDifference(m1,m3)) Then
+Else If (Abs(m1-m3).lt.eps) Then
     Write(ErrCan,*) "Numerical problem in MonopoleSFF"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
     MonopoleSFF = 1/eps
 
-Else If (SmallDifference(m2,m3)) Then
+Else If (Abs(m2-m3).lt.eps) Then
     Write(ErrCan,*) "Numerical problem in MonopoleSFF"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
     MonopoleSFF = 1/eps
@@ -13851,7 +13834,7 @@ Implicit None
 Real(dp), Intent(in) :: m1, m2, m3
 Real(dp) :: eps=1E-10_dp
 
-If ((SmallDifference(m2,m3)).and.(SmallDifference(m1,m2))) Then
+If ((Abs(m2-m3).lt.eps).and.(Abs(m1-m2).lt.eps)) Then
  If (Abs(m1).lt.eps) Then
     Write(ErrCan,*) "Numerical problem in MonopoleVFF"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
@@ -13860,7 +13843,7 @@ If ((SmallDifference(m2,m3)).and.(SmallDifference(m1,m2))) Then
   MonopoleVFF = -7/(12.*m1)
  End if
 
-Else If (SmallDifference(m2,m3)) Then
+Else If (Abs(m2-m3).lt.eps) Then
  If (Abs(m1).lt.eps) Then
     Write(ErrCan,*) "Numerical problem in MonopoleVFF"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
@@ -13874,12 +13857,12 @@ Else If (SmallDifference(m2,m3)) Then
      & 6*m1*(2*m1**2 - 9*m1*m3 + 6*m3**2)*Log(m3/m1))/(18.*(m1 - m3)**4)
   End if
 
-Else If (SmallDifference(m1,m3)) Then
+Else If (Abs(m1-m3).lt.eps) Then
     Write(ErrCan,*) "Numerical problem in MonopoleVFF"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
     MonopoleVFF = 1/eps
 
-Else If (SmallDifference(m1,m2)) Then
+Else If (Abs(m1-m2).lt.eps) Then
     Write(ErrCan,*) "Numerical problem in MonopoleVFF"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
     MonopoleVFF = 1/eps
@@ -13924,7 +13907,7 @@ Implicit None
 Real(dp), Intent(in) :: m1, m2, m3
 Real(dp) :: eps=1E-10_dp
 
-If ((SmallDifference(m2,m3)).and.(SmallDifference(m1,m2))) Then
+If ((Abs(m2-m3).lt.eps).and.(Abs(m1-m2).lt.eps)) Then
  If (Abs(m1).lt.eps) Then
     Write(ErrCan,*) "Numerical problem in MonopoleFVV"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
@@ -13933,7 +13916,7 @@ If ((SmallDifference(m2,m3)).and.(SmallDifference(m1,m2))) Then
   MonopoleFVV = 1/(3.*m1)
  End if
 
-Else If (SmallDifference(m2,m3)) Then
+Else If (Abs(m2-m3).lt.eps) Then
  If (Abs(m1).lt.eps) Then
   MonopoleFVV = 5/(9.*m2)
  Else If (Abs(m2).lt.eps) Then
@@ -13966,7 +13949,7 @@ Implicit None
 Real(dp), Intent(in) :: m1, m2, m3
 Real(dp) :: eps=1E-10_dp
 
-If ((SmallDifference(m2,m3)).and.(SmallDifference(m1,m2))) Then
+If ((Abs(m2-m3).lt.eps).and.(Abs(m1-m2).lt.eps)) Then
  If (Abs(m1).lt.eps) Then 
     Write(ErrCan,*) "Numerical problem in MonopoleFVS"
     Write(ErrCan,*) "Involved masses: ",m1,m2,m3
@@ -13975,7 +13958,7 @@ If ((SmallDifference(m2,m3)).and.(SmallDifference(m1,m2))) Then
   MonopoleFVS = 1/(24.*m2**1.5)
  End if
 
-Else If (SmallDifference(m2,m3)) Then
+Else If (Abs(m2-m3).lt.eps) Then
   If (Abs(m1).lt.eps) Then 
    MonopoleFVS = 0
  Else if (Abs(m2).lt.eps) Then 
@@ -13987,7 +13970,7 @@ Else If (SmallDifference(m2,m3)) Then
             & + 6*m1**2*m3*Log(m3/m1)))/(12.*(m1 - m3)**4*m3)
  End if
 
-Else If (SmallDifference(m1,m3)) Then
+Else If (Abs(m1-m3).lt.eps) Then
  If (Abs(m1).lt.eps) Then 
     MonopoleFVS = 0
  Else if (Abs(m2).lt.eps) Then 
@@ -13997,7 +13980,7 @@ Else If (SmallDifference(m1,m3)) Then
        & + 2*m2*(m2 + 2*m3)*Log(m2/m3)))/(4.*(m2 - m3)**4)
  End if
 
-Else If (SmallDifference(m1,m2)) Then
+Else If (Abs(m1-m2).lt.eps) Then
  If (Abs(m1).lt.eps) Then 
     MonopoleFVS = 0
   Else if (Abs(m3).lt.eps) Then 
@@ -14030,6 +14013,5 @@ Implicit None
 Real(dp), Intent(in) :: m1, m2, m3
  MonopoleFSV = MonopoleFVS(m1,m3,m2)
 End Function MonopoleFSV
-
 
 End Module LoopFunctions

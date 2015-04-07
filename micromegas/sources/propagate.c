@@ -4,11 +4,6 @@
 
 #include "micromegas.h"
 #include "micromegas_aux.h"
-
-#define Delt 0.01
-
-int  vcsMode=1;
-
 extern double Zi(int i);
 
 /*===================  micrOMEGAs Halo profile =====================*/
@@ -60,7 +55,7 @@ extern void setRhoClumps(double (*cProfile)(double));
 void setClumpConst(double f,double rho)
 {  f_clump=f; rho_clump=rho; setRhoClumps(rhoClumpsConst); }
 
-static double (*hProfile_)(double)=hProfileZhao;
+double (*hProfile_)(double)=hProfileZhao;
 
 double rhoClumpsConst(double r)
 { double v=(rho_clump - rhoDM*(*hProfile_)(r)*f_clump);
@@ -68,7 +63,7 @@ double rhoClumpsConst(double r)
   return f_clump*v;
 }
 
-static double (*rhoClumpEff_)(double)=rhoClumpsConst;
+double (*rhoClumpEff_)(double)=rhoClumpsConst;
 
 void setHaloProfile(double (*hProfile)(double)){ hProfile_=hProfile;}
 
@@ -119,19 +114,8 @@ void setRhoClumps(double (*cProfile)(double)) {   rhoClumpEff_=cProfile; }
 
 #define rHaloMin 0.000001
 
-
-static double  N_rho(void)
-{ double N;
-  if(CDM1==NULL && CDM2==NULL) N=rhoDM/Mcdm;
-  else if(CDM1==NULL) N=rhoDM/Mcdm2;
-  else if(CDM2==NULL) N=rhoDM/Mcdm1;
-  else N=rhoDM*(fracCDM2/Mcdm2 +(1-fracCDM2)/Mcdm1); 
-  
-  return N/hProfile_(Rsun); 
-}
-
-
 /*=================================  Photon propagation ====================================*/
+
 
 static double fi_, dfi_,sn_;
 
@@ -139,9 +123,8 @@ static double xIntegrand(double x)
 {  double r=Rsun*sqrt(x*x+sn_*sn_);
    double pf;
    if(r<rHaloMin) r=rHaloMin;
-   pf=hProfile_(r); 
-   if(vcsMode) pf*=(pf +rhoClumpEff_(r)/rhoDM );
-   return  pf;
+   pf=hProfile_(r);
+   return  pf*(pf +rhoClumpEff_(r)/rhoDM );
 }
 
 static double yIntegrand(double y)
@@ -151,8 +134,9 @@ static double yIntegrand(double y)
   r=Rsun*sqrt(x*x+sn_*sn_);
   if(r<rHaloMin) r=rHaloMin;
   pf=hProfile_(r);
-  if(vcsMode) pf*=(pf+rhoClumpEff_(r)/rhoDM);
-  return  pf/y/y;
+  res= pf*(pf+rhoClumpEff_(r)/rhoDM)/y/y;
+
+  return res;  
 }
 
 static double psiIntegrand(double psi)
@@ -177,7 +161,7 @@ static double psiIntegrand(double psi)
 static double fiIntegrand(double fi)
 { 
   dfi_=fi;
-  return sin(fi)*simpson(psiIntegrand,-M_PI/2,M_PI/2,1.E-4)/M_PI;
+  return  sin(fi)*simpson(psiIntegrand,-M_PI/2,M_PI/2,1.E-4)/M_PI;
 }  
 
 double HaloFactor(double fi,double dfi)
@@ -187,76 +171,23 @@ double HaloFactor(double fi,double dfi)
    
    fi_=fi;
    if(dfi<=0) {dfi_=0;res=psiIntegrand(0);} 
-   else res=simpson(fiIntegrand,0,dfi,1.E-4)/(1-cos(dfi));
-   return res/(4*M_PI)*Rsun*sm_in_kpc;
+   else res=simpson(fiIntegrand,0,dfi,1.E-3)/(1-cos(dfi));
+//displayFunc(fiIntegrand,0,dfi,"fi integrand");
+   Norm=rhoDM/hProfile_(Rsun)/Mcdm;
+   return res*Norm*Norm/(8*M_PI)*Rsun*sm_in_kpc;
 }
-
-static double b_, l1_,dl_;
-
-static double l_integrand(double l)
-{
-   fi_=acos(cos(b_)*cos(l));
-   dfi_=0;
-   return psiIntegrand(0.);
-}
-         
-static double b_integrand(double b)
-{ b_=b;
-   return cos(b)*simpson(l_integrand,l1_,l1_+dl_,1.E-3);
-}
-       
-           
-static double HaloFactorGC(double l,double b,double dl,double db)
-{  double res;
-   double sm_in_kpc=3.0856775807E21;
-   double Norm;
-  
-   l1_=l, dl_=dl;
-
-   res=simpson(b_integrand,b,b+db,1.E-3);
-   if(dl<0) res*=-1;
-   if(db<0) res*=-1;
-   return res/(4*M_PI)*Rsun*sm_in_kpc;
-}
- 
 
 void gammaFluxTab(double fi,double dfi, double sigmaV, double *Sp, double *Sobs)
 {
   int i; 
-  double hf,Norm=N_rho();
-  if(vcsMode) Norm*=Norm/2;
-  hf=Norm*HaloFactor(fi, dfi)*sigmaV;
+  double hf=HaloFactor(fi, dfi)*sigmaV;
   if(dfi>0) hf*=(1-cos(dfi))*2*M_PI; 
-  for(i=1;i<NZ;i++) Sobs[i]=hf*Sp[i];
-  Sobs[0]=Sp[0]; 
-}
-
-void gammaFluxTabGC(double l,double b, double dl,double db, double sigmaV, double *Sp, double *Sobs)
-{
-  int i; 
-  double  hf,Norm=N_rho();
-  if(vcsMode) Norm*=Norm/2;
-  hf=Norm*HaloFactorGC(l,b,dl,db)*sigmaV; 
   for(i=0;i<NZ;i++) Sobs[i]=hf*Sp[i]; 
-  Sobs[0]=Sp[0];
 }
-
 
 double gammaFlux(double fi, double dfi,  double dSigmadE )
 {
-   double hf, Norm=N_rho();
-   if(vcsMode) Norm*=Norm/2;
-   hf=Norm*HaloFactor(fi, dfi);
-   if(dfi>0) hf*=(1-cos(dfi))*2*M_PI;
-   return  dSigmadE*hf;
-}
-
-double gammaFluxGC(double l, double b, double dl, double db, double dSigmadE )
-{
-   double  hf, Norm=N_rho();
-   if(vcsMode) Norm*=Norm/2;
-   hf=Norm*HaloFactorGC(l,b,dl,db);
-   return  hf*dSigmadE;
+  return  dSigmadE*HaloFactor(fi, dfi)*(1-cos(dfi))*2*M_PI;
 }
 
 
@@ -336,7 +267,7 @@ static double  rIntegrand(double r)
    I_angular_rS=azimuthInt(Rsun*r /Kt_);
    rr=sqrt(r*r+z_*z_);
    prQ=hProfile_(rr);
-   if(vcsMode) prQ*=(prQ+rhoClumpEff_(rr)/rhoDM);
+   prQ*=(prQ+rhoClumpEff_(rr)/rhoDM);
    return r*I_angular_rS*exp(-(Rsun-r)*(Rsun-r)/(4*Kt_))*prQ;
 }
 
@@ -356,7 +287,7 @@ static double zIntegrand(double z)
 
 static double integral_cal_In(double K0_tau)
 {
-   if(K0_tau<0.001) { double prQ=hProfile_(Rsun); if(vcsMode)prQ*=prQ+rhoClumpEff_(Rsun)/rhoDM;   return prQ/2;}
+   if(K0_tau<0.001) { double prQ=hProfile_(Rsun); prQ*=prQ+rhoClumpEff_(Rsun)/rhoDM;   return prQ/2;}
    Kt_=K0_tau;
    dR_ = sqrt(4.0 * Kt_ * log(10.0) * DIGIT);  
 
@@ -369,8 +300,7 @@ static double r_;
 
 static double zIntegrand(double z)
 { double rr=sqrt(r_*r_+z*z), prQ;
-  prQ=hProfile_(rr); 
-  if(vcsMode) prQ*=prQ+rhoClumpEff_(rr)/rhoDM;
+  prQ=hProfile_(rr); prQ*=prQ+rhoClumpEff_(rr)/rhoDM;
   return   green_v(Kt_,z)*prQ; 
 }        
 
@@ -388,11 +318,7 @@ static double  rIntegrand(double r)
 static double integral_cal_In(double K0_tau)
 {
   double rMin,rMax;
-  if(K0_tau<0.001) 
-  { double prQ; prQ=hProfile_(Rsun); 
-    if(vcsMode)prQ*=prQ+rhoClumpEff_(Rsun)/rhoDM; 
-    return prQ/2;
-  }
+  if(K0_tau<0.001) {double prQ; prQ=hProfile_(Rsun); prQ*=prQ+rhoClumpEff_(Rsun)/rhoDM; return prQ/2;}
   Kt_=K0_tau;
   
   dR_  = sqrt(4.0 * Kt_ * log(100./Eps));
@@ -426,13 +352,12 @@ double posiFlux(double E, double sigmav, double *tab)
 {
   double flu;
   double rho0;
-  if(E>=tab[0])return 0;
-  rho0=N_rho();
-  if(vcsMode)  rho0*=rho0/2;
+  if(E>=Mcdm)return 0;
+  rho0=rhoDM/hProfile_(Rsun)/Mcdm;
   tab_=tab; 
   flu =Tau_dif/(E*E)*sigmav/(4*M_PI)*CELERITY_LIGHT;
   Eobs=E;
-  return  2*flu*rho0*simpson(PosifluxIntegrand,E,tab[0],Eps); 
+  return  flu*rho0*rho0*simpson(PosifluxIntegrand,E,Mcdm,Eps); 
 }
 
 static double* xa_,*ya_;
@@ -447,23 +372,21 @@ void posiFluxTab(double Emin, double sigmav, double *tab, double *tabOut)
   int i;
   double buff[NZ];
   tab_   =tab;
-  rho0=N_rho();
-  if(vcsMode) rho0*=rho0/2;
+  rho0=rhoDM/hProfile_(Rsun)/Mcdm;
   flu = Tau_dif*sigmav/(4*M_PI)*CELERITY_LIGHT;
 
-  buildInterpolation(integral_cal_In,0., dKt(tab[0],Emin),-Eps,Delt,&N_,&xa_,&ya_);
+  buildInterpolation(integral_cal_In,0., dKt(Mcdm,Emin),-Eps,&N_,&xa_,&ya_);
 
 //printf("N_=%d\n",N_);
   
-  for(i=1;i<NZ;i++)
+  for(i=0;i<NZ;i++)
   {
-     Eobs=tab[0]*exp(Zi(i));
+     Eobs=Mcdm*exp(Zi(i));
      if(Eobs<Emin*0.9) buff[i]=0; 
-     else buff[i]= (flu/Eobs)* simpson(SpectIntegrand, Eobs, tab[0], Eps);
+     else buff[i]= (flu/Eobs)* simpson(SpectIntegrand, Eobs, Mcdm, Eps);
   }   
 
-  for(i=1;i<NZ;i++) tabOut[i]=2*rho0*buff[i];
-  tabOut[0]=tab[0]; 
+  for(i=0;i<NZ;i++) tabOut[i]=rho0*rho0*buff[i]; 
   free(xa_); free(ya_);    
 }
 
@@ -635,8 +558,8 @@ static double ek_,z_,r_;
 
 #define rHalo1  0.1
 
-static double rhoQ_2(double r){ double prQ=hProfile_(r); if(vcsMode)prQ*=prQ+rhoClumpEff_(r)/rhoDM;  return r*r*prQ;  }
-static double rhoQ_3(double r){ double prQ=hProfile_(r); if(vcsMode)prQ*=prQ+rhoClumpEff_(r)/rhoDM;  return r*r*r*prQ;}
+static double rhoQ_2(double r){ double prQ=hProfile_(r); prQ*=prQ+rhoClumpEff_(r)/rhoDM;  return r*r*prQ;  }
+static double rhoQ_3(double r){ double prQ=hProfile_(r); prQ*=prQ+rhoClumpEff_(r)/rhoDM;  return r*r*r*prQ;}
 
 static double  thetaIntegrandP(double uTheta)
 {
@@ -645,8 +568,7 @@ static double  thetaIntegrandP(double uTheta)
   double prQ;
   double d=sqrt(z_*z_ + (Rsun-r_)*(Rsun-r_) +4*r_*Rsun*sinTh*sinTh);
   if(d>=Rdisk) return 0;
-  prQ=hProfile_(d); 
-  if(vcsMode) prQ*=prQ+rhoClumpEff_(d)/rhoDM;
+  prQ=hProfile_(d); prQ*=prQ+rhoClumpEff_(d)/rhoDM;
   return  uTheta*prQ*(1-exp(-2*(Rdisk-d)/Leff));
 }
 
@@ -664,7 +586,7 @@ static double rIntegrandP(double r)
   if(sinMax>=1) thetaMax=M_PI; else thetaMax=2*asin(sinMax);
 
   r_=r;
-  prQ=hProfile_(rHalo1); if(vcsMode) prQ*=prQ+rhoClumpEff_(rHalo1)/rhoDM;
+  prQ=hProfile_(rHalo1); prQ*=prQ+rhoClumpEff_(rHalo1)/rhoDM;
   
   fluxDM_r_z=2*2*simpson(thetaIntegrandP,sqrt(thetaMin),sqrt(thetaMax),
   0.1*Eps)+2*thetaMin*prQ;   	
@@ -747,15 +669,13 @@ static double pbarPropRate(double ek)
 
 double pbarFlux(double E, double dSigmadE)
 { double rho0;
-  rho0=N_rho();
-  if(vcsMode) rho0*=rho0/2;
-  return rho0*rho0*pbarPropRate(E)*dSigmadE;
+  rho0=rhoDM/hProfile_(Rsun)/Mcdm ;
+  return 0.5*rho0*rho0*pbarPropRate(E)*dSigmadE;
 }
 
-static double Mcdm0;
 
 static double logPbarRate(double x)
-{ return log(pbarPropRate( Mcdm0*exp(x)));}
+{ return log(0.5*pbarPropRate( Mcdm*exp(x)));}
 
 void pbarFluxTab(double Emin, double sigmav, double *tab, double *tabOut)
 {
@@ -764,21 +684,18 @@ void pbarFluxTab(double Emin, double sigmav, double *tab, double *tabOut)
   double * Egrid,*Fgrid;
   double tab2[NZ];
   double rho0;
-  Mcdm0=tab[0];
-  buildInterpolation(logPbarRate,log( Emin/Mcdm0),log(0.9),0.01,Delt,&N,&Egrid,&Fgrid);
-/*printf("Npbar=%d\n",N);*/
 
-  rho0=N_rho();
-  if(vcsMode)rho0*=rho0/2;
- 
+  buildInterpolation(logPbarRate,log( Emin/Mcdm),log(0.9),0.01,&N,&Egrid,&Fgrid);
+/*printf("Npbar=%d\n",N);*/
+  rho0=rhoDM/hProfile_(Rsun)/Mcdm;
   for(i=0;i<NZ;i++)
   {  double z=Zi(i);
-     double E=tab[0]*exp(z);
+     double E=Mcdm*exp(z);
      if(E<Emin*0.9) tab2[i]=0; else tab2[i]= 
      sigmav*exp(polint4(z,N, Egrid, Fgrid) )*zInterp(z,tab);
   }   
-  for(i=1;i<NZ;i++) tabOut[i]=rho0*tab2[i];
-  tabOut[0]=tab[0];
+  for(i=0;i<NZ;i++) tabOut[i]=rho0*rho0*tab2[i];
+ 
   free(Egrid); free(Fgrid);   
 }
 
@@ -789,23 +706,20 @@ void pbarFluxTab(double Emin, double sigmav, double *tab, double *tabOut)
 void solarModulation(double PHI, double mass, double * inTab, double * outTab)
 { double buff[NZ];
   int i;
-  double Mcdm0=inTab[0];
-  
-  for(i=1;i<NZ;i++)
+  for(i=0;i<NZ;i++)
   { 
     double X,E,P,Xs,Es,Ps;
     X=exp(Zi(i));
-    E=Mcdm0*X;
+    E=Mcdm*X;
     P=sqrt( E*(E+2*mass));
     Es=E+PHI/1000.;
     if(Es>=Mcdm) buff[i]=0; else
     {  Ps=sqrt( Es*(Es+2*mass));
-       Xs=Es/Mcdm0;
+       Xs=Es/Mcdm;
        buff[i]= (X/Xs)*zInterp(log(Xs),inTab)*pow(P/Ps,2);    
     }
   }
-  for(i=1;i<NZ;i++) outTab[i]=buff[i];
-  outTab[0]=Mcdm0;
+  for(i=0;i<NZ;i++) outTab[i]=buff[i];
 }
 
 
@@ -824,9 +738,181 @@ double pBarBackgroundFlux(double E)  /* arXiv:astro-ph/0609522v3 */
   else return 8.621348E-01*1.E-4*exp(s);
 }   
 
-void pBarBackgroundTab(double Emax, double *pBarTab)
+void pBarBackgroundTab(double *pBarTab)
 {
-  int i;
-  for(i=1;i<NZ;i++) { double E=Emax*exp(Zi(i));pBarTab[i]= E*pBarBackgroundFlux(E);}
-  pBarTab[0]=Emax;
+int i;
+for(i=0;i<NZ;i++) {double E=Mcdm*exp(Zi(i));pBarTab[i]= E*pBarBackgroundFlux(E);}
+
 }
+
+
+double  electonFFluxAMS(double E)
+{   return 1;} 
+
+
+double p_ep_FluxRateAMS(double E)
+{
+//http://prl.aps.org/epaps/PRL/v110/i14/e141102/positron-fraction-05-350-Sup.pdf
+// Phis. Rev. Let. v 110, 141102
+
+double data[65][3]=         {
+{0.50  , 0.65  ,   0.0947},
+{0.65  , 0.81  ,   0.0919},
+{0.81  , 1.00  ,   0.0902},
+{1.00  , 1.21  ,   0.0842},
+{1.21  , 1.45  ,   0.0783},
+{1.45  , 1.70  ,   0.0735},
+{1.70  , 1.97  ,   0.0685},
+{1.97  , 2.28  ,   0.0642},
+{2.28  , 2.60  ,   0.0605},
+{2.60  , 2.94  ,   0.0583},
+{2.94  , 3.30  ,   0.0568},
+{3.30  , 3.70  ,   0.0550},
+{3.70  , 4.11  ,   0.0541},
+{4.11  , 4.54  ,   0.0533},
+{4.54  , 5.00  ,   0.0519},
+{5.00  , 5.50  ,   0.0512},
+{5.50  , 6.00  ,   0.0508},
+{6.00  , 6.56  ,   0.0501},
+{6.56  , 7.16  ,   0.0510},
+{7.16  , 7.80  ,   0.0504},
+{7.80  , 8.50  ,   0.0513},
+{8.50  , 9.21  ,   0.0510},
+{9.21  , 9.95  ,   0.0515},
+{9.95  , 10.73 ,   0.0519},
+{10.73 , 11.54 ,   0.0528},
+{11.54 , 12.39 ,   0.0535},
+{12.39 , 13.27 ,   0.0549},
+{13.27 , 14.19 ,   0.0551},
+{14.19 , 15.15 ,   0.0543},
+{15.15 , 16.15 ,   0.0556},
+{16.15 , 17.18 ,   0.0583},
+{17.18 , 18.25 ,   0.0586},
+{18.25 , 19.37 ,   0.0592},
+{19.37 , 20.54 ,   0.0634},
+{20.54 , 21.76 ,   0.0618},
+{21.76 , 23.07 ,   0.0653},
+{23.07 , 24.45 ,   0.0651},
+{24.45 , 25.87 ,   0.0657},
+{25.87 , 27.34 ,   0.0668},
+{27.34 , 28.87 ,   0.0694},
+{28.87 , 30.45 ,   0.0710},
+{30.45 , 32.10 ,   0.0701},
+{32.10 , 33.80 ,   0.0707},
+{33.80 , 35.57 ,   0.0718},
+{35.57 , 37.40 ,   0.0747},
+{37.40 , 40.00 ,   0.0794},
+{40.00 , 43.39 ,   0.0802},
+{43.39 , 47.01 ,   0.0817},
+{47.01 , 50.87 ,   0.0856},
+{50.87 , 54.98 ,   0.0891},
+{54.98 , 59.36 ,   0.0957},
+{59.36 , 64.03 ,   0.0962},
+{64.03 , 69.00 ,   0.0978},
+{69.00 , 74.30 ,   0.1032},
+{74.30 , 80.00 ,   0.0985},
+{80.00 , 86.00 ,   0.1023},
+{86.00 , 92.50 ,   0.1120},
+{92.50 , 100.0 ,   0.1189},
+{100.0 , 115.1 ,   0.1118},
+{115.1 , 132.1 ,   0.1142},
+{132.1 , 151.5 ,   0.1215},
+{151.5 , 173.5 ,   0.1364},
+{173.5 , 206.0 ,   0.1485},
+{206.0 , 260.0 ,   0.1530},
+{260.0 , 350.0 ,   0.1550} 
+                            };
+double EE[65], flux[65];
+int i;
+
+for(i=0;i<65;i++) { EE[i]=0.5*(data[i][0]+data[i][1]); flux[i]=data[i][2];}
+
+return polint2(E,65,EE,flux);
+}
+
+// PRL 110, 141102 (2013)
+// 1008.3999  FERMI LAT
+// 1308.01333
+#define C_ 0.025
+#define g_ 3.18
+static double  Cs=C_*0.0078, gs=g_-0.66, Es=760;
+
+double el_FluxAMS(double E)
+{   
+  return C_*pow(E,-g_) + Cs*pow(E,-gs)*exp(-E/Es);
+}
+
+double pos_FluxAMS(double E)    
+{ double  Cp=C_*0.091,    gp=g_+0.63;
+
+   return Cp*pow(E,-gp) + Cs*pow(E,-gs)*exp(-E/Es);
+}
+
+double el_FluxAMS_E3(double E){ return el_FluxAMS(E)*E*E*E;}
+double pos_FluxAMS_E3(double E){return pos_FluxAMS(E)*E*E*E;}
+
+double ep_Rate_fit(double E) { return pos_FluxAMS(E)/el_FluxAMS(E);}
+
+double sum_fit_E3(double E) { return E*E*E*( pos_FluxAMS(E)+el_FluxAMS(E));}
+
+
+static double  PAMELA[17][5]=         {
+{1.5 , 1.8 ,  1.64 ,   1762 ,   0.0777},
+{1.8 , 2.1 ,  1.94 ,   1262 ,   0.0711},
+{2.1 , 2.7 ,  2.38 ,   808  ,   0.0653},
+{2.7 , 3.5 ,  3.06 ,   411  ,   0.0586},
+{3.5 , 4.2 ,  3.83 ,   226  ,   0.0545},
+{4.2 , 5   ,  4.57 ,   137  ,   0.0535},
+{5   , 6   ,  5.46 ,   79.9 ,   0.0523},
+{6   , 8   ,  6.88 ,   38.4 ,   0.0504},
+{8   , 10  ,  8.9  ,   17.1 ,   0.0520},
+{10  , 13  ,  11.3 ,    8.4 ,   0.0557},
+{13  , 15  ,  13.9 ,    4.82,   0.063 },
+{15  , 20  ,  17.2 ,    2.30,   0.061 },
+{20  , 28  ,  23   ,    0.92,   0.062 },
+{28  , 42  ,  33.1 ,    0.32,   0.073 },
+{42  , 65  ,  50.2 ,    0.109,  0.099 },
+{65  , 100 ,  77.5 ,    0.034,  0.121 },
+{100 , 200 , 135   ,   0.0118,  0.163 }
+                                         };
+                                         
+double pos_FluxPAMELA(double E)
+{
+  double EE[17];
+  double FF[17];
+  int i;
+  for(i=0;i<17;i++) { 
+  EE[i]=PAMELA[i][2]; 
+  FF[i]=PAMELA[i][3]*pow(EE[i],3); } 
+  return polint2(E,17,EE,FF)*1E-7/pow(E,3); 
+}                
+
+double pos_FluxPAMELA_E3(double E)
+{ return E*E*E*pos_FluxPAMELA(E);}
+
+double  p_ep_FluxRatePAMELA(double E)
+{
+  double EE[16];
+  double FF[16];
+  int i;
+  for(i=0;i<16;i++) { EE[i]=PAMELA[i][2]; FF[i]=PAMELA[i][4];}
+  return polint2(E,16,EE,FF);             
+} 
+
+
+
+
+double pos_FluxAMS_t(double E)
+{ 
+   double EE[62]    ={1.1110638,1.3346196,1.572518,1.8351195,2.121208,2.4282048,2.77967,3.1210,3.504481,3.897285,4.376407,4.773929,5.2581263,5.791434,6.256828,6.891321,7.445217,8.200606,8.94563	,9.571548,10.34087,11.171852,12.069799,12.914313,13.685242,14.643699,15.668062,16.603378,17.937609,19.008406,20.142185,21.139973,22.401237,23.738865,25.155973,26.657675,28.249023,29.646553,31.416813,32.6555	,34.27263,36.670082,38.856705,41.980503,45.35472,48.99862,53.45097,57.742638,62.385696,66.108826,72.11368,77.16542,83.36376,89.19109,96.356895,108.2112,123.88772,141.83308,162.35507,189.49098,232.12175,289.87888};
+   double fluxE3[62]={2.6539097,3.5088801,4.497553,5.4183536,5.856827,6.6317163,7.39372,8.5022,9.189541,9.779552,9.935177,10.25005,10.575175,10.91060,11.08312,11.61315,11.615473,11.618375,11.802377,11.988694,11.99109,12.180691,12.1831255,12.375453,12.377309,11.817423,12.191345,12.193173,12.385969,12.387826,12.97895,12.584642,12.982516,12.784905,12.786822,12.788739,12.790656,13.194714,12.993873,12.795449,12.600371,12.999067,13.831941,13.622081,13.624804,14.056266,14.059426,15.1945095,14.733996,14.966219,15.440546,14.515526,15.20894,16.436419,16.956917,15.943044,15.948621,16.203226,18.924217,20.141758,20.46688,21.78748};
+   return polint2(E,62, EE, fluxE3)*1.E-4;
+}
+
+double el_FluxAMS_t(double E)
+{
+  double EE[61]=    {1.0967772 , 1.3250836  ,1.5636265, 1.8162674 , 2.1264703 ,2.4124448, 2.7369068, 3.1050396,3.4676182,3.8724952  ,4.3247805  ,4.754285   ,5.2264447  ,5.7004385  ,6.2173553  ,6.835029, 7.3964453 , 8.131258  , 8.799144 , 9.447119 ,  10.304213,   11.063136  ,11.784439  ,12.65199   ,13.583831  ,14.584305  ,15.412873  ,16.547714  ,17.62679   ,18.92523   ,20.000416  ,21.304419  ,22.162567  ,23.794384  ,25.146461  ,26.366959  ,28.08576   ,29.916918  ,30.876953  ,32.631824  ,34.485714  ,35.875927  ,38.51705   ,41.3539 ,   45.106693  ,48.81116   ,52.822613  ,57.15958   ,61.3714    ,65.88877   ,71.86955   ,77.16126   ,82.842606  ,88.94596   ,96.24881   ,107.49459  ,122.93518  ,141.71231  ,165.95181  ,203.75908  ,254.17397};  
+  double fluxE3[61]={ 22.840649, 36.584045,  50.318073, 66.39047  , 86.39406  ,102.03505, 118.85113, 136.53552,150.4657 ,168.12833,  180.22275, 190.52452,  201.41518,  207.11066,  215.93561, 218.99332,  219.03326 , 222.13484 , 222.17535, 219.15714,  216.18779,  210.3194,    207.45845,  210.38461,  204.67374,  199.11789,  199.14331,  199.176,    193.76585,  185.91475,  185.93848,  183.40918,  178.41754,  178.44682,  176.01624,  168.87508, 168.8997,    166.60219,  164.32393,  159.85754,  159.87796,  149.20053, 151.30498,  147.19781,  141.23872,   143.23349,  135.54314, 141.31602,  131.88788,  135.61237,  126.56936, 126.59014,  126.610916, 119.81086,    124.913704,  126.68714,  123.26621,  115.06117,  111.960304,  112.013405,  104.57646};
+
+  return polint2(E,61, EE, fluxE3)*1.E-4;
+}   

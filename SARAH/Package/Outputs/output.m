@@ -127,13 +127,7 @@ tempString=TeXForm/@x;,
 tempString="";term=0;
 For[i=1,i<=Length[x],
 If[getLaTeXlength[(term+x[[i]])]>MAXTEXLENGTH&& term =!=0,
-If[clines<100,
 tempString=tempString <> "\\nonumber \\\\ \n &";
-clines++;,
-tempString=tempString <> "\\nonumber \n";
-tempString=tempString <> "\\end{align} \n \\begin{align} \n & ";
-clines=0;
-];
 tempString = tempString <>"+"<>ToString[TeXForm[x[[i]]]];
 term=x[[i]];,
 term +=x[[i]];
@@ -180,7 +174,7 @@ TeXForm[x_List]:=TeXForm/@x;
 Format[bar[x_],TeXForm]:=Format["\\bar{"<>ToString[TeXForm[x]]<>"}",OutputForm];
 Format[Adj[x_],TeXForm]:=Format[AddExp[ToString[TeXForm[x]],"\\dagger",""],OutputForm];
 Format[Tp[x_],TeXForm]:=Format[AddExp[ToString[TeXForm[x]],"T",""],OutputForm];
-Format[x_Power,TeXForm]:=If[Head[x[[1]]]===Plus ||  Head[x[[1]]]===MatMul || Head[x[[1]]] ===trace || Head[x[[1]]] === ScalarProd,
+Format[x_Power,TeXForm]:=If[Head[x[[1]]]===Plus ||  Head[x[[1]]]===MatMul || Head[x[[1]]] ===trace,
 Format["("<>ToString[TeXForm[x[[1]]]]<>")^{"<>ToString[x[[2]]]<>"}",OutputForm],
 Format[AddExp[ToString[TeXForm[x[[1]]]],ToString[x[[2]]],""],OutputForm]
 ] /;Head[x[[2]]]===Integer; 
@@ -215,11 +209,7 @@ Format[H0[a_,b_,c_],TeXForm]:=Format["{H_0("<>ToString[TeXForm[a]]<>","<>ToStrin
 Format[A0[a_],TeXForm]:=Format["{A_0("<>ToString[TeXForm[a]]<>")}",OutputForm];
 Format[Re[a_],TeXForm]:=Format["{\\Re("<>ToString[TeXForm[a]]<>")}",OutputForm];
 
-Format[Generator[a_,b_][i1_,i2_,i3_],TeXForm]:=Format["T^{"<>ToString[TeXForm[a]]<>","<>TeXOutput[DimR[SusynoForm[a],b]]<>"}_{"<>ToString[TeXForm[i1]]<>ToString[TeXForm[i2]]<>ToString[TeXForm[i3]]<>"}",OutputForm];
-
-Format[conj[Generator[a_,b_][i1_,i2_,i3_]],TeXForm]:=Format["T^{"<>ToString[TeXForm[a]]<>","<>TeXOutput[DimR[SusynoForm[a],b]]<>"\\, *}_{"<>ToString[TeXForm[i1]]<>ToString[TeXForm[i2]]<>ToString[TeXForm[i3]]<>"}",OutputForm];
-
-Format[FST[a_][i1___],TeXForm]:=Format["f^{"<>ToString[TeXForm[a]]<>"}_{"<>ToString[TeXForm[{i1}]]<>"}",OutputForm];
+Format[Generator[a_,b_][i1_,i2_,i3_],TeXForm]:=Format["T^{"<>TeXOutput[b]<>","<>TeXOutput[DimR[SusynoForm[b],a]]<>"}_{"<>ToString[TeXForm[i1]]<>ToString[TeXForm[i2]]<>ToString[TeXForm[i3]]<>"}",OutputForm];
 
 StringDimDynkin[group_,dyn_]:=Block[{dim},
 dim=DimR[SusynoForm[group],dyn];
@@ -311,18 +301,6 @@ temp=ReplaceAll[Hold[SetDelayed[Format[conj[parameters[[i,1]]],TeXForm],Format[S
 ReleaseHold[temp];
 ];
 i++;]; 
-
-For[i=1,i<=Length[threeIndexParameter],
-For[j=1,j<=5,
-Format[conj[threeIndexParameter[[i]][j]], TeXForm]=Format["("<>ToString[TeXForm[threeIndexParameter[[i]][j]]]<>")^*",OutputForm];
-
-temp=ReplaceAll[Hold[SetDelayed[Format[conj[threeIndexParameter[[nr]][nr2][a__]],TeXForm],Format["("<>ToString[TeXForm[threeIndexParameter[[nr]][nr2]]]<>")^*_"<>StringReplace[ToString[TeXForm/@{a}],","->""],OutputForm]]], {nr->i,nr2->j}];
-ReleaseHold[temp];
-temp=ReplaceAll[Hold[SetDelayed[Format[threeIndexParameter[[nr]][nr2][a__],TeXForm],Format["("<>ToString[TeXForm[threeIndexParameter[[nr]][nr2]]]<>")_"<>StringReplace[ToString[TeXForm/@{a}],","->""],OutputForm]]], {nr->i,nr2->j}];
-ReleaseHold[temp];
-
-j++;];
-i++;];
 
  For[i=1,i<=Length[TeXParameters],
 Format[TeXParameters[[i,1]],TeXForm]=Format[TeXParameters[[i,2]],OutputForm];
@@ -943,10 +921,6 @@ Switch[temp2,
 "_", sub = res[[2]];,
 "^", super=res[[2]];
 ];
-];
-
-If[StringTake[basis,{1}]==="{",
-If[StringCount[basis,"{"]===1,basis=StringDrop[basis,{1}];];
 ];
 
 res = basis;

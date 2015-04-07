@@ -22,8 +22,8 @@ ParameterDefinitions = {
   {gL,      { Description -> "Left-Coupling",
               LaTeX -> "g_L",
               Real -> False,
-              DependenceOptional -> e/Sin[ThetaW],  
-              DependenceNum -> e/Sin[ThetaW], 
+              Dependence -> None, 
+              DependenceOptional -> None,
               DependenceNum -> None,
               Value -> None,
               OutputName -> gL,
@@ -129,7 +129,11 @@ ParameterDefinitions = {
 
   {Yv,      { LaTeX -> "Y_v",
               Dependence ->  None,
-               Value -> None,
+              DependenceNum ->  Sqrt[2]/vu \
+               {{Mass[Fv,1],0,0}, 
+                {0,Mass[Fv,2],0},
+                {0, 0, Mass[Fv,3]}},
+              Value -> None,
               LesHouches -> Yv,
               OutputName-> Yv}},
 
@@ -309,12 +313,10 @@ ParameterDefinitions = {
   {ZfW,     { Dependence -> 1/Sqrt[2] {{1, 1, 0},
               { -\[ImaginaryI],\[ImaginaryI], 0},
               { 0, 0, Sqrt[2]}},
-              LesHouches -> None,
               OutputName -> ZfW }},
 
   {ZW,      { Dependence -> 1/Sqrt[2] {{1, 1},
               { -\[ImaginaryI],\[ImaginaryI]}},
-              LesHouches -> None,
               OutputName -> ZW }},
 
   {ZZ,      { Dependence -> None,
@@ -338,7 +340,7 @@ ParameterDefinitions = {
   {ThetaW,  { Description->"Weinberg-Angle",
 	      Real -> True,
               LaTeX -> "\\Theta_W",
-              DependenceNum -> ArcSin[Sqrt[1 - Mass[VWm]^2/Mass[VZ]^2]],
+              DependenceNum -> ArcCos[thetaWexp],
               OutputName -> TW,
               LesHouches -> None}},
 

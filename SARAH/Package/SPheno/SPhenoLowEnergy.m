@@ -22,16 +22,12 @@
 SPhenoLowEnergyIncluded =True;
 
 GenerateSPhenoLowEnergy:=Block[{i,temp,file,ModuleName},
-
-Print[StyleForm["Write routine for precision observables","Section",FontSize->12]];
-Print["(in collaboration with K. Nickel, W. Porod, A. Vicente)"];
-(*
 Print["----------------------------------------------"];
 Print["Writing Routines for  Low Energy Constraints  "];
 Print["(in collaboration with K. Nickel, W. Porod,   "];
 Print[" and A. Vicente)                              "];
 Print["----------------------------------------------"];
-*)
+
 
 
 (* defines the block numbers of the different observables for the LesHouches output *)

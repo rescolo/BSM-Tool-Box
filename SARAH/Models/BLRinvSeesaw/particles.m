@@ -112,7 +112,7 @@ ParticleDefinitions[GaugeES] = {
       {VB,   { Description -> "B-Boson"}},
       {VG,   { Description -> "Gluon"}},
 
-      {VWL,  { Description -> "W-Bosons",
+      {VWL,  { Description -> "W-Boson",
                FeynArtsNr -> 2,
                LaTeX -> "W",
                OutputName -> "W" }}, 
@@ -226,13 +226,12 @@ ParticleDefinitions[EWSB] = {
 
       (* New Gauge Bosons *)
 
-      {VZR,  {                Mass -> LesHouches,
+      {VZR,  {                Mass -> Automatic,
                ElectricCharge -> 0,
                LaTeX -> "Z_R",
                PDG -> {99},
                PDG.IX ->{122000002},
                OutputName -> "VZR",
-               FeynArtsNr -> 7,
                Goldstone->Ah[{2}] }},
 
       (* MSSM Ghosts *)
@@ -249,7 +248,6 @@ ParticleDefinitions[EWSB] = {
                Width -> 0,
                Mass -> Automatic,
                LaTeX -> "\\eta^{Z_R}",
-               FeynArtsNr -> 7,
                OutputName -> "gZR" }},
 
       (* -------------------------------------------------------- *)
@@ -261,7 +259,7 @@ ParticleDefinitions[EWSB] = {
 	       PDG -> {1000022,1000023,1000025,1000035,9000001,9000002,9000003},
                PDG.IX ->{211000001,211000002,211000003,211000004,211000005,211000006,211000007} }},
       {Cha,  { Description -> "Charginos",
-               ElectricCharge -> -1}}
+               ElectricCharge -> 1}}
 
 }; 
 

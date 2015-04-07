@@ -122,6 +122,17 @@ BoundaryLowScaleInput={
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
+ConditionForMassOrdering={
+{Ah,
+"If ((Abs(ZA(1,3)).gt.Abs(ZA(2,3))).And.(MAh2(1).lt.1._dp).And.(MAh2(2).lt.1._dp)) Then \n
+   MAh2temp = MAh2 \n
+   ZAtemp = ZA \n
+   ZA(1,:) = ZAtemp(2,:) \n
+   ZA(2,:) = ZAtemp(1,:) \n
+   MAh2(1) = MAh2temp(2) \n
+   MAh2(2) = MAh2temp(1) \n
+End If \n \n"}
+};
 
 
   

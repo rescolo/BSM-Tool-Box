@@ -21,13 +21,10 @@
 
 GenerateSPhenoMain[NameForModel_]:=Block[{i},
 
-(*
 Print["-----------------------------------"];
 Print["Write SPheno Main File"];
 Print["-----------------------------------"];
-*)
 
-Print[StyleForm["Write SPheno main file","Section",FontSize->12]];
 
 spheno=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"SPheno"<>NameForModel<>".f90"]];
 
@@ -41,11 +38,9 @@ WriteString[spheno,"Use LoopFunctions\n"];
 If[AddLowEnergyConstraint ===True && SPhenoOnlyForHM=!=True,
 WriteString[spheno,"Use RunSM_"<>ModelName<>"\n"]; 
 WriteString[spheno,"Use LowEnergy_"<>ModelName<>"\n"]; 
-If[SkipFlavorKit=!=True,
 WriteString[spheno,"Use FlavorKit_LFV_"<>ModelName<>"\n"]; 
 WriteString[spheno,"Use FlavorKit_QFV_"<>ModelName<>"\n"]; 
-WriteString[spheno,"Use FlavorKit_Observables_"<>ModelName<>"\n"];
-]; 
+WriteString[spheno,"Use FlavorKit_Observables_"<>ModelName<>"\n"]; 
 ];
 WriteString[spheno,"Use Mathematics\n"];
 WriteString[spheno,"Use Model_Data_"<>ModelName<>"\n"];
@@ -138,7 +133,7 @@ temp2=Join[temp2,{temp1[[i]]/. subLowEnergyParameters}];
 i++;];
 
 If[NonSUSYModel=!=True,
-WriteString[spheno,"If ((HighScaleModel.Eq.\"LOW\").and.(.not.SUSYrunningFromMZ)) Then ! No longer used by default \n "];
+WriteString[spheno,"If (HighScaleModel.Eq.\"LOW\") Then \n "];
 ];
 WriteString[spheno,"! Setting values \n "];
 For[i=1,i<=Length[listVEVsIN],
@@ -307,10 +302,8 @@ MakeCall["CalculateOneLoopDecays",Join[listVEVs,listAllParameters],{},{"epsI","d
 ];
 
 If[IncludeFineTuning===True,
-WriteString[spheno,"If (HighScaleModel.ne.\"LOW\") Then \n "];
-WriteString[spheno," If (calcFT) Then \n"];
+WriteString[spheno,"If (calcFT) Then \n"];
 MakeCall["FineTuning",listAllParametersAndVEVs, {},{"mGut","kont"},spheno];
-WriteString[spheno," End If \n"];
 WriteString[spheno,"End If \n"];
 ];
 
@@ -341,7 +334,7 @@ Close[spheno];
 
 GenerateReadingData:=Block[{},
 
-Print["  Write 'ReadingData'"];
+Print["Write ReadingData"];
 
 WriteString[spheno,"Subroutine ReadingData(kont)\n"];
 WriteString[spheno,"Implicit None\n"];
@@ -376,7 +369,7 @@ WriteString[spheno,"End Subroutine ReadingData\n\n \n"];
 
 GenerateCalculateSpectrum:=Block[{i,j,temp},
 
-Print["  Write 'CalculateSpectrum'"];
+Print["Write Calculate Spectrum"];
 
 
  MakeSubroutineTitle["CalculateSpectrum",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{"n_run","delta","WriteOut","kont"},{"mGUT"},spheno]; 
@@ -459,7 +452,7 @@ temp=Join[temp,{name}];
 i++;
 ];
 
-Print["  Write 'CalculateLowEnergy'"];
+Print["Write Calculate Low Energy"];
 
 MakeSubroutineTitle["CalculateLowEnergyConstraints",Join[temp,Transpose[ListOfLowEnergyNames][[1]]],{},{},spheno];
 
@@ -715,12 +708,6 @@ WriteString[spheno,"\n ! **** "<>ToString[PreSARAHobservablesQFV[[i,1]]]<>" ****
 MakeCall["Calculate_"<>ToString[PreSARAHobservablesQFV[[i,1]]],{},ToString/@PreSARAHobservablesQFV[[i,4]],ToString/@PreSARAHobservablesQFV[[i,2]],spheno];
 i++;];
 
-If[SkipFlavorKit=!=True,
-For[i=1,i<=Length[FLHA`WilsonCoefficients],
-WriteString[spheno,ToString[FLHA`WilsonCoefficients[[i,5]]]<>" = "<>SPhenoForm[FLHA`WilsonCoefficients[[i,6]]]<>"\n"];
-i++;];
-];
-
 
 If[IncludeOldObservables===True,
 (* q ->  q' gamma *)
@@ -822,8 +809,8 @@ MakeCall["RunSM_and_SUSY_RGEs",Join[Map[ToExpression[SPhenoForm[#]<>"input"]&,li
 
 WriteTadpoleSolution[spheno];
 MakeCall["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},spheno];
-WriteString[spheno, "mzsave  = sqrt(mz2) \n"];
 If[OnlyLowEnergySPheno=!=True,
+WriteString[spheno, "mzsave  = sqrt(mz2) \n"];
 If[AuxiliaryHyperchargeCoupling, WriteString[sphenoLoop,SPhenoForm[hyperchargeCoupling] <>" = " <>SPhenoForm[ExpressionAuxHypercharge]<>"\n"];];
 If[AddOHDM=!=True,
 WriteString[spheno,"mZ2 = 1._dp/4._dp*("<>SPhenoForm[hyperchargeCoupling]<>"**2 + "<>SPhenoForm[leftCoupling]<> "**2)*("
@@ -1055,16 +1042,14 @@ MakeCall["DeltaRho",Flatten[{masses,couplings}],{},{"dRho"},spheno];
 
 If[FreeQ[massless,Neutrino],
 WriteTadpoleSolution[spheno];
-WriteString[spheno,"CalculateOneLoopMassesSave = CalculateOneLoopMasses \n"];
-WriteString[spheno,"CalculateOneLoopMasses = .false. \n"];
 MakeCall["OneLoopMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"kont"},spheno];
-WriteString[spheno,"CalculateOneLoopMasses = CalculateOneLoopMassesSave \n"];
 WriteString[spheno,"nuMasses = "<>SPhenoForm[SPhenoMass[Neutrino]]<>" \n"];
 If[SPhenoForm[NeutrinoMM]=!="Delta",WriteString[spheno,"nuMixing = "<>SPhenoForm[NeutrinoMM]<>" \n"];];
 SetPoleMasses[spheno];
 ];
 
 
+If[OnlyLowEnergySPheno=!=True,
 WriteString[spheno,"If (WriteParametersAtQ) Then \n"];
 WriteString[spheno,"scalein = SetRenormalizationScale(160._dp**2) \n"];
 WriteString[spheno,"Else \n"];
@@ -1072,6 +1057,7 @@ WriteString[spheno,"scalein = SetRenormalizationScale(scale_save**2) \n"];
 WriteString[spheno,"End if \n"];
 WriteString[spheno, "mz2 = mzsave**2 \n"];
 WriteString[spheno, "mz = mzsave \n"];
+];
 
 If[OnlyLowEnergySPheno=!=True,
 For[i=1,i<=Length[Gauge],

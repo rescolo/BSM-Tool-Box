@@ -20,13 +20,10 @@
 
 
 GenerateSPhenoLoopCouplings[Eigenstates_]:=Block[{},
-(*
 Print["----------------------------------------------"];
 Print["Writing Routines for Loop Couplings"];
 Print["----------------------------------------------"];
-*)
 
-Print[StyleForm["Write routine for loop couplings","Section",FontSize->12]];
  
 $sarahCurrentSPhenoDir=ToFileName[{$sarahCurrentOutputDir,"SPheno"}];
 sphenoLoopCoup=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"LoopCouplings_"<>ModelName<>".f90"]];
@@ -39,9 +36,6 @@ If[SupersymmetricModel===True,
 WriteAlphaMS;
 WriteAlphaEWSB;
 WriteAlphaStrong;
-
-WriteAlphaThreshold;
-WriteAlphaStrongThreshold;
 
 GenerateDeltaVB2;
 
@@ -79,7 +73,7 @@ Close[sphenoLoopCoup];
 
 WriteLoopCouplingsHeader:=Block[{},
 
-Print["  Writing header"];
+Print["Writing Header"];
 
 WriteCopyRight[sphenoLoopCoup];
 
@@ -146,10 +140,7 @@ For[i=1,i<=Length[partS],
 	
 	val=Vertex[{conj[partS[[i]]],partS[[i]],VectorG}][[2,1]];
 	If[val=!=0,
-	If[partS[[i]]===conj[partS[[i]]],
-	coupAlphaStrong= Join[coupAlphaStrong,{{partS[[i]],1,1,CalculateColorFactor[VectorG,partS[[i]],partS[[i]]]/2}}];,
 	coupAlphaStrong= Join[coupAlphaStrong,{{partS[[i]],1,1,CalculateColorFactor[VectorG,partS[[i]],partS[[i]]]}}];
-	];
 	NeededCouplingsToGluon= Join[NeededCouplingsToGluon,{getSPhenoCoupling[C[conj[partS[[i]]],partS[[i]],VectorG]][[1,1]]}];
 	RelativeCoupling[VectorG,partS[[i]]]=1;,
 	RelativeCoupling[VectorG,partS[[i]]]=0;
@@ -203,7 +194,7 @@ temp={};
 
 WriteAlphaEWSB:=Block[{i},
 
-Print["  Writing 'AlphaEwDR'"];
+Print["AlphaEwDR"];
 
 WriteString[sphenoLoopCoup,"Real(dp) Function AlphaEwDR(Q,"];
 For[i=1,i<=Length[coupAlphaEWSB],
@@ -271,7 +262,7 @@ WriteString[sphenoLoopCoup,"End Function AlphaEwDR \n \n \n"];
 
 WriteAlphaStrong:=Block[{i},
 
-Print["  Writing 'AlphaSdr'"];
+Print["Writing AlphaSdr"];
 
 WriteString[sphenoLoopCoup,"Real(dp) Function AlphaSDR(Q,"];
 For[i=1,i<=Length[coupAlphaStrong],
@@ -310,98 +301,6 @@ WriteString[sphenoLoopCoup,"DeltaAlpha=AlphaS_mZ*DeltaAlpha/(2._dp*Pi) \n"];
 WriteString[sphenoLoopCoup,"   AlphaSDR=AlphaS_mZ/(1._dp-DeltaAlpha)\n \n"];
 
 WriteString[sphenoLoopCoup,"End Function AlphaSDR \n"];
-
-];
-
-
-WriteAlphaThreshold:=Block[{i},
-
-Print["  Writing 'AlphaEW_Treshold'"];
-
-WriteString[sphenoLoopCoup,"Real(dp) Function AlphaEW_T(AlphaEW_In, Q,"];
-For[i=1,i<=Length[coupAlphaEWSB],
-WriteString[sphenoLoopCoup,SPhenoForm[SPhenoMass[coupAlphaEWSB[[i,1]]]]];
-If[i!= Length[coupAlphaEWSB],
-WriteString[sphenoLoopCoup,","];
-];
-i++;];
-WriteString[sphenoLoopCoup,") \n \n"];
-
-
-WriteString[sphenoLoopCoup,"Real(dp),Intent(in)::AlphaEW_In, Q,"];
-For[i=1,i<=Length[coupAlphaEWSB],
-WriteString[sphenoLoopCoup,SPhenoMass[coupAlphaEWSB[[i,1]],getGenSPheno[coupAlphaEWSB[[i,1]]]]];
-If[i!= Length[coupAlphaEWSB],
-WriteString[sphenoLoopCoup,","];
-];
-i++;];
-WriteString[sphenoLoopCoup,"\n"];
-WriteString[sphenoLoopCoup,"Integer::i1 \n"];
-WriteString[sphenoLoopCoup,"Real(dp)::DeltaAlpha \n"];
-
-WriteString[sphenoLoopCoup,"DeltaAlpha=1._dp/6._dp \n"];
-For[i=1,i<=Length[coupAlphaEWSB],
-If[getGenSPheno[coupAlphaEWSB[[i,1]]]>1,
-If[SMQ[coupAlphaEWSB[[i,1]]]=!=True,
-WriteString[sphenoLoopCoup, "Do i1="<> ToString[If[SMQ[coupAlphaEWSB[[i,1]]],4,getGenSPhenoStart[coupAlphaEWSB[[i,1]]]]]<>","<> ToString[getGenSPheno[coupAlphaEWSB[[i,1]]]]<>"\n"];
-WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha+"<>SPhenoForm[coupAlphaEWSB[[i,2]]^2*coupAlphaEWSB[[i,3]]*coupAlphaEWSB[[i,4]]/3]<>"*Log("<>SPhenoMass[coupAlphaEWSB[[i,1]],i1]<>"/ Q) \n"];
-WriteString[sphenoLoopCoup,"End Do \n"];
-];,
-If[SMQ[coupAlphaEWSB[[i,1]]]=!=True,
-WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha+"<>SPhenoForm[coupAlphaEWSB[[i,2]]^2*coupAlphaEWSB[[i,3]]*coupAlphaEWSB[[i,4]]/3]<>"*Log("<>SPhenoMass[coupAlphaEWSB[[i,1]],i1]<>"/ Q)\n"];
-];
-];
-i++;];
-
-WriteString[sphenoLoopCoup,"DeltaAlpha=-alpha_in*DeltaAlpha/(2._dp*Pi) \n"];
-
-WriteString[sphenoLoopCoup,"AlphaEW_T=Alpha_in/(1._dp-DeltaAlpha) \n \n"];
-WriteString[sphenoLoopCoup,"End Function AlphaEW_T \n \n \n"];
-
-];
-
-
-WriteAlphaStrongThreshold:=Block[{i},
-
-Print["  Writing 'AlphaS_T'"];
-
-WriteString[sphenoLoopCoup,"Real(dp) Function AlphaS_T(AlphaS_In, Q,"];
-For[i=1,i<=Length[coupAlphaStrong],
-WriteString[sphenoLoopCoup,SPhenoForm[SPhenoMass[coupAlphaStrong[[i,1]]]]];
-If[i!= Length[coupAlphaStrong],
-WriteString[sphenoLoopCoup,","];
-];
-i++;];
-WriteString[sphenoLoopCoup,") \n"];
-
-
-WriteString[sphenoLoopCoup,"Real(dp),Intent(in):: AlphaS_In, Q,"];
-For[i=1,i<=Length[coupAlphaStrong],
-WriteString[sphenoLoopCoup,SPhenoMass[coupAlphaStrong[[i,1]],getGenSPheno[coupAlphaStrong[[i,1]]]]];
-If[i!= Length[coupAlphaStrong],
-WriteString[sphenoLoopCoup,","];
-];
-i++;];
-WriteString[sphenoLoopCoup," \n"];
-
-WriteString[sphenoLoopCoup,"Integer::i1 \n"];
-WriteString[sphenoLoopCoup,"Real(dp)::DeltaAlpha \n"];
-
-
-WriteString[sphenoLoopCoup,"DeltaAlpha = 0.5_dp \n"];
-For[i=1,i<=Length[coupAlphaStrong],
-If[getGenSPheno[coupAlphaStrong[[i,1]]]>1,
-WriteString[sphenoLoopCoup, "Do i1=1,"<> ToString[getGenSPheno[coupAlphaStrong[[i,1]]]]<>"\n"];
-WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha-"<>SPhenoForm[coupAlphaStrong[[i,2]]^2*coupAlphaStrong[[i,3]]*coupAlphaStrong[[i,4]]/3]<>"*Log("<>SPhenoMass[coupAlphaStrong[[i,1]],i1]<>"/ Q) \n"];
-WriteString[sphenoLoopCoup,"End Do \n"];,
-WriteString[sphenoLoopCoup,"DeltaAlpha=DeltaAlpha-"<>SPhenoForm[coupAlphaStrong[[i,2]]^2*coupAlphaStrong[[i,3]]*coupAlphaStrong[[i,4]]/3]<>"*Log("<>SPhenoMass[coupAlphaStrong[[i,1]],i1]<>"/ Q) \n"];
-];
-i++;];
-
-WriteString[sphenoLoopCoup,"DeltaAlpha=AlphaS_In*DeltaAlpha/(2._dp*Pi) \n"];
-WriteString[sphenoLoopCoup,"   AlphaS_T=AlphaS_In/(1._dp-DeltaAlpha)\n \n"];
-
-WriteString[sphenoLoopCoup,"End Function AlphaS_T\n"];
 
 ];
 
@@ -530,23 +429,16 @@ SPhenoParameters=Join[SPhenoParameters,{{cplHiggsWWvirt,{generation},{getGenSPhe
 SPhenoParameters=Join[SPhenoParameters,{{cplPseudoHiggsPP,{generation},{getGenSPheno[HiggsBoson]}}}];
 SPhenoParameters=Join[SPhenoParameters,{{cplPseudoHiggsGG,{generation},{getGenSPheno[HiggsBoson]}}}];
 
-Print["  write loop induced couplings of Higgs to vector bosons (",Dynamic[DynamicHiggsLoopCnr],"/",8,")"];
-DynamicHiggsLoopCnr=1;
+
 GenerateHiggsLoopCoupling["Photon",NeededRatiosLoopCouplingsPhoton,NeededMassesLoopPhoton,NeededCouplingsToPhoton,ParticlesToPhotonAndHiggs];
-DynamicHiggsLoopCnr=2;
 GenerateHiggsLoopCoupling["Gluon",NeededRatiosLoopCouplingsGluon,NeededMassesLoopGluon,NeededCouplingsToGluon,ParticlesToGluonAndHiggs];
-DynamicHiggsLoopCnr=3;
 GenerateHiggsLoopCouplingSM["Photon",NeededRatiosLoopCouplingsPhoton,NeededMassesLoopPhoton,NeededCouplingsToPhoton,ParticlesToPhotonAndHiggs];
-DynamicHiggsLoopCnr=4;
 GenerateHiggsLoopCouplingSM["Gluon",NeededRatiosLoopCouplingsGluon,NeededMassesLoopGluon,NeededCouplingsToGluon,ParticlesToGluonAndHiggs];
 
-DynamicHiggsLoopCnr=5;
+
 GeneratePseudoHiggsLoopCoupling["Photon",NeededRatiosLoopCouplingsPhoton,NeededMassesLoopPhoton,NeededCouplingsToPhoton,ParticlesToPhotonAndHiggs];
-DynamicHiggsLoopCnr=6;
 GeneratePseudoHiggsLoopCoupling["Gluon",NeededRatiosLoopCouplingsGluon,NeededMassesLoopGluon,NeededCouplingsToGluon,ParticlesToGluonAndHiggs];
-DynamicHiggsLoopCnr=7;
 GeneratePseudoHiggsLoopCouplingSM["Photon",NeededRatiosLoopCouplingsPhoton,NeededMassesLoopPhoton,NeededCouplingsToPhoton,ParticlesToPhotonAndHiggs];
-DynamicHiggsLoopCnr=8;
 GeneratePseudoHiggsLoopCouplingSM["Gluon",NeededRatiosLoopCouplingsGluon,NeededMassesLoopGluon,NeededCouplingsToGluon,ParticlesToGluonAndHiggs];
 
 
@@ -572,7 +464,7 @@ WriteString[sphenoBR, "! Weinberg angle not defined in model (using experimental
 
 list = Table[SPhenoCouplingsAll[[i,1,1]],{i,1,Length[SPhenoCouplingsAll]}];
 
-Print["  Write loop induced couplings to Higgs"];
+Print["Write loop induced couplings to Higgs"];
 
 If[getGenSPheno[HiggsBoson]>1 && FreeQ[ParameterDefinitions,"Down-VEV"]==False && FreeQ[ParameterDefinitions,"Up-VEV"]==False,
 
@@ -667,7 +559,7 @@ i++;];
 
 
 
-Print["   Writing coupling ratios for HiggsBounds"];
+Print["   Writing Coupling ratios for HiggsBounds"];
 
 WriteString[sphenoBR,"!----------------------------------------------------\n"];
 WriteString[sphenoBR,"! Coupling ratios for HiggsBounds \n"];
@@ -902,7 +794,7 @@ WriteString[sphenoBR, "\n"];
 
 GenerateHiggsLoopCoupling[vname_,ratios_,masses_,coups_,list_]:=Block[{i, factor,coupL,stringTemp},
 
-(* Print["Write Loop induced coupling Higgs to ",vname]; *)
+Print["Write Loop induced coupling Higgs to ",vname];
 
 (* MakeSubroutineTitle["CoupHiggsTo"<>vname,Flatten[{ratios,masses,coups}],{"mHiggs"},{"coup"},sphenoLoopCoup]; *)
 
@@ -989,7 +881,7 @@ WriteString[sphenoLoopCoup,"End Subroutine CoupHiggsTo"<>vname <>"\n\n"];
 
 GenerateHiggsLoopCouplingSM[vname_,ratios_,masses_,coups_,list_]:=Block[{i},
 
-(* Print["Write Loop induced coupling Higgs to ",vname]; *)
+Print["Write Loop induced coupling Higgs to ",vname];
 
 (* MakeSubroutineTitle["CoupHiggsTo"<>vname<>"SM",Flatten[{masses,coups}],{"mHiggs"},{"coup"},sphenoLoopCoup]; *)
 
@@ -1062,7 +954,7 @@ WriteString[sphenoLoopCoup,"End Subroutine CoupHiggsTo"<>vname <>"SM \n\n"];
 
 GeneratePseudoHiggsLoopCoupling[vname_,ratios_,masses_,coups_,list_]:=Block[{i},
 
-(* Print["Write Loop induced coupling Higgs to ",vname]; *)
+Print["Write Loop induced coupling Higgs to ",vname];
 
 (* MakeSubroutineTitle["CoupPseudoHiggsTo"<>vname,Flatten[{ratios,masses,coups}],{"mHiggs"},{"coup"},sphenoLoopCoup]; *)
 MakeSubroutineTitle["CoupPseudoHiggsTo"<>vname,Flatten[{ratios,masses}],{"mHiggs","inG"},{"coup"},sphenoLoopCoup];
@@ -1126,7 +1018,7 @@ WriteString[sphenoLoopCoup,"End Subroutine CoupPseudoHiggsTo"<>vname <>"\n\n"];
 
 GeneratePseudoHiggsLoopCouplingSM[vname_,ratios_,masses_,coups_,list_]:=Block[{i},
 
-(* Print["Write Loop induced coupling Higgs to ",vname]; *)
+Print["Write Loop induced coupling Higgs to ",vname];
 
 (* MakeSubroutineTitle["CoupPseudoHiggsTo"<>vname<>"SM",Flatten[{masses,coups}],{"mHiggs"},{"coup"},sphenoLoopCoup]; *)
 MakeSubroutineTitle["CoupPseudoHiggsTo"<>vname<>"SM",Flatten[{masses}],{"mHiggs"},{"coup"},sphenoLoopCoup];
@@ -1222,7 +1114,7 @@ WriteEffCouplingsFermionHiggs["Coup"<>SPhenoForm[fermion]<>"To"<>SPhenoForm[scal
 
 WriteEffCouplingsFermionHiggs[name_,masses_,couplings_,wave_,penguin_,yukawa_,mixL_,mixR_,vev_,mixHiggs_,compHiggs_]:=Block[{i},
 
-Print["  Write effective coupling ",name];
+Print["Write effective Coupling ",name];
 
 MakeSubroutineTitle[name,Flatten[{masses,couplings,yukawa,mixL,mixR,vev,mixHiggs}],{"gt1","gt2","gt3"},{"coupL","coupR"},sphenoLoopCoup];
 
@@ -1434,7 +1326,7 @@ WriteString[sphenoLoopCoup,"End Subroutine "<>name<>" \n\n \n"];
 
 
 GenerateDeltaVB2:=Block[{i,j,temp,res,masses,couplings,couplinglist,i1,j1,jj1,k1,k2,k3,f1,f2,f3,f4},
-Print["  Write 'DeltaVB'"];
+Print["Write Delta VB"];
 
 temp=InsFields[{{C[Neutrino,FieldToInsert[1],AntiField[FieldToInsert[2]]]},{Internal[1]->FieldToInsert[1], Internal[2]->FieldToInsert[2],External[1]->Neutrino}}];
 temp = DeleteContributions[temp,Flatten[{VectorP,VectorG,VectorW,VectorZ}]];

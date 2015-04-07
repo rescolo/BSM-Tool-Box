@@ -20,13 +20,9 @@
 
 
 GenerateSPhenoBR[Eigenstates_]:=Block[{i},
-(*
 Print["--------------------------------------"];
 Print["Writing Branching Ratios "];
 Print["--------------------------------------"];
-*)
-
-Print["  Writing branching ratios."];
 
 sphenoBR=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"BranchingRatios_"<>ModelName<>".f90"]];
 
@@ -179,10 +175,7 @@ MakeCall[ToString[savedDecayInfos[[i,1]]]<>"TwoBodyDecay",Flatten[{listAllParame
 MakeCall[ToString[savedDecayInfos[[i,1]]]<>"TwoBodyDecay",Flatten[{NewMassParameters,listAllParametersAndVEVs}],{"-1", "DeltaM"},{"gP"<>ToString[savedDecayInfos[[i,1]]]<>length2B,"gT"<>ToString[savedDecayInfos[[i,1]]],"BR"<>ToString[savedDecayInfos[[i,1]]]<>length2B},sphenoBR];
 
 
-If[getType[savedDecayInfos[[i,1]]]===F,
-WriteString[sphenoBR,"If (Enable3BDecaysF) Then \n"];,
-WriteString[sphenoBR,"If (Enable3BDecaysS) Then \n"];
-];
+WriteString[sphenoBR,"If (Enable3BDecays) Then \n"];
 If[getGenSPheno[savedDecayInfos[[i,1]]]>1,
 WriteString[sphenoBR,"If (MaxVal(gT"<>ToString[savedDecayInfos[[i,1]]]<>").Lt.MaxVal(fac3*Abs("<>ToString[SPhenoMass[savedDecayInfos[[i,1]]]]<>"))) Then \n"];,
 WriteString[sphenoBR,"If (gT"<>ToString[savedDecayInfos[[i,1]]]<>".Lt.fac3*Abs("<>ToString[SPhenoMass[savedDecayInfos[[i,1]]]]<>")) Then \n"];

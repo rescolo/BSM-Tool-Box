@@ -96,7 +96,6 @@ DEFINITION[EWSB][VEVs]=
    {SHup, {vHp, 1/Sqrt[2]}, {sigmaP, \[ImaginaryI]/Sqrt[2]},{phiP,1/Sqrt[2]}},
    {SvL, {vNu[3], 1/Sqrt[2]}, {sigmaV, \[ImaginaryI]/Sqrt[2]},{phiV,1/Sqrt[2]}}
 };
-*)
 
 DEFINITION[EWSB][VEVs]= 
   {{SHd0, {vdR, 1/Sqrt[2]}, {sigmad, \[ImaginaryI]/Sqrt[2]},{phid,1/Sqrt[2]}},
@@ -108,9 +107,8 @@ DEFINITION[EWSB][VEVs]=
    {SvL, {0, 1/Sqrt[2]}, {sigmaV, \[ImaginaryI]/Sqrt[2]},{phiV,1/Sqrt[2]}}
 };
 
+*)
 
-
-(*
 DEFINITION[EWSB][VEVs]= 
   {{SHd0, {vdR, 1/Sqrt[2]},  {sigmad, \[ImaginaryI]/Sqrt[2]},{phid,1/Sqrt[2]}},
    {SHu0, {vuR, 1/Sqrt[2]},  {sigmau, \[ImaginaryI]/Sqrt[2]},{phiu,1/Sqrt[2]}},
@@ -120,7 +118,7 @@ DEFINITION[EWSB][VEVs]=
    {SHup, {0, 1/Sqrt[2]}, {sigmaP, \[ImaginaryI]/Sqrt[2]},{phiP,1/Sqrt[2]}},
    {SvL, {vNu[1], 1/Sqrt[2]}, {sigmaV, \[ImaginaryI]/Sqrt[2]},{phiV,1/Sqrt[2]}}
 };
-*)
+
 
 
  

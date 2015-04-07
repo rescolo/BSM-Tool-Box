@@ -35,23 +35,3 @@ Subroutine ScalarToTwoVectorbosonsNew(mS,mV1,mV2,coup,width)
    endif
 
   End Subroutine ScalarToTwoVectorbosonsNew
-
-Subroutine FermionToFermionVectorBosonMassless(mFin,mFout,mV,coupL,coupR,width)
-  implicit none
-   real(dp), intent(in) :: mFin,mFout,mV
-   real(dp), intent(out) :: width
-   complex(dp), intent(in) :: coupL, coupR
-
-
-   if ( abs(mFin).le.( abs(mFout)+abs(mV) ) ) then
-    width = 0._dp
-
-   else
-
-    width = 0.5_dp*oo16Pi*(Abs(coupL)**2 + Abs(coupR)**2)*mFin**3
-
-
-   endif
-
-  End Subroutine FermionToFermionVectorBosonMassless
-

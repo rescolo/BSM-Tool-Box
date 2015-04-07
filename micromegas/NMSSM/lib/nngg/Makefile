@@ -1,15 +1,15 @@
 # --- variables defined by configure ---
 
-all:lGamma.exe
+.PHONY: clean all
 
-CALCHEP = ../../../CalcHEP_src
-LIBTOOLS=../../../Packages/LoopTools-2.1
+CHEP   =  ../../../CalcHEP_src
+LIBTOOLS = ../../../Packages/LoopTools-2.1
 
 ifneq ($(MAKECMDGOALS),clean)
-include   $(CALCHEP)/FlagsForMake
+include   $(CHEP)/FlagsForMake
 endif 
 
-FFLAGS += -g  -ffixed-line-length-none
+FFLAGS += -g  -ffixed-line-length-none 
 
 
 .PHONY: force squared_me_gg squared_me_gz  renconst util
@@ -27,7 +27,8 @@ endif
 export FC
 export FFLAGS
 
-#LIBTOOLS=$(CURDIR)/../LoopTools-2.1
+all:lGamma.exe
+
 
 
 $(LIBTOOLS)/libooptools.a:
@@ -36,7 +37,7 @@ $(LIBTOOLS)/libooptools.a:
 subdir = util
 #OBJ= $(notdir $(subst .c,.o, $(filter-out $(special),$(wildcard *.c diagram/*.c out/*.c))))
 
-nnggOBJ = $(subst .F,.o, $(wildcard *.F  squared_me_gg/*.F  squared_me_gz/*.F  renconst/*.F)) interfacegz.o interface.o nmssmf.o
+nnggOBJ = $(subst .F,.o,$(wildcard *.F squared_me_gg/*.F squared_me_gz/*.F renconst/*.F)) interfacegz.o interface.o nmssmf.o
 nngg.a : $(subdir) nngg.a(run_gg.o run_gz.o mdl_ini.o interface.o interfacegz.o)
 
 nngg.a : $(subdir)  nngg.a($(nnggOBJ))
@@ -46,7 +47,7 @@ nngg.a(run.o): 2to2.h renconst.h looptools.h model.h
 nngg.a(mdl_ini.o):model.h
 
 lGamma.exe : main.f   nngg.a $(LIBTOOLS)/libooptools.a 
-	$(FC) $(FFLAGS) -o lGamma.exe $^ $(CALCHEP)/lib/libSLHAplus.a  $(CALCHEP)/lib/faux.o
+	$(FC) $(FFLAGS) -o lGamma.exe  $^ $(CHEP)/lib/libSLHAplus.a 
 
 
 $(subdir) : 

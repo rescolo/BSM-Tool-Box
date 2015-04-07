@@ -1,3 +1,4 @@
+
 #include"micromegas_aux.h"
 #include"micromegas_f.h"
 #define  NEWMODEL
@@ -267,8 +268,10 @@ double twist2FF__(double sgn, double mq,double msq,double mne)
   double D=(msq*msq-mne*mne -mq*mq);
   double D2=D*D-4*mq*mq*mne*mne;
   
-//return  parton_x(pdfQnum,1.2*(msq-mne*mne/msq))/D2*(D +sgn*2*p1_p2);
-  return  parton_x(pdfQnum,msq-mne              )/D2*(D +sgn*2*p1_p2);
+//  return  parton_x(pdfQnum,1.2*(msq-mne*mne/msq))/D2*(D +sgn*2*p1_p2);
+   
+  return  parton_x(pdfQnum,msq-mne)/D2*(D +sgn*2*p1_p2);
+
 }
 
 
@@ -289,15 +292,15 @@ double zeroloopFactor(double sgn, double mq,double msq,double mne)
 
 extern double (*loopFF__)(double,double,double,double);
 
-int nucleonAmplitudes(char * WIMP,  double(*LF)(double,double,double,double), double*pA0,double*pA5,double*nA0,double*nA5) 
+int nucleonAmplitudes(double(*LF)(double,double,double,double), double*pA0,double*pA5,double*nA0,double*nA5) 
 {
   double wimpMass; 
   int wimpN,Qnum,aQnum,i,II,sgn,ntot,n;
   double  s,MN=0.939; 
   numout *ccSI,*ccSD,*cc; 
   double wGluP, wGluN,GG;
-  REAL pvect[16]; 
-
+  double pvect[16]; 
+  char WIMP[20];
 
   double wS0P__[6],wS0N__[6]; /*scalar */
   double wV5P__[3],wV5N__[3]; /*pseudo-vector*/
@@ -323,8 +326,9 @@ int nucleonAmplitudes(char * WIMP,  double(*LF)(double,double,double,double), do
 
   for(i=0;i<2;i++) {pA0[i]=0; pA5[i]=0; nA0[i]=0; nA5[i]=0;}
   
-  wimpMass= pMass(WIMP);
-  GG=sqrt(4*M_PI*parton_alpha(wimpMass));
+  if(sortOddParticles(WIMP))return 1;
+  wimpMass= Mcdm;
+  GG=sqrt(4*M_PI*parton_alpha(Mcdm));
   
   for(wimpN=0; wimpN<Nodd;wimpN++) if(strcmp(OddPrtcls[wimpN].name,WIMP)==0 ||
                            strcmp(OddPrtcls[wimpN].aname,WIMP)==0) break;
@@ -353,7 +357,7 @@ int nucleonAmplitudes(char * WIMP,  double(*LF)(double,double,double,double), do
     for(n=1;n<=ntot;n++)
     { double cs0, ampl, qMass;
       char * names[4];
-      REAL masses[4];
+      double masses[4];
       int pdg[4];
       int l,err_code=0;
       int spin2,color,neutral,neutralWIMP;
@@ -599,7 +603,7 @@ void setrecoilrnergygrid_(double * step, int * nSteps)
 
 
 
-static double nucleusRecoil_stat(double M_cdm, double(*vfv)(double),
+static double nucleusRecoil_stat(double(*vfv)(double),
       int A, int Z, double J,
       
       void (*Sxx)(double, double *,double *, double *),
@@ -631,8 +635,8 @@ static double nucleusRecoil_stat(double M_cdm, double(*vfv)(double),
   { 
     double Mr,SCcoeff;
 
-    E0=M_cdm/(M_cdm+MA),E0=2*MA*E0*E0;
-    Mr=MA*M_cdm/(MA+M_cdm);
+    E0=Mcdm/(Mcdm+MA),E0=2*MA*E0*E0;
+    Mr=MA*Mcdm/(MA+Mcdm);
 
     SCcoeff=4/M_PI*3.8937966E-28*Mr*Mr;
 
@@ -671,7 +675,7 @@ static double nucleusRecoil_stat(double M_cdm, double(*vfv)(double),
     if(J) dNdE[i]+=(csv00*s00+csv01*s01+csv11*s11);
     if(vfv==fDvDelta) dNdE[i]/=deltaV_;
     else dNdE[i]*=simpson(vfv,vmin,vmax,1.E-4);
-    dNdE[i]*=1/E0*1.E5*vC*vC*(rhoDM/M_cdm)*lDay*(Kg/MA)*1.E-6;
+    dNdE[i]*=1/E0*1.E5*vC*vC*(rhoDM/Mcdm)*lDay*(Kg/MA)*1.E-6;
     if(i==0 ||i==eGrid-1) sum+=dNdE[i]/2; else sum+=dNdE[i];
   }
   return sum*eStep;
@@ -698,61 +702,36 @@ double * dNdE)
     S11_0=  (Sp-Sn)*(Sp-Sn)*(2*J+1)*(J+1)/(4*M_PI*J);
     S01_0=2*(Sp+Sn)*(Sp-Sn)*(2*J+1)*(J+1)/(4*M_PI*J);
   }  
-  return nucleusRecoil_stat(Mcdm,vfv,A,Z,J,Sxx_, css,csv00,csv01,csv11,dNdE);
+  return nucleusRecoil_stat(vfv,A,Z,J,Sxx_, css,csv00,csv01,csv11,dNdE);
 }
 
+
  
-static double nucleusRecoil1(char *WINP, double(*vfv)(double),
+double nucleusRecoil( double(*vfv)(double),
       int A, int Z, double J,
       void (*Sxx)(double,double*,double*,double*),
       double(*LF)(double,double,double,double),
       double * dNdE)
 {
-  double css,csv00,csv01,csv11,M; 
+  double css,csv00,csv01,csv11; 
   double pA0[2],pA5[2],nA0[2],nA5[2];
   int i;
   
-  nucleonAmplitudes(WINP,LF,pA0,pA5,nA0,nA5);
-  M=pMass(WINP);
+  nucleonAmplitudes(LF,pA0,pA5,nA0,nA5);
   for(i=0,css=0,csv00=0,csv01=0,csv11=0;i<2;i++)
   { double AS=Z*pA0[i]+(A-Z)*nA0[i];
     double AVplus =pA5[i]+nA5[i];
     double AVminus=pA5[i]-nA5[i];
     double C=(1+dmAsymm*(1-2*i))/2;
+    
     css+=AS*AS*C;
     csv00+=AVplus*AVplus*C;
     csv11+=AVminus*AVminus*C;
     csv01+=AVplus*AVminus*C;
   }  
-  return nucleusRecoil_stat(M,vfv,A,Z,J,Sxx,
+  return nucleusRecoil_stat(vfv,A,Z,J,Sxx,
                                 css,csv00,csv01,csv11,dNdE);
 } 
-
-
-double nucleusRecoil(double(*vfv)(double),
-int A, int Z, double J,
-void (*Sxx)(double,double*,double*,double*),
-double(*LF)(double,double,double,double),
-double * dNdE)  
-{  int i;
-   double NfracCDM2; 
-   if(CDM1  && !CDM2)   return nucleusRecoil1(CDM1,vfv,A,Z,J,Sxx, LF,dNdE); 
-   if(!CDM1 &&  CDM2)   return nucleusRecoil1(CDM2,vfv,A,Z,J,Sxx, LF,dNdE); 
-   if(CDM1  &&  CDM2) 
-   { double* dNdE1=malloc(eGrid*sizeof(double));
-     double r1=0,r2=0;
-     if(fracCDM2!=1) r1= nucleusRecoil1(CDM1,vfv,A,Z,J,Sxx, LF,dNdE1); 
-     if(fracCDM2!=0) r2= nucleusRecoil1(CDM2,vfv,A,Z,J,Sxx, LF,dNdE);
-     if(fracCDM2==1) { free(dNdE1);   return r2;}
-     if(fracCDM2==0) { for(i=0;i<NZ;i++) dNdE[i]=dNdE1[i]; free(dNdE1);   return r1;}
-      
-     NfracCDM2=  fracCDM2*Mcdm1/(fracCDM2*Mcdm1 +(1-fracCDM2)*Mcdm2);      
-     
-     for(i=0;i<NZ;i++) dNdE[i]=(NfracCDM2-1)*dNdE1[i]+ NfracCDM2*dNdE[i];
-     free(dNdE1); 
-     return r1*(NfracCDM2-1)+r2*NfracCDM2;
-   }
-}
 
 double nucleusRecoilAux( 
       double(*vfv)(double),
@@ -782,7 +761,7 @@ double nucleusRecoilAux(
   csv11=AVminus*AVminus;
   csv01=AVplus*AVminus;
 
-  return nucleusRecoil_stat(Mcdm,vfv,A,Z,J,Sxx,
+  return nucleusRecoil_stat(vfv,A,Z,J,Sxx,
                                 css,csv00,csv01,csv11,dNdE);
 } 
 
@@ -831,7 +810,7 @@ double * dNdE)
   }  
   return nucleusRecoil(vfv,A,Z,J,Sxx_,LF,dNdE);
 }
- 
+
 
 
 /*====== Auxilarry service functions ======*/
@@ -920,8 +899,7 @@ double S00F19(double q)
   double q01=Q01(u), q21=Q21(u);   
   double be0=beta0(u,upi), be2=2*be0,be02=-sqrt(2.)*be0;
   
-  return ((2*J+1)/16/M_PI)*2.610*exp(-u)*(p01*p01*(1+be0)+p21*p21*(1+be2)
-  -2*be02*p01*p21);
+  return ((2*J+1)/16/M_PI)*2.610*exp(-u)*(p01*p01*(1+be0)+p21*p21*(1+be2) -2*be02*p01*p21);
 } 
 
 double S11F19(double q)
@@ -931,8 +909,7 @@ double S11F19(double q)
   double q01=Q01(u), q21=Q21(u); 
   double be0=beta0(u,upi), be2=2*be0,be02=-sqrt(2.)*be0;
   
-  return ((2*J+1)/16/M_PI)*2.807*exp(-u)*(q01*q01*(1+be0)+q21*q21*(1+be2)
-  -2*be02*q01*q21);
+  return ((2*J+1)/16/M_PI)*2.807*exp(-u)*(q01*q01*(1+be0)+q21*q21*(1+be2) -2*be02*q01*q21);
 } 
 
 double S01F19(double q)
@@ -943,8 +920,7 @@ double S01F19(double q)
   double q01=Q01(u), q21=Q21(u); 
   double be0=beta0(u,upi), be2=2*be0,be02=-sqrt(2.)*be0;
   
-  return ((2*J+1)/8/M_PI)*2.707*exp(-u)*(p01*q01*(1+be0)+p21*q21*(1+be2)
-  -be02*(p01*q21+p21*q01));
+  return ((2*J+1)/8/M_PI)*2.707*exp(-u)*(p01*q01*(1+be0)+p21*q21*(1+be2) -be02*(p01*q21+p21*q01));
 } 
 */
 

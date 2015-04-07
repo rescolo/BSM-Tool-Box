@@ -6,8 +6,8 @@
 #define MASSES_INFO      
   /* Display information about mass spectrum  */
 
-//#define HIGGSBOUNDS "../Packages/HiggsBounds-4.2.0"  
-//#define HIGGSSIGNALS "../Packages/HiggsSignals-1.3.0"
+//#define HIGGSBOUNDS "../Packages/HiggsBounds-4.1.0"  
+//#define HIGGSSIGNALS "../Packages/HiggsSignals-1.2.0"
 
 #define OMEGA            
   /* Calculate relic density and display contribution of  individual channels */
@@ -32,7 +32,7 @@
 
 #define NEUTRINO //neutrino telescope
 
-//#define DECAYS
+#define DECAYS
 //#define CROSS_SECTIONS
 
   
@@ -128,12 +128,12 @@ int main(int argc,char** argv)
 
 
 #ifdef OMEGA
-{ int fast=0;
+{ int fast=1;
   double Beps=1.E-5, cut=0.01;
   double Omega,Xf;
 
 // to exclude processes with virtual W/Z in DM   annihilation      
-   VZdecay=1; VWdecay=1; cleanDecayTable();
+//   VZdecay=0; VWdecay=0; cleanDecayTable();
      
 
 //   to include processes with virtual W/Z  also  in co-annihilation 
@@ -141,8 +141,6 @@ int main(int argc,char** argv)
        
   printf("\n==== Calculation of relic density =====\n");  
   Omega=darkOmega(&Xf,fast,Beps);
-
-//    Omega=darkOmega2(fast,Beps);
   printf("Xf=%.2e Omega=%.4e\n",Xf,Omega);  
   printChannels(Xf,cut,Beps,1,stdout);   
 //   VZdecay=1; VWdecay=1; cleanDecayTable();  // restore default
@@ -184,7 +182,7 @@ printf("\n==== Indirect detection =======\n");
      "and spherical region described by cone with angle %.2f[rad]\n",fi,2*dfi);
 #ifdef SHOWPLOTS
      sprintf(txt,"Photon flux[cm^2 s GeV]^{1} at f=%.2f[rad], cone angle %.2f[rad]",fi,2*dfi);
-     displaySpectrum(FluxA,txt,Emin,Mcdm);
+     displaySpectrum(FluxA,txt,Emin,Mcdm,1);
 #endif
      printf("Photon flux = %.2E[cm^2 s GeV]^{-1} for E=%.1f[GeV]\n",SpectdNdE(Etest, FluxA), Etest);       
   }
@@ -193,7 +191,7 @@ printf("\n==== Indirect detection =======\n");
   { 
     posiFluxTab(Emin, sigmaV, SpE,  FluxE);
 #ifdef SHOWPLOTS     
-    displaySpectrum(FluxE,"positron flux [cm^2 s sr GeV]^{-1}" ,Emin,Mcdm);
+    displaySpectrum(FluxE,"positron flux [cm^2 s sr GeV]^{-1}" ,Emin,Mcdm, 1);
 #endif
     printf("Positron flux  =  %.2E[cm^2 sr s GeV]^{-1} for E=%.1f[GeV] \n",
     SpectdNdE(Etest, FluxE),  Etest);           
@@ -203,7 +201,7 @@ printf("\n==== Indirect detection =======\n");
   { 
     pbarFluxTab(Emin, sigmaV, SpP,  FluxP  ); 
 #ifdef SHOWPLOTS    
-     displaySpectrum(FluxP,"antiproton flux [cm^2 s sr GeV]^{-1}" ,Emin, Mcdm);
+     displaySpectrum(FluxP,"antiproton flux [cm^2 s sr GeV]^{-1}" ,Emin, Mcdm,1);
 #endif
     printf("Antiproton flux  =  %.2E[cm^2 sr s GeV]^{-1} for E=%.1f[GeV] \n",
     SpectdNdE(Etest, FluxP),  Etest);             
@@ -248,7 +246,7 @@ printf("\n==== Indirect detection =======\n");
 
 printf("\n==== Calculation of CDM-nucleons amplitudes  =====\n");   
 
-    nucleonAmplitudes(CDM1,NULL, pA0,pA5,nA0,nA5);
+    nucleonAmplitudes(NULL, pA0,pA5,nA0,nA5);
     printf("CDM[antiCDM]-nucleon micrOMEGAs amplitudes:\n");
     printf("proton:  SI  %.3E [%.3E]  SD  %.3E [%.3E]\n",pA0[0], pA0[1],  pA5[0], pA5[1] );
     printf("neutron: SI  %.3E [%.3E]  SD  %.3E [%.3E]\n",nA0[0], nA0[1],  nA5[0], nA5[1] ); 
@@ -319,8 +317,8 @@ printf("\n======== Direct Detection ========\n");
  if(forSun) printf("Sun\n"); else printf("Earth\n");
   err=neutrinoFlux(Maxwell,forSun, nu,nu_bar);
 #ifdef SHOWPLOTS
-  displaySpectrum(nu,"nu flux from Sun [1/Year/km^2/GeV]",Emin,Mcdm);
-  displaySpectrum(nu_bar,"nu-bar from Sun [1/Year/km^2/GeV]",Emin,Mcdm);
+  displaySpectrum(nu,"nu flux from Sun [1/Year/km^2/GeV]",Emin,Mcdm,1);
+  displaySpectrum(nu_bar,"nu-bar from Sun [1/Year/km^2/GeV]",Emin,Mcdm,1);
 #endif
 { double Ntot;
   double Emin=10; //GeV
@@ -334,7 +332,7 @@ printf("\n======== Direct Detection ========\n");
 
   muonUpward(nu,nu_bar, mu);
 #ifdef SHOWPLOTS  
-  displaySpectrum(mu,"Upward muons[1/Year/km^2/GeV]",1,Mcdm/2);
+  displaySpectrum(mu,"Upward muons[1/Year/km^2/GeV]",1,Mcdm/2,1);
 #endif
   { double Ntot;
     double Emin=1; //GeV
@@ -345,7 +343,7 @@ printf("\n======== Direct Detection ========\n");
 /* Contained events */
   muonContained(nu,nu_bar,1., mu);
 #ifdef SHOWPLOTS  
-  displaySpectrum(mu,"Contained  muons[1/Year/km^3/GeV]",Emin,Mcdm);
+  displaySpectrum(mu,"Contained  muons[1/Year/km^3/GeV]",Emin,Mcdm,1);
 #endif
   { double Ntot;
     double Emin=1; //GeV

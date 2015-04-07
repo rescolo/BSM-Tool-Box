@@ -1349,17 +1349,17 @@ Contains
     Do i3=1,Size(mS02)
      coupLC = c_DDS0_1L_L(i1,i2,i3)
      coupRC = c_DDS0_1L_R(i1,i2,i3)
-     B_LR2 = B_LR2 + 16._dp * Pi2 * coupLC * coupRC / mS02(i3) 
-     B_SLL1 = B_SLL1 + 8._dp * Pi2 * coupLC**2 / mS02(i3) 
-     B_SRR1 = B_SRR1 + 8._dp * Pi2 * coupRC**2 / mS02(i3)
+     B_LR2 = B_LR2 - 16._dp * Pi2 * coupLC * coupRC / mS02(i3) 
+     B_SLL1 = B_SLL1 - 8._dp * Pi2 * coupLC**2 / mS02(i3) 
+     B_SRR1 = B_SRR1 - 8._dp * Pi2 * coupRC**2 / mS02(i3)
     End Do
 
     Do i3=2,Size(mP02)
      coupLC = c_DDP0_1L_L(i1,i2,i3)
      coupRC = c_DDP0_1L_R(i1,i2,i3)
-     B_LR2 = B_LR2 + 16._dp * Pi2  * coupLC * coupRC / mP02(i3) 
-     B_SLL1 = B_SLL1 + 8._dp * Pi2 * coupLC**2 / mP02(i3) 
-     B_SRR1 = B_SRR1 + 8._dp * Pi2 * coupRC**2 / mP02(i3)
+     B_LR2 = B_LR2 - 16._dp * Pi2  * coupLC * coupRC / mP02(i3) 
+     B_SLL1 = B_SLL1 - 8._dp * Pi2 * coupLC**2 / mP02(i3) 
+     B_SRR1 = B_SRR1 - 8._dp * Pi2 * coupRC**2 / mP02(i3)
     End Do
     WC_4d_VLL(is,i1,i2) = B_VLL
     WC_4d_VRR(is,i1,i2) = B_VRR
@@ -4142,7 +4142,7 @@ end if
 
    Call Sigma_SM_chirally_enhanced(gi, vevSM, mu, CKM_160, Y_l, Y_d &
       & , Y_u, Mi, T_l, T_d, T_u, M2_E, M2_L, M2_D, M2_Q, M2_U     &
-      & , epsD, epsL, epsD_FC, kont)
+      & , epsD, epsL, epsD_FC)
    !-------------------------------------------------
    ! recalculate Yukawa, taking epsD_FC into account
    !-------------------------------------------------
@@ -4183,7 +4183,6 @@ end if
   Call ParametersToG(gi, y_l_160, y_d_160, y_u_160, Mi_160, T_l_160, T_d_160 &
         & , T_u_160, M2_E_160, M2_L_160, M2_D_160, M2_Q_160, M2_U_160        &
         & , M2_H_160, mu_160, B_160, g2(1:213))
-
   g2(214) = Log(tanb_Q)
 
   tz = Log(160._dp/Qin)
@@ -4557,7 +4556,7 @@ end if
 
    Call Sigma_SM_chirally_enhanced(gi_160, vevSM, mu_160, CKM_160, Y_l_s &
       & , Y_d_s, Y_u_s, Mi_160, T_l_s, T_d_s, T_u_s, M2_E_160            &
-      & , M2_L_160, M2_D_s, M2_Q_s, M2_U_s, epsD, epsL, epsD_FC, kont    &
+      & , M2_L_160, M2_D_s, M2_Q_s, M2_U_s, epsD, epsL, epsD_FC          &
       & , RS0_T, RP0_T, mf_d_mt, cpl_DDS0_1L_R, cpl_DDP0_1L_R)
 
    Do i1=1,3
@@ -5677,6 +5676,9 @@ end if
   ! NPB 659 are for B_q 
   !-------------------------------------------------------------
   F_A = Conjg(F_A)
+!Write(*,*) i,l,MassBq(i),mhat
+!Write(*,*) "A",Cmplx(2._dp * mf_l(l) * F_A),Cmplx(F_S),Cmplx(F_P)
+!Write(*,*) "B",Cmplx(c10*sw2),Cmplx(cS),Cmplx(cP)
   !---------------------------------------------
   ! the life-time is in ps -> division by hbar
   !---------------------------------------------

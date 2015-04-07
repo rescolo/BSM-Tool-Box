@@ -21,7 +21,7 @@
 
 MakeDecayLists3Body[particle_,file_]:=Block[{i,temp, channels,addedDecays},
 
-(* Print["Decay of ", particle]; *)
+Print["Decay of ", particle];
 
 Switch[getType[particle],
 F,temp2=ThreeBodyDecay[particle];,
@@ -80,8 +80,6 @@ NeededMasses[[i]] = Join[NeededMasses[[i]],{SPhenoMass[Propagator/.temp[[i,j]]]}
 If[getType[particle]===F,
 If[FreeQ[NeededWidths[[i]], SPhenoWidth[Propagator/.temp[[i,j]]]]==True && FreeQ[massless,getBlank[Propagator/.temp[[i,j]]]]==True,
 NeededWidths[[i]] = Join[NeededWidths[[i]],{SPhenoWidth[Propagator/.temp[[i,j]]]}];
-Missing::Decay="The width of `` is needed for the three-body decay of ``, but it is not calculated. Please add the particle to 'ListDecayParticles' in your SPheno.m file";
-If[FreeQ[ListDecayParticles,RE[Propagator/.temp[[i,j]]]] && FreeQ[{VectorW,VectorZ},RE[Propagator/.temp[[i,j]]]],Message[Missing::Decay,Propagator/.temp[[i,j]],particle];];
 NeededWidthsTemp[[i]] = Join[NeededWidthsTemp[[i]],{ToExpression[ToString[SPhenoWidth[Propagator/.temp[[i,j]]]]<>"temp"]}];
 ];
 ];
@@ -455,19 +453,9 @@ WriteString[file, "n_length=1\n"];
 
 For[i=1,i<=Length[processes],
 finalparticles= Map[getBlank,List @@ processes[[i,1]]];
-finalparticlesHead=List @@ processes[[i,1]] /. A_Symbobl[b__List]->A;
-WriteString[file,"Do gt1="<>ToString[getGenSPhenoStart[finalparticles[[1]]]] <> ","<>ToString[getGenSPheno[finalparticles[[1]]]] <> "\n"];
-If[finalparticlesHead[[2]]===finalparticlesHead[[1]],
-WriteString[file,"  Do gt2=gt1,"<>ToString[getGenSPheno[finalparticles[[2]]]] <> "\n"];,
-WriteString[file,"  Do gt2="<>ToString[getGenSPhenoStart[finalparticles[[2]]]] <> ","<>ToString[getGenSPheno[finalparticles[[2]]]] <> "\n"];
-];
-If[finalparticlesHead[[3]]===finalparticlesHead[[2]],
-WriteString[file,"    Do gt3=gt2,"<>ToString[getGenSPheno[finalparticles[[3]]]] <> "\n"];,
-If[finalparticlesHead[[3]]===finalparticlesHead[[1]],
-WriteString[file,"    Do gt3=gt1,"<>ToString[getGenSPheno[finalparticles[[3]]]] <> "\n"];,
-WriteString[file,"    Do gt3="<>ToString[getGenSPhenoStart[finalparticles[[3]]]] <> ","<>ToString[getGenSPheno[finalparticles[[3]]]] <> "\n"];
-];
-];
+WriteString[file,"Do gt1=1,"<>ToString[getGenSPheno[finalparticles[[1]]]] <> "\n"];
+WriteString[file,"  Do gt2=1,"<>ToString[getGenSPheno[finalparticles[[2]]]] <> "\n"];
+WriteString[file,"    Do gt3=1,"<>ToString[getGenSPheno[finalparticles[[3]]]] <> "\n"];
 
 If[(AntiField[particle]===particle) && (C@@processes[[i,1]]=!=(AntiField/@(C@@processes[[i,1]]))),
 WriteString[file, "gPartial(i1,n_length)= 2._dp*"<>ToString[widths[[i]]]<>"(i1,gt1,gt2,gt3)\n"];,
@@ -564,8 +552,6 @@ WriteString[file,"Call IntegrateGaugeSS(Boson2,mass,coup,deltaM,epsI,"<>name<>",
 ];
 
 MakeSymmFactorPart[{f1 /. {One[x_]->x, Two[x_]->x},n1},{f2/. {One[x_]->x, Two[x_]->x},n2},{f3/. {One[x_]->x, Two[x_]->x},n3},"resR",file];
-fac=CallGetChargeFactorDecay[AntiField[particle],process,process,"BOX"];
-WriteString[file,"resR= "<>SPhenoForm[fac]<>"*resR ! color factor \n"];
 WriteString[file, "resS = resS + resR \n \n "];
 
 
@@ -575,6 +561,7 @@ WriteString[file, "resS = resS + resR \n \n "];
 
 
 MakeDiagonalProcessScalar[particle_, {f1_,n1_},{f2_,n2_},{f3_,n3_},{f1b_,f2b_,f3b_},{prop_,nProp_},{couplingsAll_, NRC_},process_,file_]:=Block[{temp1,temp2},
+
 listCorrInd=getCorrespondingIndices[{f1,n1}, {f2,n2},{f3,n3},f1b,f2b,f3b];
 temp1=MakeIndicesCoupling[{AntiField[particle],iIN},{prop,nProp},{Final1 /. process,listCorrInd[[1]]},couplingsAll[[2*(NRC-1)+1,2]]];
 temp2=MakeIndicesCoupling[{AntiField[prop],nProp},{Final2 /. process,listCorrInd[[2]]},{Final3 /. process,listCorrInd[[3]]},couplingsAll[[2*NRC,2]]];
@@ -627,19 +614,14 @@ name2=ToString[SPhenoIntNameN[tempInt]];
 Switch[getType[prop],
 S,
 WriteString[file, "coup(4:6) = coup(1:3) \n"];
-WriteString[file, "Call IntegrateSaSa(mass,m_in,r_out,coup,smin,smax,epsI,resC) \n"];
-WriteString[file, "If (resC.ne.resC) resC = 0._dp\n"];,
+WriteString[file, "Call IntegrateSaSa(mass,m_in,r_out,coup,smin,smax,epsI,resC) \n"];,
 F,
  WriteString[file, "coup(5:8) = coup(1:4) \n"];
-WriteString[file, "Call IntegrateFFLM(mass,m_in,r_out,coup,smin,smax,epsI,resC) \n"];
-WriteString[file, "If (resC.ne.resC) resC = 0._dp\n"];,
+WriteString[file, "Call IntegrateFFLM(mass,m_in,r_out,coup,smin,smax,epsI,resC) \n"];,
 V,
 WriteString[file, "coup(4:6) = coup(1:3) \n"];
 WriteString[file, "Call IntegrateVV(mass,m_in,r_out,coup,smin,smax,epsI,resC) \n"];
-WriteString[file, "If (resC.ne.resC) resC = 0._dp\n"];
 ];
-fac=CallGetChargeFactorDecay[AntiField[particle],process,process,"BOX"];
-WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resC  ! Color factor \n"];
 
 (*
 If[getType[prop]===S,
@@ -671,10 +653,9 @@ FinalListProcess1=temp[[2]];
 MakeDiagonalProcess[particle, {listFinalStatesRep[[1]],n1},{listFinalStatesRep[[2]],n2},{listFinalStatesRep[[3]],n3},{FinalListProcess1[[1]],FinalListProcess1[[2]],FinalListProcess1[[3]]},{Propagator /. process1,nr1},{couplings,nrC1},process1,file];
 
 
-(* If[(Final1 /.process1)===(Final3 /.process1) || (Final1 /.process1)===(Final3 /.process1) , *)
-If[FreeQ[Couplings/.process1,Cp[a___,b_,c___,b_]],
+If[(Final1 /.process1)===(Final3 /.process1) || (Final1 /.process1)===(Final3 /.process1) ,
 MakeDiagonalProcess[particle, {listFinalStatesRep[[1]],n1},{listFinalStatesRep[[2]],n2},{listFinalStatesRep[[3]],n3},{FinalListProcess1[[1]] /. {One[x_]->Two[x], Two[x_]->One[x]},FinalListProcess1[[2]] /. {One[x_]->Two[x], Two[x_]->One[x]},FinalListProcess1[[3]] /. {One[x_]->Two[x], Two[x_]->One[x]}},{Propagator /. process1,nr1},{couplings,nrC1},process1,file];
- ]; 
+];
 
 MakeOffDiagonalProcess[particle,{listFinalStatesRep[[1]],n1},{listFinalStatesRep[[2]],n2},{listFinalStatesRep[[3]],n3},{FinalListProcess1[[1]] /. {One[x_]->Two[x], Two[x_]->One[x]},FinalListProcess1[[2]]/. {One[x_]->Two[x], Two[x_]->One[x]},FinalListProcess1[[3]]/. {One[x_]->Two[x], Two[x_]->One[x]}},{FinalListProcess1[[1]],FinalListProcess1[[2]],FinalListProcess1[[3]]}, {Propagator /. process1, nr1},{Propagator /. process1, nr1},{couplings,nrC1,nrC1},process1,process1,-1,file];,
 
@@ -773,9 +754,9 @@ FinalParticle3=Final3 /. diagrams[[1]];
 If[getGenSPheno[FinalParticle1]>1,
 var1="gt1";
 If[FinalParticle1===particle,
-DoLoop1="    Do gt1="<>ToString[getGenSPhenoStart[FinalParticle1]] <> ", iIN-1\n";
+DoLoop1="    Do gt1=1, iIN-1\n";
 DoLoopEnd1= "   End Do \n";,
-DoLoop1="    Do gt1="<>ToString[getGenSPhenoStart[FinalParticle1]] <> ","<>ToString[getGenSPheno[FinalParticle1]] <> "\n";
+DoLoop1="    Do gt1=1,"<>ToString[getGenSPheno[FinalParticle1]] <> "\n";
 DoLoopEnd1= "   End Do \n";
 ];,
 DoLoop1="";
@@ -786,15 +767,9 @@ var1="1";
 If[getGenSPheno[FinalParticle2]>1,
 var2="gt2";
 If[FinalParticle2===particle,
-If[FinalParticle2===FinalParticle1,
-DoLoop2="      Do gt2=gt1, iIN-1\n";,
-DoLoop2="      Do gt2="<>ToString[getGenSPhenoStart[FinalParticle2]] <> ", iIN-1\n";
-];
+DoLoop2="      Do gt2=1, iIN-1\n";
 DoLoopEnd2= "     End Do \n";,
-If[FinalParticle2===FinalParticle1,
-DoLoop2="      Do gt2=gt1,"<>ToString[getGenSPheno[FinalParticle2]] <> "\n";,
-DoLoop2="      Do gt2="<>ToString[getGenSPhenoStart[FinalParticle2]] <> ","<>ToString[getGenSPheno[FinalParticle2]] <> "\n";
-];
+DoLoop2="      Do gt2=1,"<>ToString[getGenSPheno[FinalParticle2]] <> "\n";
 DoLoopEnd2= "     End Do \n";
 ];,
 DoLoop2="";
@@ -805,21 +780,9 @@ var2="1";
 If[getGenSPheno[FinalParticle3]>1,
 var3="gt3";
 If[FinalParticle3===particle,
-If[FinalParticle3===FinalParticle2,
-DoLoop3="        Do gt3=gt2, iIN-1\n";,
-If[FinalParticle3===FinalParticle1,
-DoLoop3="        Do gt3=gt1, iIN-1\n";,
-DoLoop3="        Do gt3="<>ToString[getGenSPhenoStart[FinalParticle3]] <> ", iIN-1\n";
-];
-];
+DoLoop3="        Do gt3=1, iIN-1\n";
 DoLoopEnd3= "       End Do \n";,
-If[FinalParticle3===FinalParticle2,
-DoLoop3="        Do gt3=gt2,"<>ToString[getGenSPheno[FinalParticle3]] <> "\n";,
-If[FinalParticle3===FinalParticle1,
-DoLoop3="        Do gt3=gt1,"<>ToString[getGenSPheno[FinalParticle3]] <> "\n";,
-DoLoop3="        Do gt3="<>ToString[getGenSPhenoStart[FinalParticle3]] <> ","<>ToString[getGenSPheno[FinalParticle3]] <> "\n";
-];
-];
+DoLoop3="        Do gt3=1,"<>ToString[getGenSPheno[FinalParticle3]] <> "\n";
 DoLoopEnd3= "       End Do \n";
 ];,
 DoLoop3="";
@@ -873,11 +836,6 @@ WriteString[file, "Isum = Isum + 1 \n"];
 If[getType[particle]===F,
 WriteString[file, "Boson2(1) = "<>SPhenoMass[Propagator /. diagrams[[i]], i1] <>" \n"];
 WriteString[file, "Boson2(2) ="<>SPhenoWidth[Propagator /. diagrams[[i]], i1] <>" \n \n"];
-
-WriteString[file, "Boson4(1) = "<>SPhenoMass[Propagator /. diagrams[[i]], i1] <>" \n"];
-WriteString[file, "Boson4(2) ="<>SPhenoWidth[Propagator /. diagrams[[i]], i1] <>" \n"];
-WriteString[file, "Boson4(3) = "<>SPhenoMass[Propagator /. diagrams[[i]], i1] <>" \n"];
-WriteString[file, "Boson4(4) ="<>SPhenoWidth[Propagator /. diagrams[[i]], i1] <>" \n \n"];
 ];
 WriteString[file, "resS=0._dp \n"];
 WriteString[file, "resD=0._dp \n \n"];
@@ -986,15 +944,7 @@ factor=CalculateColorFactorDecay[AntiField[particle],Final1 /. diagrams[[1]],Pro
 
 
 
-If[getType[particle]===F,
-(* WriteString[file,"  g = "<>SPhenoForm[factor] <>"*oo512pi3 / Abs("<>SPhenoMass[particle,iIN]<>")**3*g\n"]; *)
-WriteString[file,"  g = oo512pi3 / Abs("<>SPhenoMass[particle,iIN]<>")**3*g\n"];,
-(* factor=CalculateColorFactorDecay[AntiField[particle],Final1 /. diagrams[[1]],Propagator /. diagrams[[1]]]*CalculateColorFactorDecay[AntiField[Propagator /. diagrams[[1]]],Final3 /. diagrams[[1]],Final2 /. diagrams[[1]]]/DimR[SU3,SA`DynL[getBlank[particle],color] /.{0}->{0,0}/. SA`DynL[a__]->{0,0}]; *)
-(* factor=CalculateColorFactorDecay[AntiField[particle],Final1 /. diagrams[[1]],Propagator /. diagrams[[1]]]*CalculateColorFactorDecay[AntiField[Propagator /. diagrams[[1]]],Final3 /. diagrams[[1]],Final2 /. diagrams[[1]]];
-If[NumericQ[factor]===False,factor=1;]; 
-WriteString[file,"  g = "<>SPhenoForm[factor] <>"*g\n"]; *)
-WriteString[file,""];
-];
+WriteString[file,"  g = "<>SPhenoForm[factor] <>"*oo512pi3 / Abs("<>SPhenoMass[particle,iIN]<>")**3*g\n"];
 
 WriteString[file, "End Subroutine "<>ToString[particle]<>"To"<>SPhenoShortName[finalparticles[[1]]]<>SPhenoShortName[finalparticles[[2]]]<>SPhenoShortName[finalparticles[[3]]]<> " \n \n \n"];
 
@@ -1154,7 +1104,7 @@ LRconjugated1={"1","2","5","6"};,
 LRconjugated1={"2","1","6","5"};
 ];
 
-If[getType[prop2]===S, (* CHANGED *)
+If[getType[prop2]===V,
 LRconjugated2={"3","4","7","8"};,
 LRconjugated2={"4","3","8","7"};
 ];
@@ -1193,7 +1143,7 @@ WriteString[file,"coup2(5) = "<> ToString[couplingsAll[[2*NRC1,1,1]]] <> ind1b <
 WriteString[file,"coup2(6) = "<> ToString[couplingsAll[[2*NRC1,1,2]]] <> ind1b <>" \n"];
 ];
 
-If[check2b==False,  
+If[check2b==False,
 WriteString[file,"coup2("<>LRconjugated2[[3]] <>") = Conjg("<> ToString[couplingsAll[[2*NRC2,1,1]]] <> ind2b <>") \n"];
 WriteString[file,"coup2("<>LRconjugated2[[4]] <>") = Conjg("<> ToString[couplingsAll[[2*NRC2,1,2]]] <> ind2b <>") \n"];,
 WriteString[file,"coup2(7) = "<> ToString[couplingsAll[[2*NRC2,1,1]]] <> ind2b <>" \n"];
@@ -1210,39 +1160,26 @@ name2=ToString[SPhenoIntNameN[tempInt]];
 If[getType[prop1] ===S && getType[prop2]===S,
 If[f1a===f1b,
 WriteString[file, "Call IntegrateScalarS1S2(Boson4, mass, coup2, deltaM, epsI,"<>name<>","<>name2<>", resC, check) \n"];
-WriteString[file, "If (resC.ne.resC) resC = 0._dp\n"];
 fac=2.*relativeFactor;
-WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resC \n"];
-fac=CallGetChargeFactorDecay[AntiField[particle],process1,process2,"BOX"];
-WriteString[file,"resC= "<>SPhenoForm[fac]<>"*resC ! color factor \n"];,
+WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resC \n"];,
 WriteString[file, "Call IntegrateScalarST(Boson4, mass, coup2, deltaM, epsI,"<>name<>","<>name2<>", resC, check) \n"];
-WriteString[file, "If (resC.ne.resC) resC = 0._dp\n"];
 fac=-2.*relativeFactor;
 fac=-2.;
 WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resC \n"];
-fac=CallGetChargeFactorDecay[AntiField[particle],process1,process2,"TRIANGLE"];
-WriteString[file,"resC= "<>SPhenoForm[fac]<>"*resC ! color factor \n"];
 ];,
 If[getType[prop1] ===V && getType[prop2]===V,
 If[f1b=== f1a,
 WriteString[file, "Call IntegrateGaugeSS(Boson4, mass, coup2, deltaM, epsI,"<>name<>","<>name2<>", resR, check) \n"];
-WriteString[file, "If (resR.ne.resR) resR = 0._dp\n"];
 fac=2.*relativeFactor;
 WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resR \n"];,
 WriteString[file, "Call IntegrateGaugeST(Boson4, mass, coup2, deltaM, epsI,"<>name<>","<>name2<>", resC, check) \n"];
-WriteString[file, "If (resC.ne.resC) resC = 0._dp\n"];
 fac=-2.;
 WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resC \n"];
-fac=CallGetChargeFactorDecay[AntiField[particle],process1,process2,"BOX"];
-WriteString[file,"resC= "<>SPhenoForm[fac]<>"*resC ! color factor \n"];
 ];,
 If[f1b=== f1a,
 WriteString[file, "Call IntegrateGaugeSscalarS(Boson4, mass, coup2, deltaM, epsI,"<>name<>","<>name2<>", resC, check) \n"];
-WriteString[file, "If (resC.ne.resC) resC = 0._dp\n"];
 fac=2.*relativeFactor;
-WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resC \n"];
-fac=CallGetChargeFactorDecay[AntiField[particle],process1,process2,"BOX"];
-WriteString[file,"resC= "<>SPhenoForm[fac]<>"*resC ! color factor \n"];,
+WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resC \n"];,
 If[AntiField[particle]=!=particle,
 If[f2b===f2,
 fac=-2.;
@@ -1263,12 +1200,9 @@ fac =-2;
 ];
 ];
 WriteString[file, "Call IntegrateGaugeSscalarT(Boson4, mass, coup2, deltaM, epsI,"<>name<>","<>name2<>", resC, check) \n"];
-WriteString[file, "If (resC.ne.resC) resC = 0._dp\n"];
 (* fac=-2.*relativeFactor; *)
 
 WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resC \n"];
-fac=CallGetChargeFactorDecay[AntiField[particle],process1,process2,"BOX"];
-WriteString[file,"resC= "<>SPhenoForm[fac]<>"*resC ! color factor \n"];
 ];
 ];
 ];
@@ -1284,7 +1218,7 @@ WriteString[file, "resS = resS + resC \n"];
 
 
 
-MakeOffDiagonalProcessScalar[particle_, {f1_,n1_},{f2_,n2_},{f3_,n3_},{f1a_,f2a_,f3a_},{f1b_,f2b_,f3b_},{prop1_,nProp1_},{prop2_,nProp2_},{couplingsAll_, NRC1_,NRC2_},process1_, process2_,relativeFactor_,file_]:=Block[{temp1,temp2, fac,cfac},
+MakeOffDiagonalProcessScalar[particle_, {f1_,n1_},{f2_,n2_},{f3_,n3_},{f1a_,f2a_,f3a_},{f1b_,f2b_,f3b_},{prop1_,nProp1_},{prop2_,nProp2_},{couplingsAll_, NRC1_,NRC2_},process1_, process2_,relativeFactor_,file_]:=Block[{temp1,temp2, fac},
 
 listCorrInd=getCorrespondingIndices[{f1,n1}, {f2,n2},{f3,n3},f1a,f2a,f3a];
 temp1a=MakeIndicesCoupling[{AntiField[particle],iIN},{prop1,nProp1},{Final1 /. process1,listCorrInd[[1]]},couplingsAll[[2*(NRC1-1)+1,2]]];
@@ -1292,9 +1226,7 @@ temp1b=MakeIndicesCoupling[{AntiField[prop1],nProp1},{Final2 /. process1,listCor
 
 
 listCorrInd1=getCorrespondingIndices[{f1,n1}, {f2,n2},{f3,n3},f1b,f2b,f3b];
-
 temp2a=MakeIndicesCoupling[{particle,iIN},{AntiField[prop2],nProp2},{AntiField[Final1 /. process2],listCorrInd1[[1]]},couplingsAll[[2*(NRC2-1)+1,2]],True];
-
 temp2b=MakeIndicesCoupling[{prop2,nProp2},{AntiField[Final2 /. process2],listCorrInd1[[2]]},{AntiField[Final3 /. process2],listCorrInd1[[3]]},couplingsAll[[2*NRC2,2]],True];
 
 
@@ -1340,35 +1272,8 @@ WriteString[file,"mass(2) = "<> ToString[SPhenoMass[prop2,nProp2]] <>"  \n"];
 
 
 If[check1a==True,
-WriteString[file,"coup(1) = Conjg("<> ToString[couplingsAll[[2*(NRC1-1)+1,1,1]] ]<> ind1a <>") \n"];,
+WriteString[file,"coup(1) = Conjg("<> ToString[couplingsAll[[2*(NRC1-1)+1,1,2]] ]<> ind1a <>") \n"];,
 WriteString[file,"coup(1) = "<> ToString[couplingsAll[[2*(NRC1-1)+1,1,1]]] <> ind1a <>" \n"];
-];
-
-If[check1b==False,
-WriteString[file,"coup(3) = Conjg("<> ToString[couplingsAll[[2*(NRC1),1,1]]] <> ind1b <>") \n"];
-WriteString[file,"coup(2) = Conjg("<> ToString[couplingsAll[[2*(NRC1),1,2]]] <> ind1b <>")  \n"];,
-WriteString[file,"coup(2) = "<> ToString[couplingsAll[[2*(NRC1),1,1]]] <> ind1b <>" \n"];
-WriteString[file,"coup(3) = "<> ToString[couplingsAll[[2*(NRC1),1,2]]] <> ind1b <>"  \n"];
-];
-
-If[check2a==True,
-WriteString[file,"coup(4) = Conjg("<> ToString[couplingsAll[[2*(NRC2-1)+1,1,1]]] <> ind2a <>") \n"];,
-WriteString[file,"coup(4) = "<> ToString[couplingsAll[[2*(NRC2-1)+1,1,1]]] <> ind2a <>" \n"];
-];
-
-If[check2b==False,
-WriteString[file,"coup(5) = Conjg("<> ToString[couplingsAll[[2*NRC2,1,1]]] <> ind2b <>") \n"];
-WriteString[file,"coup(6) = Conjg("<> ToString[couplingsAll[[2*NRC2,1,2]]] <> ind2b <>") \n"];,
-WriteString[file,"coup(6) = "<> ToString[couplingsAll[[2*NRC2,1,1]]] <> ind2b <>" \n"];
-WriteString[file,"coup(5) = "<> ToString[couplingsAll[[2*NRC2,1,2]]] <> ind2b <>" \n"];
-];
-
-(*
-If[check2a==False,
-WriteString[file,"coup(3) = Conjg("<> ToString[couplingsAll[[2*(NRC2-1)+1,1,1]]] <> ind2a <>") \n"];
-WriteString[file,"coup(2) = Conjg("<> ToString[couplingsAll[[2*(NRC2-1)+1,1,2]]] <> ind2a <>")  \n"];,
-WriteString[file,"coup(2) = "<> ToString[couplingsAll[[2*(NRC2-1)+1,1,1]]] <> ind2a <>" \n"];
-WriteString[file,"coup(3) = "<> ToString[couplingsAll[[2*(NRC2-1)+1,1,2]]] <> ind2a <>"  \n"];
 ];
 
 If[check2a==False,
@@ -1389,14 +1294,10 @@ WriteString[file,"coup(6) = Conjg("<> ToString[couplingsAll[[2*NRC2,1,2]]] <> in
 WriteString[file,"coup(6) = "<> ToString[couplingsAll[[2*NRC2,1,1]]] <> ind2b <>" \n"];
 WriteString[file,"coup(5) = "<> ToString[couplingsAll[[2*NRC2,1,2]]] <> ind2b <>" \n"];
 ];
-*)
 
 WriteString[file, "Call IntegrateVaVb(mass,m_in,r_out,coup,smin,smax,epsI,resC) \n"];
-WriteString[file, "If (resC.ne.resC) resC = 0._dp\n"];
 fac=2.*relativeFactor;
 WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resC \n"];
-fac=CallGetChargeFactorDecay[AntiField[particle],process1,process2,"BOX"];
-WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resC  ! Color factor \n"];
 ];,
 
 {F,F},
@@ -1412,21 +1313,21 @@ WriteString[file,"coup(1) = "<> ToString[couplingsAll[[2*(NRC1-1)+1,1,1]]] <> in
 WriteString[file,"coup(2) = "<> ToString[couplingsAll[[2*(NRC1-1)+1,1,2]] ]<> ind1a <>" \n"];
 ];
 
+If[check2a==False,
+WriteString[file,"coup(4) = Conjg("<> ToString[couplingsAll[[2*(NRC2-1)+1,1,1]]] <> ind2a <>") \n"];
+WriteString[file,"coup(3) = Conjg("<> ToString[couplingsAll[[2*(NRC2-1)+1,1,2]]] <> ind2a <>")  \n"];,
+WriteString[file,"coup(3) = "<> ToString[couplingsAll[[2*(NRC2-1)+1,1,1]]] <> ind2a <>" \n"];
+WriteString[file,"coup(4) = "<> ToString[couplingsAll[[2*(NRC2-1)+1,1,2]]] <> ind2a <>"  \n"];
+];
+
 If[check1b==True,
-WriteString[file,"coup(4) = Conjg("<> ToString[couplingsAll[[2*NRC1,1,1]]] <> ind1b <>") \n"];
-WriteString[file,"coup(3) = Conjg("<> ToString[couplingsAll[[2*NRC1,1,2]]] <> ind1b <>") \n"];,
-WriteString[file,"coup(3) = "<> ToString[couplingsAll[[2*NRC1,1,1]]] <> ind1b <>" \n"];
-WriteString[file,"coup(4) = "<> ToString[couplingsAll[[2*NRC1,1,2]]] <> ind1b <>" \n"];
+WriteString[file,"coup(6) = Conjg("<> ToString[couplingsAll[[2*NRC1,1,1]]] <> ind1b <>") \n"];
+WriteString[file,"coup(5) = Conjg("<> ToString[couplingsAll[[2*NRC1,1,2]]] <> ind1b <>") \n"];,
+WriteString[file,"coup(5) = "<> ToString[couplingsAll[[2*NRC1,1,1]]] <> ind1b <>" \n"];
+WriteString[file,"coup(6) = "<> ToString[couplingsAll[[2*NRC1,1,2]]] <> ind1b <>" \n"];
 ];
 
-If[check2a==True,
-WriteString[file,"coup(6) = Conjg("<> ToString[couplingsAll[[2*(NRC2-1)+1,1,1]]] <> ind2a <>") \n"];
-WriteString[file,"coup(5) = Conjg("<> ToString[couplingsAll[[2*(NRC2-1)+1,1,2]]] <> ind2a <>")  \n"];,
-WriteString[file,"coup(5) = "<> ToString[couplingsAll[[2*(NRC2-1)+1,1,1]]] <> ind2a <>" \n"];
-WriteString[file,"coup(6) = "<> ToString[couplingsAll[[2*(NRC2-1)+1,1,2]]] <> ind2a <>"  \n"];
-];
-
-If[check2b==True,
+If[check2b==False,
 WriteString[file,"coup(7) = Conjg("<> ToString[couplingsAll[[2*NRC2,1,1]]] <> ind2b <>") \n"];
 WriteString[file,"coup(8) = Conjg("<> ToString[couplingsAll[[2*NRC2,1,2]]] <> ind2b <>") \n"];,
 WriteString[file,"coup(7) = "<> ToString[couplingsAll[[2*NRC2,1,1]]] <> ind2b <>" \n"];
@@ -1435,17 +1336,11 @@ WriteString[file,"coup(8) = "<> ToString[couplingsAll[[2*NRC2,1,2]]] <> ind2b <>
 
 If[f1a===f1b,
 WriteString[file, "Call IntegrateFFLM(mass,m_in,r_out,coup,smin,smax,epsI,resC) \n"];
-WriteString[file, "If (resC.ne.resC) resC = 0._dp\n"];
+fac=2.*relativeFactor;
+WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resC \n"];,
+WriteString[file, "Call IntegrateFFLM(mass,m_in,r_outcrossed,coup,smin2,smax2,epsI,resC) \n"];
 fac=2.*relativeFactor;
 WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resC \n"];
-fac=CallGetChargeFactorDecay[AntiField[particle],process1,process2,"BOX"];
-WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resC  ! Color factor \n"];,
-WriteString[file, "Call IntegrateChiChiInterference(mass,m_in,r_outcrossed,coup,smin2,smax2,epsI,resC) \n"];
-WriteString[file, "If (resC.ne.resC) resC = 0._dp\n"];
-fac=2.*relativeFactor;
-WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resC \n"];
-fac=CallGetChargeFactorDecay[AntiField[particle],process1,process2,"BOXCROSS"];
-WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resC  ! Color factor \n"];
 ];,
 
 
@@ -1461,8 +1356,7 @@ F,
 
 	checkSa=check2a;checkSb=check2b;
 	indSa = ind2a;indSb = ind2b;
-	NRSa =2*( NRC2-1)+1; NRSb =2*NRC2;
-	cfac=CallGetChargeFactorDecay[AntiField[particle],process2,process1,"TRIANGLE"];,
+	NRSa =2*( NRC2-1)+1; NRSb =2*NRC2;,
 
 S,
 
@@ -1476,7 +1370,6 @@ S,
 	checkSa=check1a;checkSb=check1b;
 	indSa = ind1a;indSb = ind1b;
 	NRSa =2*( NRC1-1)+1; NRSb =2*NRC1;
-	cfac=CallGetChargeFactorDecay[AntiField[particle],process1,process2,"TRIANGLE"];
 ];
 
 If[checkFa==True,
@@ -1505,9 +1398,7 @@ WriteString[file,"coup(6) = "<> ToString[couplingsAll[[NRSb,1,1]]] <> indSb <>" 
 WriteString[file,"coup(7) = "<> ToString[couplingsAll[[NRSb,1,2]]] <> indSb <>"  \n"];
 ];
 
-WriteString[file,"Call IntegrateSF(mass,m_in,r_out,coup,smin,smax,epsI,resC) \n"];
-WriteString[file, "If (resC.ne.resC) resC = 0._dp\n"];
-WriteString[file,"resC = "<>ToString[FortranForm[cfac]]<>"*resC  ! Color factor \n"];,
+WriteString[file,"Call IntegrateSF(mass,m_in,r_out,coup,smin,smax,epsI,resC) \n"];,
 
 
 {F,V},
@@ -1523,8 +1414,7 @@ F,
 
 	checkVa=check2a;checkVb=check2b;
 	indVa = ind2a;indVb = ind2b;
-	NRVa =2*( NRC2-1)+1; NRVb =2*NRC2;
-	cfac=CallGetChargeFactorDecay[AntiField[particle],process2,process1,"TRIANGLE"];,
+	NRVa =2*( NRC2-1)+1; NRVb =2*NRC2;,
 
 V,
 	WriteString[file,"mass(2) = "<> ToString[SPhenoMassSq[prop1,nProp1]] <>"  \n"];
@@ -1536,7 +1426,6 @@ V,
 	checkVa=check1a;checkVb=check1b;
 	indVa = ind1a;indVb = ind1b;
 	NRVa =2*( NRC1-1)+1; NRVb=2*NRC1;
-	cfac=CallGetChargeFactorDecay[AntiField[particle],process1,process2,"TRIANGLE"];
 ];
 
 If[checkFa==True,
@@ -1566,10 +1455,7 @@ WriteString[file,"coup(7) = "<> ToString[couplingsAll[[NRVb,1,2]]] <> indVb <>" 
 ];
 
 
-WriteString[file,"Call IntegrateVF(mass,m_in,r_out,coup,smin,smax,epsI,resC) \n"];
-WriteString[file,"resC = "<>ToString[FortranForm[cfac]]<>"*resC  ! Color factor \n"];
-
-WriteString[file, "If (resC.ne.resC) resC = 0._dp\n"];,
+WriteString[file,"Call IntegrateVF(mass,m_in,r_out,coup,smin,smax,epsI,resC) \n"];,
 
 {S,S},
 WriteString[file,"mass(1) = "<> ToString[SPhenoMass[prop1,nProp1]] <>"  \n"];
@@ -1600,10 +1486,7 @@ WriteString[file,"coup(6) = "<> ToString[couplingsAll[[2*NRC2,1,2]]] <> ind2b <>
 
 
 WriteString[file,"Call IntegrateSaSb(mass,m_in,r_out,coup,smin,smax,epsI,resC) \n"];
-WriteString[file, "If (resC.ne.resC) resC = 0._dp\n"];
-WriteString[file,"resC = 2._dp*resC \n"];
-fac=CallGetChargeFactorDecay[AntiField[particle],process1,process2,"BOX"];
-WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resC  ! Color factor \n"];,
+WriteString[file,"resC = 2._dp*resC \n"];,
 
 {S,V},
 Switch[getType[prop1],
@@ -1659,14 +1542,10 @@ WriteString[file,"coup(5) = "<> ToString[couplingsAll[[NRSb,1,2]]] <> indSb <>" 
 
 WriteString[file,"If(Abs(mass(1)-mass(2)).lt.0.1) Then \n"];
 WriteString[file,"Call IntegrateVSGoldstone(mass,m_in,r_out,coup,smin,smax,epsI,resC) \n"];
-WriteString[file, "If (resC.ne.resC) resC = 0._dp\n"];
 WriteString[file,"Else \n"];
 WriteString[file,"Call IntegrateVS(mass,m_in,r_out,coup,smin,smax,epsI,resC) \n"];
-WriteString[file, "If (resC.ne.resC) resC = 0._dp\n"];
 WriteString[file,"End If \n"];
-WriteString[file,"resC = 2._dp*resC \n"];
-fac=CallGetChargeFactorDecay[AntiField[particle],process1,process2,"BOX"];
-WriteString[file,"resC = "<>ToString[FortranForm[fac]]<>"*resC  ! Color factor \n"];,
+WriteString[file,"resC = 2._dp*resC \n"];,
 
 
 {V,V},

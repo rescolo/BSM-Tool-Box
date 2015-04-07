@@ -6,11 +6,11 @@ MINPAR={{1,Lambda1IN},
         {3,Lambda3IN},
         {4,Lambda4IN},
         {5,Lambda5IN},
-        {10,TanBeta} };
+        {6,TanBeta} };
 
 RealParameters = {TanBeta};
 
-ParametersToSolveTadpoles = {M112,M222};
+ParametersToSolveTadpoles = {MHD2,MHU2};
 
 BoundaryLowScaleInput={
  {Lambda1,Lambda1IN},
@@ -23,7 +23,7 @@ BoundaryLowScaleInput={
 
 
 
-ListDecayParticles = {Fu,Fe,Fd,hh,Ah,Hm};
+ListDecayParticles = {Fu,Fe,Fd,hh,Ah,Hpm};
 ListDecayParticles3B = {{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"}};
 
 

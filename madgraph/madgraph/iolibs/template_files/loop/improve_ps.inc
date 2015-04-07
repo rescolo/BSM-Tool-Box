@@ -1,4 +1,4 @@
-      SUBROUTINE %(proc_prefix)sIMPROVE_PS_POINT_PRECISION(P)
+      SUBROUTINE IMPROVE_PS_POINT_PRECISION(P)
 	  IMPLICIT NONE
 C
 C CONSTANTS
@@ -25,7 +25,7 @@ C ----------
 		ENDDO
 	  ENDDO
 
-	  CALL %(proc_prefix)s%(mp_prefix)sIMPROVE_PS_POINT_PRECISION(QP_P)
+	  CALL %(mp_prefix)sIMPROVE_PS_POINT_PRECISION(QP_P)
 
 	  DO I=1,NEXTERNAL
 	    DO J=0,3
@@ -36,7 +36,7 @@ C ----------
 	  END
 
 
-      SUBROUTINE %(proc_prefix)s%(mp_prefix)sIMPROVE_PS_POINT_PRECISION(P)
+      SUBROUTINE %(mp_prefix)sIMPROVE_PS_POINT_PRECISION(P)
 	  IMPLICIT NONE
 C
 C CONSTANTS
@@ -56,7 +56,7 @@ C
 C  
 C FUNCTIONS
 C
-      LOGICAL %(proc_prefix)s%(mp_prefix)sIS_PHYSICAL
+      LOGICAL %(mp_prefix)sIS_PHYSICAL
 C
 C SAVED VARIABLES
 C
@@ -89,7 +89,7 @@ C
 	  ENDDO
 
 C Check the sanity of the original PS point
-      IF (.NOT.%(proc_prefix)s%(mp_prefix)sIS_PHYSICAL(NEWP,WARNED)) THEN
+      IF (.NOT.%(mp_prefix)sIS_PHYSICAL(NEWP,WARNED)) THEN
 	    ERRCODE = 1
 		WRITE(*,*) 'ERROR:: The input PS point is not precise enough.'
 		GOTO 100
@@ -97,9 +97,9 @@ C Check the sanity of the original PS point
 
 C Now restore the precision
       IF (ImprovePSPoint.eq.1) THEN
-        CALL %(proc_prefix)s%(mp_prefix)sPSMC_IMPROVE_PS_POINT_PRECISION(NEWP,ERRCODE,WARNED)	    
+        CALL %(mp_prefix)sPSMC_IMPROVE_PS_POINT_PRECISION(NEWP,ERRCODE,WARNED)	    
 	  ELSEIF((ImprovePSPoint.eq.2).or.(ImprovePSPoint.le.0)) THEN
-	    CALL %(proc_prefix)s%(mp_prefix)sORIG_IMPROVE_PS_POINT_PRECISION(NEWP,ERRCODE,WARNED)
+	    CALL %(mp_prefix)sORIG_IMPROVE_PS_POINT_PRECISION(NEWP,ERRCODE,WARNED)
 	  ENDIF
 	  IF (ERRCODE.NE.0) THEN
         IF (WARNED.LT.20) THEN
@@ -107,9 +107,9 @@ C Now restore the precision
 		  WARNED=WARNED+1
 		ENDIF
 	    IF (ImprovePSPoint.eq.1) THEN
-	       CALL %(proc_prefix)s%(mp_prefix)sORIG_IMPROVE_PS_POINT_PRECISION(NEWP,ERRCODETMP,WARNED)
+	       CALL %(mp_prefix)sORIG_IMPROVE_PS_POINT_PRECISION(NEWP,ERRCODETMP,WARNED)
 	  	ELSEIF((ImprovePSPoint.eq.2).or.(ImprovePSPoint.le.0)) THEN
-           CALL %(proc_prefix)s%(mp_prefix)sPSMC_IMPROVE_PS_POINT_PRECISION(NEWP,ERRCODETMP,WARNED)		  
+           CALL %(mp_prefix)sPSMC_IMPROVE_PS_POINT_PRECISION(NEWP,ERRCODETMP,WARNED)		  
         ENDIF
 		IF (ERRCODETMP.NE.0) GOTO 100
 	  ENDIF
@@ -120,7 +120,7 @@ C Report to the user or update the PS point.
 100  CONTINUE
       IF (WARNED.LT.20) THEN
 	    WRITE(*,*) 'WARNING:: This PS point could not be improved. Error code = ',ERRCODE,ERRCODETMP
-		CALL %(proc_prefix)s%(mp_prefix)sWRITE_MOM(P)
+		CALL %(mp_prefix)sWRITE_MOM(P)
 	    WARNED = WARNED +1 
 	  ENDIF
 	  GOTO 102
@@ -140,7 +140,7 @@ C Report to the user or update the PS point.
 	  END
       
 
-      FUNCTION %(proc_prefix)s%(mp_prefix)sIS_CLOSE(P,NEWP,WARNED)
+      FUNCTION %(mp_prefix)sIS_CLOSE(P,NEWP,WARNED)
 	  IMPLICIT NONE
 C
 C CONSTANTS
@@ -155,17 +155,16 @@ C
 C ARGUMENTS 
 C
       %(real_format)s P(0:3,NEXTERNAL), NEWP(0:3,NEXTERNAL)
-	  LOGICAL %(proc_prefix)s%(mp_prefix)sIS_CLOSE
+	  LOGICAL %(mp_prefix)sIS_CLOSE
 	  INTEGER WARNED
 C
 C LOCAL VARIABLES 
 C
       INTEGER I,J
 	  %(real_format)s REF,REF2
-	  DOUBLE PRECISION BUFFDP
 
 C NOW MAKE SURE THE SHIFTED POINT IS NOT TOO FAR FROM THE ORIGINAL ONE
-     %(proc_prefix)s%(mp_prefix)sIS_CLOSE = .TRUE.
+     %(mp_prefix)sIS_CLOSE = .TRUE.
      REF  = ZERO
 	 REF2 = ZERO
 	 DO J=1,NEXTERNAL
@@ -176,17 +175,16 @@ C NOW MAKE SURE THE SHIFTED POINT IS NOT TOO FAR FROM THE ORIGINAL ONE
 	 ENDDO
 
 	  IF ((REF/REF2).GT.THRS_CLOSE) THEN
-	    %(proc_prefix)s%(mp_prefix)sIS_CLOSE = .FALSE.
+	    %(mp_prefix)sIS_CLOSE = .FALSE.
 	    IF (WARNED.LT.20) THEN
-		  BUFFDP = (REF/REF2)
-	      WRITE(*,*) 'WARNING:: The improved PS point is too far from the original one',BUFFDP
+	      WRITE(*,*) 'WARNING:: The improved PS point is too far from the original one',dble(REF/REF2)
 		  WARNED=WARNED+1
 		ENDIF
 	  ENDIF
 
 	  END
 
-      FUNCTION %(proc_prefix)s%(mp_prefix)sIS_PHYSICAL(P,WARNED)
+      FUNCTION %(mp_prefix)sIS_PHYSICAL(P,WARNED)
 	  IMPLICIT NONE
 C
 C CONSTANTS
@@ -211,7 +209,7 @@ C
 C ARGUMENTS 
 C
       %(real_format)s P(0:3,NEXTERNAL)
-	  LOGICAL %(proc_prefix)s%(mp_prefix)sIS_PHYSICAL
+	  LOGICAL %(mp_prefix)sIS_PHYSICAL
 	  INTEGER WARNED
 C
 C LOCAL VARIABLES 
@@ -219,7 +217,6 @@ C
       INTEGER I,J
 	  %(real_format)s BUFF,REF
 	  %(real_format)s MASSES(NEXTERNAL)
-	  double precision BUFFDPA,BUFFDPB
 C  
 C GLOBAL VARIABLES
 C 
@@ -231,7 +228,7 @@ C ----------
 C BEGIN CODE
 C ----------
 
-      %(proc_prefix)s%(mp_prefix)sIS_PHYSICAL = .TRUE.
+      %(mp_prefix)sIS_PHYSICAL = .TRUE.
 
 C WE FIRST CHECK THAT THE INPUT PS POINT IS REASONABLY PHYSICAL
 C FOR THAT WE NEED A REFERENCE SCALE
@@ -249,32 +246,29 @@ C FOR THAT WE NEED A REFERENCE SCALE
 		ENDDO
 		IF ((BUFF/REF).GT.THRES_FOURMOM) THEN
 		  IF (WARNED.LT.20) THEN
-		    BUFFDPA = (BUFF/REF)
-		    WRITE(*,*) 'ERROR:: Four-momentum conservation is not accurate enough, ',BUFFDPA
-		    CALL %(proc_prefix)s%(mp_prefix)sWRITE_MOM(P)
+		    WRITE(*,*) 'ERROR:: Four-momentum conservation is not accurate enough, ',dble(BUFF/REF)
+		    CALL %(mp_prefix)sWRITE_MOM(P)
 			WARNED=WARNED+1
 		  ENDIF
-		  %(proc_prefix)s%(mp_prefix)sIS_PHYSICAL = .FALSE.
+		  %(mp_prefix)sIS_PHYSICAL = .FALSE.
 		ENDIF
 	  ENDDO
 	  REF = REF / (ONE*NEXTERNAL)
 	  DO I=1,NEXTERNAL
 	    REF=ABS(P(0,I))+ABS(P(1,I))+ABS(P(2,I))+ABS(P(3,I))
 		IF ((SQRT(ABS(P(0,I)**2-P(1,I)**2-P(2,I)**2-P(3,I)**2-MASSES(I)**2))/REF).GT.THRES_ONSHELL) THEN
-		  IF (WARNED.LT.20) THEN
-		    BUFFDPA=MASSES(I)
-			BUFFDPB=(SQRT(ABS(P(0,I)**2-P(1,I)**2-P(2,I)**2-P(3,I)**2-MASSES(I)**2))/REF)
-		    WRITE(*,*) 'ERROR:: Onshellness of the momentum of particle ',I,' of mass ',BUFFDPA,' is not accurate enough, ',BUFFDPB
-		    CALL %(proc_prefix)s%(mp_prefix)sWRITE_MOM(P)
+		  IF (WARNED.LT.20) THEN		  
+		    WRITE(*,*) 'ERROR:: Onshellness of the momentum of particle ',I,' of mass ',dble(MASSES(I)),' is not accurate enough, ', dble(SQRT(ABS(P(0,I)**2-P(1,I)**2-P(2,I)**2-P(3,I)**2-MASSES(I)**2))/REF)
+		    CALL %(mp_prefix)sWRITE_MOM(P)
 			WARNED=WARNED+1
 		  ENDIF		  
-		  %(proc_prefix)s%(mp_prefix)sIS_PHYSICAL = .FALSE.
+		  %(mp_prefix)sIS_PHYSICAL = .FALSE.
 		ENDIF
 	  ENDDO
 
 	  END
 
-	  SUBROUTINE %(proc_prefix)sWRITE_MOM(P)
+	  SUBROUTINE WRITE_MOM(P)
 	  IMPLICIT NONE
 	  INTEGER    NEXTERNAL
       PARAMETER (NEXTERNAL=%(nexternal)d)
@@ -282,7 +276,7 @@ C FOR THAT WE NEED A REFERENCE SCALE
       PARAMETER (NINITIAL=%(ninitial)d)
 	  DOUBLE PRECISION ZERO
 	  PARAMETER (ZERO=0.0d0)
-      DOUBLE PRECISION %(proc_prefix)smdot
+      DOUBLE PRECISION mdot
 
 	  INTEGER I,J
 
@@ -303,21 +297,21 @@ C
       WRITE (*,*) '    ---------------------'
       WRITE (*,*) '    E | px | py | pz | m '
       DO I=1,NEXTERNAL
-        WRITE (*,'(1x,5e27.17)') P(0,I),P(1,I),P(2,I),P(3,I),SQRT(ABS(%(proc_prefix)sMDOT(P(0,I),P(0,I))))
+        WRITE (*,'(1x,5e27.17)') P(0,I),P(1,I),P(2,I),P(3,I),SQRT(ABS(MDOT(P(0,I),P(0,I))))
       ENDDO
       WRITE (*,*) '    Four-momentum conservation sum:'
       WRITE (*,'(1x,4e27.17)') PSUM(0),PSUM(1),PSUM(2),PSUM(3)
       WRITE (*,*) '   ---------------------'
 	  END
 
-	  DOUBLE PRECISION function %(proc_prefix)smdot(p1,p2)
+	  DOUBLE PRECISION function mdot(p1,p2)
       implicit none
       DOUBLE PRECISION p1(0:3),p2(0:3)
-      %(proc_prefix)smdot=p1(0)*p2(0)-p1(1)*p2(1)-p1(2)*p2(2)-p1(3)*p2(3)
+      mdot=p1(0)*p2(0)-p1(1)*p2(1)-p1(2)*p2(2)-p1(3)*p2(3)
       return
       end
 
-	  SUBROUTINE %(proc_prefix)s%(mp_prefix)sWRITE_MOM(P)
+	  SUBROUTINE %(mp_prefix)sWRITE_MOM(P)
 	  IMPLICIT NONE
 	  INTEGER    NEXTERNAL
       PARAMETER (NEXTERNAL=%(nexternal)d)
@@ -325,7 +319,7 @@ C
       PARAMETER (NINITIAL=%(ninitial)d)
 	  %(real_format)s ZERO
 	  PARAMETER (ZERO=0.0%(exp_letter)s+00%(mp_specifier)s)
-      %(real_format)s %(proc_prefix)s%(mp_prefix)smdot
+      %(real_format)s %(mp_prefix)smdot
 
 	  INTEGER I,J
 
@@ -357,7 +351,7 @@ C The GCC4.7 compiler on SLC machines has trouble to write out quadruple precisi
       WRITE (*,*) '    ---------------------'
       WRITE (*,*) '    E | px | py | pz | m '
       DO I=1,NEXTERNAL
-	    DOT=SQRT(ABS(%(proc_prefix)s%(mp_prefix)sMDOT(P(0,I),P(0,I))))
+	    DOT=SQRT(ABS(%(mp_prefix)sMDOT(P(0,I),P(0,I))))
 		DP_DOT=DOT
         WRITE (*,'(1x,5e27.17)') DP_P(0,I),DP_P(1,I),DP_P(2,I),DP_P(3,I),DP_DOT
       ENDDO
@@ -366,10 +360,10 @@ C The GCC4.7 compiler on SLC machines has trouble to write out quadruple precisi
       WRITE (*,*) '   ---------------------'
 	  END
 
-      %(real_format)s function %(proc_prefix)s%(mp_prefix)smdot(p1,p2)
+      %(real_format)s function %(mp_prefix)smdot(p1,p2)
       implicit none
       %(real_format)s p1(0:3),p2(0:3)
-      %(proc_prefix)s%(mp_prefix)smdot=p1(0)*p2(0)-p1(1)*p2(1)-p1(2)*p2(2)-p1(3)*p2(3)
+      %(mp_prefix)smdot=p1(0)*p2(0)-p1(1)*p2(1)-p1(2)*p2(2)-p1(3)*p2(3)
       return
       end
 
@@ -378,7 +372,7 @@ C stores the result in P and for the quadruple precision
 c version , it also modifies the global variables
 C PS and MP_DONE accordingly.
 
-	  SUBROUTINE %(proc_prefix)sROTATE_PS(P_IN,P,ROTATION)
+	  SUBROUTINE ROTATE_PS(P_IN,P,ROTATION)
 	  IMPLICIT NONE
 C  
 C CONSTANTS 
@@ -423,7 +417,7 @@ C rotation=2 => (xp=-z,yp=y,zp=x)
 	  END
 
 
-	  SUBROUTINE %(proc_prefix)s%(mp_prefix)sROTATE_PS(P_IN,P,ROTATION)
+	  SUBROUTINE %(mp_prefix)sROTATE_PS(P_IN,P,ROTATION)
 	  IMPLICIT NONE
 C  
 C CONSTANTS 
@@ -443,7 +437,7 @@ C
 C GLOBAL VARIABLES
 C 
 	  LOGICAL MP_DONE
-	  common/%(proc_prefix)sMP_DONE/MP_DONE
+	  common/MP_DONE/MP_DONE
 
 C ----------
 C BEGIN CODE
@@ -478,7 +472,7 @@ C *****************************************************************
 C Beginning of the routine for restoring precision with V.H. method
 C *****************************************************************
 
-      SUBROUTINE %(proc_prefix)s%(mp_prefix)sORIG_IMPROVE_PS_POINT_PRECISION(P,ERRCODE,WARNED)
+      SUBROUTINE %(mp_prefix)sORIG_IMPROVE_PS_POINT_PRECISION(P,ERRCODE,WARNED)
 	  IMPLICIT NONE
 C  
 C CONSTANTS 
@@ -505,7 +499,7 @@ C
 C  
 C FUNCTIONS
 C
-      LOGICAL %(proc_prefix)s%(mp_prefix)sIS_CLOSE 
+      LOGICAL %(mp_prefix)sIS_CLOSE 
 C
 C LOCAL VARIABLES 
 C
@@ -608,7 +602,7 @@ C
 	   NEWP(J,P1) = REF
 	 ENDDO
  
-      IF (.NOT.%(proc_prefix)s%(mp_prefix)sIS_CLOSE(P,NEWP,WARNED)) THEN
+      IF (.NOT.%(mp_prefix)sIS_CLOSE(P,NEWP,WARNED)) THEN
 	    ERRCODE=999
 		GOTO 100
 	  ENDIF
@@ -627,7 +621,7 @@ C *****************************************************************
 C Beginning of the routine for restoring precision a la PSMC
 C *****************************************************************
 
-      SUBROUTINE %(proc_prefix)s%(mp_prefix)sPSMC_IMPROVE_PS_POINT_PRECISION(P,ERRCODE,WARNED)
+      SUBROUTINE %(mp_prefix)sPSMC_IMPROVE_PS_POINT_PRECISION(P,ERRCODE,WARNED)
 	  IMPLICIT NONE
 C  
 C CONSTANTS 
@@ -658,7 +652,7 @@ C
 C  
 C FUNCTIONS
 C
-      LOGICAL %(proc_prefix)s%(mp_prefix)sIS_CLOSE
+      LOGICAL %(mp_prefix)sIS_CLOSE
 C
 C LOCAL VARIABLES 
 C
@@ -712,7 +706,7 @@ C     First make sur that the space like momentum is exactly conserved
 
 C     Now find the 'x' rescaling factor
       DO I=1,NAPPROXZEROS
-	    CALL %(proc_prefix)sFINDX(NEWP,APPROX_ZEROS(I),XSCALE,ERROR)
+	    CALL FINDX(NEWP,APPROX_ZEROS(I),XSCALE,ERROR)
 		IF(ERROR.EQ.0) THEN
 		  GOTO 1001
 		ELSE
@@ -766,7 +760,7 @@ C     Consistency check
 		GOTO 1000
 	  ENDIF
 
-      IF (.NOT.%(proc_prefix)s%(mp_prefix)sIS_CLOSE(P,NEWP,WARNED)) THEN
+      IF (.NOT.%(mp_prefix)sIS_CLOSE(P,NEWP,WARNED)) THEN
 	    ERRCODE=999
 		GOTO 1000
 	  ENDIF
@@ -782,7 +776,7 @@ C     Consistency check
       END
 
 
-	  SUBROUTINE %(proc_prefix)sFINDX(P,SEED,XSCALE,ERROR)
+	  SUBROUTINE FINDX(P,SEED,XSCALE,ERROR)
 	  IMPLICIT NONE
 C  
 C CONSTANTS 
@@ -829,12 +823,12 @@ C ----------
 	  ENDDO
 
 	  DO I=1,MAXITERATIONS
-	    CALL %(proc_prefix)sFUNCT(PVECSQ(1),XN,.FALSE.,ERR, FVAL)
+	    CALL FUNCT(PVECSQ(1),XN,.FALSE.,ERR, FVAL)
 		IF (ERR.NE.0) THEN
 		  ERROR=ERR
 		  GOTO 710
 		ENDIF
-	    CALL %(proc_prefix)sFUNCT(PVECSQ(1),XN,.TRUE.,ERR, DVAL)
+	    CALL FUNCT(PVECSQ(1),XN,.TRUE.,ERR, DVAL)
 		IF (ERR.NE.0) THEN
 		  ERROR=ERR
 		  GOTO 710
@@ -851,12 +845,12 @@ C ----------
 
   700 CONTINUE
 C     For good measure, we iterate one last time
-	  CALL %(proc_prefix)sFUNCT(PVECSQ(1),XN,.FALSE.,ERR, FVAL)
+	  CALL FUNCT(PVECSQ(1),XN,.FALSE.,ERR, FVAL)
 	  IF (ERR.NE.0) THEN
 		ERROR=ERR
 		GOTO 710
       ENDIF
-	  CALL %(proc_prefix)sFUNCT(PVECSQ(1),XN,.TRUE.,ERR, DVAL)
+	  CALL FUNCT(PVECSQ(1),XN,.TRUE.,ERR, DVAL)
 	  IF (ERR.NE.0) THEN
 	    ERROR=ERR
 		GOTO 710
@@ -868,7 +862,7 @@ C     For good measure, we iterate one last time
 
 	  END
 
-	  SUBROUTINE %(proc_prefix)sFUNCT(PVECSQ,X,DERIVATIVE,ERROR,RES)
+	  SUBROUTINE FUNCT(PVECSQ,X,DERIVATIVE,ERROR,RES)
 	  IMPLICIT NONE
 C  
 C CONSTANTS 

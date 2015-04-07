@@ -7,8 +7,7 @@ Module SugraRuns
  Use RGEs
  Use StandardModel
  Use LoopCouplings
- Use Model_Data, Only: MnuR, in_extpar, r_extpar, i_extpar &
-     & , product_stop_masses, CalcScale_from_Stops
+ Use Model_Data, Only: MnuR, in_extpar, r_extpar, i_extpar, product_stop_masses
  Use MSSM_Data, Only: P0
  Use LoopMasses
 ! load modules
@@ -213,7 +212,6 @@ Contains
    & , mSpm2, RSpm, mSneutrino2, RSneutrino, mSlepton2, RSlepton, mUsquark2 &
    & , RUsquark, mDSquark2, RDSquark, mf_l2, mf_u2, mf_d2, mC, mC2, U, V    &
    & , mN, mN2, N, dmZ2)
-
    mZ2_mZ = Real(dmZ2+mZ2,dp)
    If (mZ2_mZ.Lt.0._dp) Then
     Iname = Iname - 1
@@ -338,6 +336,7 @@ Contains
   vevs_DR(1) = Sqrt(vev2 / (1._dp+tanb**2) )
   vevs_DR(2) = tanb * vevs_DR(1)
 
+
   !-------------------------------------
   ! Initialize fermion mixing matrices
   !-------------------------------------
@@ -432,7 +431,6 @@ Contains
   Y_l_old = Y_l
   Y_d_old = Y_d
   Y_u_old = Y_u
-
   !------------------------------
   ! now the iteration
   !------------------------------
@@ -480,7 +478,6 @@ Contains
         & , SigS_l, SigL_l, SigR_l)
 
     mf_u_DR_SM(3) = mf_u(3) + SigQCD
-
     Call Yukawas(mf_u_DR_SM, vevs_DR(2), uU_L, uU_R, SigS_u, SigL_u, SigR_u &
           & , Y_u, .False., kont)
 
@@ -636,7 +633,7 @@ Contains
   !----------------------------------------------------------------
   ! the RGE paper defines the Yukawas transposed to my conventions
   !----------------------------------------------------------------
-
+Write(10,*) "resum",i_loop
   Yl_mZ = Y_l
   Yd_mZ = Y_d
   Yu_mZ = Y_u
@@ -978,7 +975,7 @@ Contains
    Do i1 = 1,3
     Ml = M2_L(i1,i1)
     Mr = M2_E(i1,i1)
-    A = T_l(i1,i1)
+    A = A_l(i1,i1)
     Y = Y_l(i1,i1)
     Call SfermionMass(Ml, Mr, A, mu, vevSM, Y, T3_d, YL_l, YR_l, gSU2, gp &
                     &, kont, msf, msf2, Rsf)
@@ -997,7 +994,7 @@ Contains
    Do i1 = 1,3
     Ml = M2_Q(i1,i1)
     Mr = M2_D(i1,i1)
-    A = T_d(i1,i1)
+    A = A_d(i1,i1)
     Y = Y_d(i1,i1)
     Call SfermionMass(Ml, Mr, A, mu, vevSM, Y, T3_d, YL_q, YR_d, gSU2, gp &
                     &, kont, msf, msf2, Rsf)
@@ -1016,7 +1013,7 @@ Contains
    Do i1 = 1,3
     Ml = M2_Q(i1,i1)
     Mr = M2_U(i1,i1)
-    A = T_u(i1,i1)
+    A = A_u(i1,i1)
     Y = Y_u(i1,i1)
     Call SfermionMass(Ml, Mr, A, mu, vevSM, Y, T3_u, YL_q, YR_u, gSU2, gp &
                     &, kont, msf, msf2, Rsf)
@@ -1053,11 +1050,12 @@ Contains
   ! scalar
   !---------------
   mat2R(1,1) = mP02(1) * cosb**2 + mP02(2) * sinb**2
-  mat2R(1,2) = -(mP02(1) + mP02(2)) * cosb * sinb
+  mat2R(1,2) = (mP02(1) + mP02(2)) * cosb * sinb
   mat2R(2,1) = mat2R(1,2)
   mat2R(2,2) = mP02(2) * cosb**2 + mP02(1) * sinb**2
 
   Call EigenSystem(mat2R,mS02,RS0,kont, test)
+
   !-------------------------------------------------------------------
   ! setting renormalisation scale to Q, because the RGEs start there
   !-------------------------------------------------------------------
@@ -1117,7 +1115,7 @@ Contains
    ! scalar
    !---------------
    mat2R(1,1) = mP02(1) * cosb**2 + mP02(2) * sinb**2
-   mat2R(1,2) = -(mP02(1) + mP02(2)) * cosb * sinb
+   mat2R(1,2) = (mP02(1) + mP02(2)) * cosb * sinb
    mat2R(2,1) = mat2R(1,2)
    mat2R(2,2) = mP02(2) * cosb**2 + mP02(1) * sinb**2
 
@@ -1236,6 +1234,7 @@ Contains
   vev2 =  mZ2_mZ * CosW2SinW2 / (pi * alphamZ)
   vevSM(1) = Sqrt(vev2 / (1._dp+tanb**2) )
   vevSM(2) = tanb * vevSM(1)
+
   !-------------------------------------
   ! Initialize fermion mixing matrices
   !-------------------------------------
@@ -1293,6 +1292,7 @@ Contains
   ! now the iteration
   !------------------------------
   i_loop_max = 100 ! this should be sufficient
+
   Do i_loop =1,i_loop_max
    yuk_b = Y_d(3,3)! for checking of convergence
    yuk_t = Y_u(3,3)
@@ -1326,7 +1326,6 @@ Contains
         & , mN, mN2, N, mC, mC2, U, V, mS02, RS0, mP02, RP0, mSpm2, RSpm      &
         & , mZ2_run, mW2_run, .True., SigS_u, SigL_u, SigR_u, SigQCD)
     mf_u_DR_SM(3) = mf_u(3) + SigQCD
-
     ! d-quarks, total self-energy
     Call Sigma_Fermion3sckm(p2, gSU2, gSU3, sinW2_DR, T3_d, e_d, V0CKM, mf_d_DR &
         & , Y_d, mf_u_DR, Y_u, mSdown2, RSdown, mSup2, RSup,  mglu, phase_glu &
@@ -1344,13 +1343,9 @@ Contains
     epsD = 0._dp
     epsL = 0._dp
     If (Resum) Then
-     Call Sigma_SM_chirally_enhanced(gauge, vevSM, mu, V0ckm, Y_l, Y_d, Y_u &
+      Call Sigma_SM_chirally_enhanced(gauge, vevSM, mu, V0ckm, Y_l, Y_d, Y_u &
        & , Mi, T_l, T_d, T_u, M2_E, M2_L, M2_D, M2_Q, M2_U &
-       & , epsD, epsL, epsD_FC, kont )
-     If (kont.ne.0) then
-      Iname = Iname - 1
-      return
-     End If 
+       & , epsD, epsL, epsD_FC )
     End If
 
     !---------------------------------------------------------
@@ -1533,7 +1528,7 @@ Contains
    Do i1 = 1,3
     Ml = M2_L(i1,i1)
     Mr = M2_E(i1,i1)
-    A = T_l(i1,i1)
+    A = A_l(i1,i1)
     Y = Y_l(i1,i1)
     Call SfermionMass(Ml, Mr, A, mu, vevSM, Y, T3_d, YL_l, YR_l, gSU2, gp &
                     &, kont, msf, msf2, Rsf)
@@ -1552,7 +1547,7 @@ Contains
    Do i1 = 1,3
     Ml = M2_Q(i1,i1)
     Mr = M2_D(i1,i1)
-    A = T_d(i1,i1)
+    A = A_d(i1,i1)
     Y = Y_d(i1,i1)
     Call SfermionMass(Ml, Mr, A, mu, vevSM, Y, T3_d, YL_q, YR_d, gSU2, gp &
                     &, kont, msf, msf2, Rsf)
@@ -1571,7 +1566,7 @@ Contains
    Do i1 = 1,3
     Ml = M2_Q(i1,i1)
     Mr = M2_U(i1,i1)
-    A = T_u(i1,i1)
+    A = A_u(i1,i1)
     Y = Y_u(i1,i1)
     Call SfermionMass(Ml, Mr, A, mu, vevSM, Y, T3_u, YL_q, YR_u, gSU2, gp &
                     &, kont, msf, msf2, Rsf)
@@ -1583,7 +1578,6 @@ Contains
      Return
     End If
    End Do
-
    !-------------------------------------------------------
    ! the chirally enhanced terms
    !-------------------------------------------------------
@@ -1592,11 +1586,7 @@ Contains
    If (Resum) Then
     Call Sigma_SM_chirally_enhanced(gauge, vevSM, mu, V0ckm, Y_l, Y_d, Y_u &
        & , Mi, T_l, T_d, T_u, M2_E, M2_L, M2_D, M2_Q, M2_U &
-       & , epsD, epsL, epsD_FC, kont )
-    If (kont.ne.0) then
-     Iname = Iname - 1
-     return
-    End If 
+       & , epsD, epsL, epsD_FC )
    End If
 
    Do i1=1,3
@@ -1605,13 +1595,14 @@ Contains
       & ,T3_d, e_d, mf_u_DR, Y_u, id3C, id3C, mSdown2, RSdown, mSup2         &
       & ,RSup, mglu, phase_glu, mN, mN2, N, mC, mC2, U, V, mS02, RS0         &
       & ,mP02, RP0, mSpm2, RSpm, mZ2_run, mW2_run, .True., .True., SigDown)
-     If (Resum) then
-      mf_d_DR(i1) = mf_d_DR_SM(i1) + Real(SigDown,dp) &
-                  &                + oosqrt2 * epsD(i1) * vevSM(2) * Y_d(i1,i1)
-      mf_d_DR(i1) = mf_d_DR(i1) / (1 + tanb * epsD(i1) )
-     Else
-      mf_d_DR(i1) = mf_d_DR_SM(i1) + Real(SigDown,dp)
-     End If
+     mf_d_DR(i1) = mf_d_DR_SM(i1) + Real(SigDown,dp) &
+                 &                + epsD(i1) * vevSM(2) * Y_d(i1,i1)
+     mf_d_DR(i1) = mf_d_DR(i1) / (1 + tanb * epsD(i1) )
+!      If (FermionMassResummation) Then
+!       mf_d_DR(i1) = mf_d_DR_SM(i1) / (1- Real(SigDown,dp) / mf_d_DR(i1) )
+!      Else
+!       mf_d_DR(i1) = mf_d_DR_SM(i1) + Real(SigDown,dp)
+!      End If
      Y_d(i1,i1) = sqrt2 * mf_d_DR(i1) / vevSM(1)
 
      p2 = mf_u_DR(i1)**2
@@ -1635,13 +1626,14 @@ Contains
         & , mSneut2, RSneut, mglu, phase_glu, mN, mN2, N, mC, mC2, U &
         & , V, mS02, RS0, mP02, RP0, mSpm2, RSpm, mZ2_run, mW2_run           &
         & , .False., .True., SigLep)
-     If (Resum) then
-      mf_l_DR(i1) = mf_l_DR_SM(i1) + Real(SigLep,dp) &
-                  &                + oosqrt2 * epsL(i1) * vevSM(2) * Y_l(i1,i1)
-      mf_l_DR(i1) = mf_l_DR(i1) / (1 + tanb * epsL(i1) )
-     Else
-      mf_l_DR(i1) = mf_l_DR_SM(i1) + Real(SigLep,dp)
-     End If
+     mf_l_DR(i1) = mf_l_DR_SM(i1) + Real(SigLep,dp) &
+                 &                + epsL(i1) * vevSM(2) * Y_l(i1,i1)
+     mf_l_DR(i1) = mf_l_DR(i1) / (1 + tanb * epsL(i1) )
+!      If (FermionMassResummation) Then
+!       mf_l_DR(i1) = mf_l_DR_SM(i1) / (1- Real(SigLep,dp) / mf_l_DR(i1) )
+!      Else
+!       mf_l_DR(i1) = mf_l_DR_SM(i1) + Real(SigLep,dp)
+!      End If
      Y_l(i1,i1)  = sqrt2 * mf_l_DR(i1) / vevSM(1)
     
     End Do
@@ -1765,7 +1757,7 @@ Contains
    Y = mass + SigS 
    If (Present(eps)) Then ! resummation included
     Do i1=1,3
-     Y(i1,i1) = ( Y(i1,i1) + oosqrt2 * eps(i1) * vev * tanb  * Yold(i1,i1)) &
+     Y(i1,i1) = ( Y(i1,i1) + eps(i1) * vev * tanb  * Yold(i1,i1)) &
             &   / (1 + tanb * eps(i1) )
     End Do
    End If
@@ -8398,14 +8390,8 @@ Contains
   ! I take here the geometric mean of the stop masses
   !-----------------------------------------------------------------
   If (.Not.UseFixedScale) Then
-   If (UseNewScale) Then
-    mudim = CalcScale_from_Stops(Real(M2_U(3,3),dp), Real(M2_Q(3,3),dp)   &
-               & , Y_u(3,3), A_u(3,3), vevSM, mu, gauge(2), gauge(1) )
-    If (mudim.Lt.mZ**2) mudim = mZ**2
-   Else
-    mudim = Max(mZ**2 &
+   mudim = Max(mZ**2 &
          &    , product_stop_masses(mUSquark, RUSquark, GenerationMixing))
-   End If
    Call SetRGEScale(mudim)
    UseFixedScale = .False.
   End If
@@ -8517,7 +8503,6 @@ Contains
 
      Call odeint(g58, 58, 0._dp, tz,  0.1_dp * delta , dt, 0._dp, rge58, kont)
      tanbQ = Exp( g58(58) )
-     tanb_Q = tanbQ
     End If
 
     tz = Log(mudim/mZ)
@@ -8589,11 +8574,11 @@ Contains
    If (Sum(in_extpar(26,:)).Gt.0) Then
     mp0(2) = P0(2)%m
     mp02(2) = P0(2)%m2
-    Call LoopMassesMSSM_2(0.1_dp*delta, tanb_mZ, tanbQ, gauge, Y_l, Y_d, Y_u &
-       & , Mi, A_l, A_d, A_u, M2_E, M2_L, M2_D, M2_Q, M2_U, mu               &
-       & , mC, mC2, U, V, mN, mN2, N, mS0, mS02, RS0, mP02, RP0, mSpm        &
-       & , mSpm2, RSpm, mDsquark, mDsquark2, RDsquark, mUsquark, mUsquark2   &
-       & , RUsquark, mSlepton, mSlepton2, RSlepton, mSneutrino, mSneutrino2  &
+    Call LoopMassesMSSM_2(0.1_dp*delta, tanbQ, gauge, Y_l, Y_d, Y_u, Mi     &
+       & , A_l, A_d, A_u, M2_E, M2_L, M2_D, M2_Q, M2_U, mu                  &
+       & , mC, mC2, U, V, mN, mN2, N, mS0, mS02, RS0, mP02, RP0, mSpm       &
+       & , mSpm2, RSpm, mDsquark, mDsquark2, RDsquark, mUsquark, mUsquark2  &
+       & , RUsquark, mSlepton, mSlepton2, RSlepton, mSneutrino, mSneutrino2 &
        & , RSneutrino, mGlu, phase_glu, M2_H, B, kont)
 
     mu_loop = mu
@@ -8602,8 +8587,8 @@ Contains
     If (WriteComment) Write(*,*) "LoopMassesMSSM_2",t2-t1
 
    Else If (Sum(in_extpar(24,:)).Gt.0) Then
-    Call LoopMassesMSSM_3(tanb_mZ, tanbQ, gauge, Y_l, Y_d, Y_u, Mi, A_l     &
-       & , A_d, A_u, M2_E, M2_L, M2_D, M2_Q, M2_U, mu, B, 0.1_dp*delta      &
+    Call LoopMassesMSSM_3(tanbQ, gauge, Y_l, Y_d, Y_u, Mi, A_l, A_d, A_u    &
+       & , M2_E, M2_L, M2_D, M2_Q, M2_U, mu, B, 0.1_dp*delta                &
        & , mC, mC2, U, V, mN, mN2, N, mS0, mS02, RS0, mP0, mP02, RP0, mSpm  &
        & , mSpm2, RSpm, mDsquark, mDsquark2, RDsquark, mUsquark, mUsquark2  &
        & , RUsquark, mSlepton, mSlepton2, RSlepton, mSneutrino, mSneutrino2 &
@@ -8614,15 +8599,13 @@ Contains
     If (WriteComment) Write(*,*) "LoopMassesMSSM_3",t2-t1
 
    Else
-    Call LoopMassesMSSM(0.1_dp*delta, tanb_mZ, tanb, gauge, Y_l, Y_d, Y_u &
-     & , Mi, A_l, A_d, A_u, M2_E, M2_L, M2_D, M2_Q, M2_U, M2_H, phase_mu  &
-     & , mu, B, j, uU_L, uU_R, uD_L, uD_R, uL_L, uL_R                     &
+    Call LoopMassesMSSM(0.1_dp*delta, tanb, gauge, Y_l, Y_d, Y_u, Mi, A_l &
+     & , A_d, A_u, M2_E, M2_L, M2_D, M2_Q, M2_U, M2_H, phase_mu, mu, B, j &
+     & , uU_L, uU_R, uD_L, uD_R, uL_L, uL_R                               &
      & , mC, mC2, U, V, mN, mN2, N, mS0, mS02, RS0, mP0, mP02, RP0, mSpm  &
      & , mSpm2, RSpm, mDsquark, mDsquark2, RDsquark, mUsquark, mUsquark2  &
      & , RUsquark, mSlepton, mSlepton2, RSlepton, mSneutrino, mSneutrino2 &
      & , RSneutrino, mGlu, phase_glu, kont)
-    tanb_Q = tanb
-
     g0(210) = Real(mu,dp)
     g0(211) = Aimag(mu)
     g0(212) = Real(B,dp)
@@ -8684,43 +8667,23 @@ Contains
     tz = 0.5_dp * Log(mZ2/mudim)
     dt = tz / 100._dp
 
-    !---------------------------------------------------------------
-    ! recalculating scale for later use here, as I am using the 
-    ! tree-level stop masses as default
-    !---------------------------------------------------------------
-    If (.Not.UseFixedScale) Then
-     If (UseNewScale) Then
-      mudim = CalcScale_from_Stops(Real(M2_U(3,3),dp), Real(M2_Q(3,3),dp)   &
-                 & , Y_u(3,3), A_u(3,3), vevSM, mu, gauge(2), gauge(1) )
-      If (mudim.Lt.mZ**2) mudim = mZ**2
-     Else
-      mudim = Max(mZ**2 &
-           &    , product_stop_masses(mUSquark, RUSquark, GenerationMixing))
-     End If
-     Call SetRGEScale(mudim)
-     UseFixedScale = .False.
-    End If
-    !-----------------------------------------------------------------
-    ! and now the running, using the previous scale for consistency
-    !-----------------------------------------------------------------
     Call odeint(g0, 213, 0._dp, tz, 0.1_dp * delta, dt, 0._dp, rge213, kont)
 
-    Call GToParameters(g0, gauge_mZ, Y_l_mZ, Y_d_mZ, Y_u_mZ, Mi_mZ, A_l_mZ &
-           & , A_d_mZ, A_u_mZ, M2_E_mZ, M2_L_mZ, M2_D_mZ, M2_Q_mZ, M2_U_mZ &
-           & , M2_H_mZ, mu_mZ, B_mZ)
-    Y_u_mZ = Transpose(Y_u_mZ)
-    Y_d_mZ = Transpose(Y_d_mZ)
-    Y_l_mZ = Transpose(Y_l_mZ)
-    A_u_mZ = Transpose(A_u_mZ)
-    A_d_mZ = Transpose(A_d_mZ)
-    A_l_mZ = Transpose(A_l_mZ)
-    gauge_mZ(1) = Sqrt(3._dp / 5._dp ) * gauge_mZ(1)
+    Call GToParameters(g0, gauge, Y_l, Y_d, Y_u, Mi, A_l, A_d, A_u &
+                  & , M2_E, M2_L, M2_D, M2_Q, M2_U, M2_H, mu, B)
+    Y_u = Transpose(Y_u)
+    Y_d = Transpose(Y_d)
+    Y_l = Transpose(Y_l)
+    A_u = Transpose(A_u)
+    A_d = Transpose(A_d)
+    A_l = Transpose(A_l)
+    gauge(1) = Sqrt(3._dp / 5._dp ) * gauge(1)
 
-    vev = 2._dp * mW / gauge_mZ(2)
+    vev = 2._dp * mW / gauge(2)
     vevSM(1) = vev / Sqrt(1._dp + tanb_mZ**2)
     vevSM(2) = tanb_mZ * vevSM(1)
 
-    Abs_Mu2 = (M2_H_mZ(2) * tanb_MZ**2 - M2_H_mZ(1) ) / (1._dp - tanb_MZ**2) &
+    Abs_Mu2 = (M2_H(2) * tanb_MZ**2 - M2_H(1) ) / (1._dp - tanb_MZ**2) &
           & - 0.5_dp * mZ2
     If (Abs_Mu2.Lt.0._dp) Then
      Write (ErrCan,*) 'Warning from subroutine Sugra, |mu|^2 < 0 at m_Z'
@@ -8733,22 +8696,34 @@ Contains
     End If
     Abs_Mu = Sqrt( Abs_Mu2 )
     mu_T = Abs_mu * phase_mu
-    B_T = (M2_H_mZ(1) + M2_H_mZ(2) + 2._dp *  Abs_Mu2) * tanb_MZ / (1+tanb_MZ**2)
+    B_T = (M2_H(1) + M2_H(2) + 2._dp *  Abs_Mu2) * tanb_MZ / (1+tanb_MZ**2)
 
-    Call TreeMassesMSSM2(gauge_mZ(1), gauge_mZ(2), vevSM, Mi_mZ(1), Mi_mZ(2)   &
-     & , Mi_mZ(3), mu_T, B_T, tanb_mZ, M2_E_mZ, M2_L_mZ, A_l_mZ, Y_l_mZ        &
-     & , M2_D_mZ, M2_U_mZ, M2_Q_mZ, A_d_mZ, A_u_mZ, Y_d_mZ, Y_u_mZ, uU_L, uU_R &
-     & , uD_L, uD_R, uL_L, uL_R, mGlu_T, Phase_Glu_T, mC_T, mC2_T, U_T, V_T    &
-     & , mN_T, mN2_T, N_T, mSneutrino_T, mSneutrino2_T, Rsneutrino_T           &
-     & , mSlepton_T, mSlepton2_T, RSlepton_T, mDSquark_T, mDSquark2_T          &
-     & , RDSquark_T, mUSquark_T, mUSquark2_T, RUSquark_T, mP0_T, mP02_T, RP0_T &
-     & , mS0_T, mS02_T, RS0_T, mSpm_T, mSpm2_T, RSpm_T, mZ2_run, mW2_run       &
-     & , GenerationMixing, kont, .False., .False.)
+    Call TreeMassesMSSM2(gauge(1), gauge(2), vevSM, Mi(1), Mi(2), Mi(3)       &
+     & , mu_T, B_T, tanb_mZ, M2_E, M2_L, A_l, Y_l, M2_D, M2_U, M2_Q, A_d, A_u &
+     & , Y_d, Y_u, uU_L, uU_R, uD_L, uD_R, uL_L, uL_R                         &
+     & , mGlu_T, Phase_Glu_T, mC_T, mC2_T, U_T, V_T, mN_T, mN2_T, N_T         &
+     & , mSneutrino_T, mSneutrino2_T, Rsneutrino_T, mSlepton_T, mSlepton2_T   &
+     & , RSlepton_T, mDSquark_T, mDSquark2_T, RDSquark_T, mUSquark_T          &
+     & , mUSquark2_T, RUSquark_T, mP0_T, mP02_T, RP0_T, mS0_T, mS02_T, RS0_T  &
+     & , mSpm_T, mSpm2_T, RSpm_T, mZ2_run, mW2_run, GenerationMixing, kont    &
+     & , .False., .False.)
 
     If (kont.Ne.0) Then
      Iname = Iname - 1
      Deallocate(mass_old, mass_new, diff_m  )
      Return
+    End If
+
+    !-----------------------------------------------------------------
+    ! setting of renormalization scale, if it is not yet fixed 
+    ! somewhere else
+    ! I take here the geometric mean of the stop masses
+    !-----------------------------------------------------------------
+    If (.Not.UseFixedScale) Then
+     mudim = Max(mZ**2 &
+           &    , product_stop_masses(mUSquark, RUSquark, GenerationMixing))
+     Call SetRGEScale(mudim)
+     UseFixedScale = .False.
     End If
 
     !-----------------------------------------------------------------------

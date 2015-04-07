@@ -4,11 +4,10 @@
 #include<sys/stat.h>
 #include<sys/types.h>
 
-
 #include <dlfcn.h>
 #include <sys/wait.h> 
              
-#include"crt_util.h"
+
 #include"num_in.h"
 #include"num_out.h"
 #include"VandP.h"

@@ -57,14 +57,7 @@ ParticleDefinitions[GaugeES] = {
                  FeynArtsNr -> 3,
                  LaTeX -> "H^-",
                  OutputName -> "Hm" }},                                                   
-    
-     {Fs,     {   Description -> "s neutrino", 
-		   PDG -> {99198,99199,99197},
-                   FeynArtsNr -> 20,                  
-		   LaTeX -> "S_1",
-                   ElectricCharge -> 0,
-                 OutputName -> "S1" }},                                                   
-    
+      
       {VP,   { Description -> "Photon"}}, 
       {VZ,   { Description -> "Z-Boson",
       			 Goldstone -> Ah[{1}] }}, 
@@ -86,8 +79,8 @@ ParticleDefinitions[GaugeES] = {
       {Fu,   { Description -> "Up-Quarks"}},   
       {Fe,   { Description -> "Leptons" }},
       {Fv,   { Description -> "Neutrinos",
-	       PDG ->{12,14,16,8810012,8810014,8810016,9910012,9910014,9910016} }}                                                                             
-   };    
+      			PDG ->{12,14,16,8810012,8810014,8810016,9910012,9910014,9910016} }}                                                                         
+        };    
         
         
         

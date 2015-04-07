@@ -5,7 +5,6 @@ MCATNLOLIBDIR= ../MCatNLO/lib/
 BINDIR= ../bin/
 PDFDIR= ./PDF/
 CUTTOOLSDIR= ./CutTools/
-IREGIDIR= ./IREGI/src/
 STDHEPDIR= ./StdHEP/
 
 PROCESS= hfill.o matrix.o myamp.o 
@@ -81,16 +80,10 @@ $(BINDIR)combine_events: $(COMBINE)
 
 CutTools: $(LIBDIR)libcts.a
 
-IREGI: $(LIBDIR)libiregi.a
-
 $(LIBDIR)libcts.a: $(CUTTOOLSDIR)
 	cd $(CUTTOOLSDIR); make
-	ln -sf ../Source/$(CUTTOOLSDIR)includects/libcts.a $(LIBDIR)libcts.a
-	ln -sf ../Source/$(CUTTOOLSDIR)includects/mpmodule.mod $(LIBDIR)mpmodule.mod
-
-$(LIBDIR)libiregi.a: $(IREGIDIR)
-	cd $(IREGIDIR); make
-	ln -sf ../Source/$(IREGIDIR)libiregi.a $(LIBDIR)libiregi.a
+	ln -sf ../Source/CutTools/includects/libcts.a $(LIBDIR)libcts.a
+	ln -sf ../Source/CutTools/includects/mpmodule.mod $(LIBDIR)mpmodule.mod
 
 StdHEP: $(MCATNLOLIBDIR)libstdhep.a  
 
@@ -105,9 +98,6 @@ clean4pdf:
 
 cleanCT:
 	cd $(CUTTOOLSDIR); make clean; cd ..
-
-cleanIR:
-	cd $(IREGIDIR); make clean; cd ..
 
 cleanStdHEP:
 	cd $(STDHEPDIR); make clean; cd ..

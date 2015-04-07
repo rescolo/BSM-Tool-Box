@@ -15,6 +15,9 @@ RenormalizationScale = MSu[1]*MSu[6];
 
 ConditionGUTscale = (g1*gBL-g1BL*gBL1)/Sqrt[gBL^2+gBL1^2] == g2;
 
+UseHiggs2LoopMSSM = True;
+
+
 BoundaryHighScale={
 {g1,(g1*gBL-g1BL*gBL1)/Sqrt[gBL^2+gBL1^2]},
 {g1,Sqrt[(g1^2+g2^2)/2]},
@@ -41,7 +44,8 @@ BoundaryHighScale={
 {MassWB,m12},
 {MassG,m12},
 {MassBp,m12},
-{MassBBp,0}
+{MassBBp,0},
+{MassBpB,0}
 };
 
 
@@ -86,11 +90,21 @@ BoundaryLowScaleInput={
  {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
 };
 
+ConditionForMassOrdering={
+{Ah,
+"If ((Abs(ZA(1,2)**2)+Abs(ZA(1,1)**2)).le.(Abs(ZA(1,3)**2)+Abs(ZA(1,4)**2))) Then \n
+ MAh2temp = MAh2 \n
+ ZAtemp = ZA \n
+ ZA(1,:) = ZAtemp(2,:) \n
+ ZA(2,:) = ZAtemp(1,:) \n
+ MAh2(2) = MAh2temp(1) \n
+ MAh2(1) = MAh2temp(2) \n
+End If \n" }
+};
+
 
 ListDecayParticles = Automatic;
 ListDecayParticles3B =Automatic;
-
-UseBoundarySUSYatEWSB = True;
 
 (* Example for mSugra input values *)
 DefaultInputValues = {m0 -> 1000, m12 -> 1500, TanBeta->20, SignumMu ->1, Azero -> -1500, SignumMuP -> 1, TBetaP -> 1.15, MZp -> 2500, Yn[1,1]->0.37, Yn[2,2]->0.4, Yn[3,3]->0.4};

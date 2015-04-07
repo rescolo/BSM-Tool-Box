@@ -143,11 +143,6 @@ ParameterDefinitionsMain = {
 			 LesHouches ->{HMIX,101},
              Value -> None,
              OutputName-> Bmu }},        
-
-{{   Description -> "Hypercharge FI-Term", 
-	     LaTeX -> "\\xi_Y",
-             LesHouches -> {FITERMS,1},
-             OutputName-> XiY }},
              
 (*----------------------------------------*)
 (* Soft-breaking masses                   *)
@@ -275,7 +270,7 @@ ParameterDefinitionsMain = {
              
 {{Description -> "Pseudo Scalar mixing angle",
 			 LaTeX -> "\\beta",
-			 DependenceSPheno -> ArcSin[Abs[ZP[1,2]]],
+			 DependenceSPheno -> ArcSin[Abs[ZA[1,2]]],
   (*           DependenceNum -> ArcTan[TanBeta],  *)
              Real -> True, 
              LesHouches -> {HMIX, 10},
@@ -493,7 +488,7 @@ ParameterDefinitionsMain = {
                                {-lWolf,1-1/2*lWolf^2, aWolf*lWolf^2},
                                {aWolf*lWolf^3*Sqrt[(1-rWolf)^2 +nWolf^2],-aWolf*lWolf^2,1}},
              LesHouches -> VCKM,
-             DependenceSPheno -> MatMul[Transpose[conj[Vd]],Vu],
+             DependenceSPheno -> Matmul[Transpose[conj[Vd]],Vu],
              OutputName-> VCKM      }}, 
              
 {{Description ->"Complex CKM Matrix", 
@@ -542,7 +537,7 @@ ParameterDefinitionsMain = {
 					    {0, Mass[Fu,2],0},
   				            {0, 0, Mass[Fu,3]}}, 
              LaTeX -> "\\hat{Y}_u^0",
-             DependenceSPheno -> MatMul[MatMul[conj[Uu],Yu0],Transpose[Vu]],
+             DependenceSPheno -> Matmul[Matmul[conj[Uu],Yu0],Transpose[Vu]],
              LesHouches -> Yu,
              OutputName -> ckYu }},    
 
@@ -551,7 +546,7 @@ ParameterDefinitionsMain = {
  				{0, Mass[Fd,2],0},
  				{0, 0, Mass[Fd,3]}}, 
               LaTeX -> "\\hat{Y}_d^0",
-             DependenceSPheno -> MatMul[MatMul[conj[Ud],Yd0],Transpose[Vd]],
+             DependenceSPheno -> Matmul[Matmul[conj[Ud],Yd0],Transpose[Vd]],
              LesHouches -> Yd,
              OutputName -> ckYd}},    
 
@@ -559,13 +554,13 @@ ParameterDefinitionsMain = {
 {{ Description->"SCKM Trilinear-Down-Coupling",
               LaTeX -> "\\hat{T}_d^0",
              LesHouches -> Td,
-             DependenceSPheno -> MatMul[MatMul[conj[Ud],T[Yd0]],Transpose[Vd]],
+             DependenceSPheno -> Matmul[Matmul[conj[Ud],T[Yd0]],Transpose[Vd]],
              OutputName -> ckTd }},   
 
 {{ Description->"SCKM Trilinear-Up-Coupling",
               LaTeX -> "\\hat{T}_u^0",
              LesHouches -> Tu,
-             DependenceSPheno -> MatMul[MatMul[conj[Uu],T[Yu0]],Transpose[Vu]],
+             DependenceSPheno -> Matmul[Matmul[conj[Uu],T[Yu0]],Transpose[Vu]],
              OutputName -> ckTu }},
              
             
@@ -573,20 +568,20 @@ ParameterDefinitionsMain = {
 {{Description->"SCKM Softbreaking left Squark Mass",
                LaTeX -> "\\hat{m}^{2}_{\\tilde{q}}",
                LesHouches -> mq2,
-               DependenceSPheno -> MatMul[MatMul[Vd,mq02],Transpose[conj[Vd]]],               
+               DependenceSPheno -> Matmul[Matmul[Vd,mq02],Transpose[conj[Vd]]],               
                OutputName -> mq02 }},	
 
 
 {{Description->"SCKM Softbreaking right Up-Squark Mass",
                LaTeX -> "\\hat{m}^{2}_{\\tilde{u}}",
                LesHouches -> mu2,
-               DependenceSPheno -> MatMul[MatMul[conj[Uu],mu02],Transpose[Uu]],               
+               DependenceSPheno -> Matmul[Matmul[conj[Uu],mu02],Transpose[Uu]],               
                OutputName -> mu02 }},             
              
 {{Description->"SCKM Softbreaking right Down-Squark Mass",
                LaTeX -> "\\hat{m}^{2}_{\\tilde{d}}",
                LesHouches -> md2,
-               DependenceSPheno -> MatMul[MatMul[conj[Ud],md02],Transpose[Ud]],                              
+               DependenceSPheno -> Matmul[Matmul[conj[Ud],md02],Transpose[Ud]],                              
                OutputName -> md02 }},  
                
 (*----------------------------------------*)
@@ -598,26 +593,26 @@ ParameterDefinitionsMain = {
 					{0, Mass[Fe,2],0},
   				{0, 0, Mass[Fe,3]}}, 
               LaTeX -> "\\hat{Y}_e^0",
-             DependenceSPheno ->MatMul[MatMul[Ve,Ye0],Transpose[Ue]] ,
+             DependenceSPheno ->Matmul[Matmul[Ve,Ye0],Transpose[Ue]] ,
              LesHouches -> Ye,
              OutputName -> pmYe}},  
 
 {{ Description->"PMNS Trilinear-Lepton-Coupling",
               LaTeX -> "\\hat{T}_e^0",
              LesHouches -> Te,
-             DependenceSPheno ->MatMul[MatMul[Ue,T[Ye0]],Transpose[conj[Ve]]],
+             DependenceSPheno ->Matmul[Matmul[Ue,T[Ye0]],Transpose[conj[Ve]]],
              OutputName -> pmTe }},              
                
 {{Description->"PMNS Softbreaking right Slepton Mass",
                LaTeX -> "\\hat{m}^{2}_{\\tilde{e}}",
                LesHouches -> me2,
-               DependenceSPheno ->MatMul[MatMul[Ue,me02],Transpose[conj[Ue]]],
+               DependenceSPheno ->Matmul[Matmul[Ue,me02],Transpose[conj[Ue]]],
                OutputName -> me02 }},             
              
 {{Description->"PMNS Softbreaking left Slepton Mass",
                LaTeX -> "\\hat{m}^{2}_{\\tilde{l}}",
                LesHouches -> ml2,
-                DependenceSPheno ->MatMul[MatMul[Transpose[Ve],ml02],conj[Ve]],
+                DependenceSPheno ->Matmul[Matmul[Transpose[Ve],ml02],conj[Ve]],
                OutputName -> ml02 }},                            
              
         
@@ -914,7 +909,7 @@ ParameterDefinitionsMain = {
              OutputName-> Tv             }},
 
 {{ Description -> "Softbreaking right Sneutrino Mass",
-             LaTeX -> "m_{\\nu}^2",
+             LaTeX -> "{m_\\nu^2}",
              DependenceNum ->  None, 
              LesHouches -> mv2,
              OutputName-> mv2
@@ -949,24 +944,7 @@ ParameterDefinitionsMain = {
 {{ Description -> "SM Higgs Mass Parameter",
             LaTeX -> "m_H^2",
 	        OutputName -> mH2,
-	        LesHouches -> {SM,3}}},
-
-(*----------------------------------------*)
-(* Gravity                               *)
-(*----------------------------------------*)   
-
-{{ Description -> "Gravitino Mass",
-                LaTeX -> "m_{3/2}",
-	        OutputName -> m32,
-                Value ->  1,                  (* to circumvent problems when loading file in MadGraph *)
-	        LesHouches -> {MSUGRA,2}}},
-
-{{ Description -> "Planck Mass",
-            LaTeX -> "M_P",
-	        OutputName -> MP,
-                Value ->  2.43*10^18,
-	        LesHouches -> {MSUGRA,1}}}
-
+	        LesHouches -> {SM,3}}}
 
 			                                 
  }; 

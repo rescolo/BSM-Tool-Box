@@ -114,7 +114,7 @@ BoundaryLowScaleInput={
  {MassWB, M2input},
  {MassG, M3input},
  {\[Mu], Muinput},
- {B[\[Mu]], MA2input/(TanBeta + 1/TanBeta)},
+ {B[\[Mu]], mA2input/(TanBeta + 1/TanBeta)},
  {vd,Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]},
  {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
 };
@@ -126,8 +126,3 @@ DefaultInputValues[1] = {m0 -> 250, m12 -> 250, TanBeta -> 10, SignumMu -> 1, Az
 DefaultInputValues[2] = {LambdaInput -> 10^5, MessengerScale -> 2*10^5, TanBeta -> 10, SignumMu -> 1, cGrav -> 1, n5plets -> 1, n10plets ->0  };
 
 NeglectLoopsInvolving = {};
-
-IncludeFineTuning = True;
-FineTuningParameters={
-{m0,1/2},{m12,1/2},{Azero,1/2},{\[Mu],1/2},{B[\[Mu]],1/2}
-};

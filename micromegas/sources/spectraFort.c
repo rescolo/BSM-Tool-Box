@@ -34,17 +34,16 @@ void setrhoclumps_(double(*cProfile)(double*))
 void setclumpconst_(double*f,double*rho) {  setClumpConst(*f,*rho); }
 
 
-double calcspectrum_(int*key, double *Sg, double *Se, double *Sp, double *Sne, double *Snm,double *Snl , int *err,int len)
+double calcspectrum_(int*key, double *Sg, double *Se, double *Sp, double *Sne, double *Snm,double *Snl , int *err)
 {  
   double *Sg_=NULL, *Se_=NULL, *Sp_=NULL, *Sne_=NULL, *Snm_=NULL, *Snl_=NULL;
-  
   if(Sg !=mocommon_.par) Sg_=Sg;
   if(Se !=mocommon_.par) Se_=Se;
   if(Sp !=mocommon_.par) Sp_=Sp;
   if(Sne!=mocommon_.par) Sne_=Sne;
   if(Snm!=mocommon_.par) Snm_=Snm;
   if(Snl!=mocommon_.par) Snl_=Snl;
-
+   
   return calcSpectrum(*key,Sg_, Se_, Sp_, Sne_, Snm_, Snl_ ,err); 
 }
 
@@ -56,11 +55,11 @@ double zinterp_(double*x, double*tab) {  return zInterp(*x, tab);}
 
 double spectdnde_(double *E, double *tab){ return SpectdNdE(*E, tab); }   
  
-int displayspectrum_(double*tab, char*fmess,double *Emin,double *Emax,int len)
+int displayspectrum_(double*tab, char*fmess,double *Emin,double *Emax,int*EU,int len)
 {
    char cmess[200];
    fName2c(fmess,cmess, len);
-   return  displaySpectrum(tab, cmess,*Emin,*Emax);
+   return  displaySpectrum(tab, cmess,*Emin,*Emax,*EU);
 } 
 
 
@@ -82,11 +81,11 @@ void pbarfluxtab_(double* Emin, double*sigmav, double *tab,double *tabOut)
 extern void  solarmodulation_(double *PHI, double *mass, double * inTab, double * outTab)
 {   solarModulation(*PHI, *mass, inTab, outTab);}
 
-int basicspectra_(double *Mass, int *pdgN, int *outN, double * tab)
-{ return basicSpectra(*Mass,*pdgN, *outN, tab);}
+int basicspectra_(int *pdgN, int *outN, double * tab)
+{ return basicSpectra(*pdgN, *outN, tab);}
 
-int basicnuspectra_(int*forSun, double *Mass, int *pdgN, int *outN, double * tab)
-{ return basicNuSpectra(*forSun,*Mass, *pdgN, *outN, tab);}
+int basicnuspectra_(int*forSun,int *pdgN, int *outN, double * tab)
+{ return basicNuSpectra(*forSun, *pdgN, *outN, tab);}
 
 
 

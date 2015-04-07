@@ -1,183 +1,152 @@
 Mathematica 7.0 for Linux x86 (64-bit)
 Copyright 1988-2008 Wolfram Research, Inc.
 
-In[1]:= SARAH (Private Version)
-by Florian Staub, 2014
+In[1]:= SARAH SARAHVERSION
+by Florian Staub, 2013
 
 References:
   Comput.Phys.Commun.181 (2010) 1077-1086. (arXiv:0909.2863[hep-ph])
   Comput.Phys.Commun.182 (2011) 808-833. (arXiv:1002.0840[hep-ph])
   Comput.Phys.Commun.184 (2013) 1792-1809. (arXiv:1207.0906[hep-ph])
-  Comput.Phys.Commun.185 (2014) 1773-1790. (arXiv:1309.7223[hep-ph])
+  arXiv:1309.7223[hep-ph]
 Download and Documentation:
   http://sarah.hepforge.org
 
-Start evaluation of a model with:
-   Start["Name of Model"]
-e.g. Start["MSSM"] or Start["NMSSM","CKM"]
+Begin evaluation of Model with:       Start["Name of Model"]
+  e.g. Start["MSSM"] or Start["NMSSM","CKM"]
 To get a list with all installed models, use ShowModels
 
-In[2]:= Preparing arrays
- ... checking Directory: /home/fnstaub/Documents/Uni/SARAH/sarah4/Models/
+In[2]:= Initialization
+
 Model file for the Omega Model (Regime-3) loaded
+*****************************
 Model files loaded   
   Model    : Omega
   Author(s): undefined
   Date     : 2012-09-01
+*****************************
 ******************************************************* 
 Loading Susyno functions for the handling of Lie Groups 
 Based on Susyno v.2.0 by Renato Fonseca (1106.5016)
 webpage: web.ist.utl.pt/renato.fonseca/susyno.html
 ******************************************************* 
-Initialization
-Checking model files: Dynamic[DynamicCheckModelFiles]
-Initialize gauge groups: Dynamic[DynamicInitGaugeG]
-Initialize field: Dynamic[DynamicInitFields]
-Preprocessing necessary information: Dynamic[DynamicInitMisc]
-Checking for anomalies: Dynamic[DynamicCheckAnomalies]
-Derive Lagrangian
-Calculate superpotential: Dynamic[DynamicTermSuperpotentialNr]/13(
- 
->   Dynamic[DynamicTermSuperpotential])
-  checking charge conservation: Dynamic[DynamicCheckingCCSup]
-Calculate F-Terms: Dynamic[DynamicFTermNr]/30 (Dynamic[DynamicFTermName])
-Calculate Matter interactions: Dynamic[DynamicMatterNr]/900 (
- 
->   Dynamic[DynamicMatterName])
-Calculate soft-breaking terms: Dynamic[DynamicSoftTermsCurrent]
-Calculate kinetic Terms
-  ... for scalars: Dynamic[DynamicKineticScalarNr]/11 (
- 
->   Dynamic[DynamicKineticScalarName])
-  ... for fermions: Dynamic[DynamicKineticFermionNr]/11 (
- 
->   Dynamic[DynamicKineticFermionName])
-Calculate D-Terms: Dynamic[DynamicDTermsNr]/44 (Dynamic[DynamicDTermsName])
-Calculate gaugino interactions: Dynamic[DynamicGauginoMatter]/44 (
- 
->   Dynamic[DynamicGauginoMatterName])
-Calculate vector-gaugino interactions: Dynamic[DynamicGauginoVector]/4 (
- 
->   Dynamic[DynamicGauginoVectorName])
-Calculate vector self-interactions: Dynamic[DynamicVectorNr]/4 (
- 
->   Dynamic[DynamicVectorName])
-Calculate gauge transformations: Dynamic[DynamicGaugeTNr]/15 (
- 
->   Dynamic[DynamicGaugeTName])
+Generate all Superfields
+Checking Model Files ...
+    Model File is okay
+    Particle File is okay
+    Parameter File is okay
+Check for needed generators
+   Calculate Lie Group constants
+Create all component Fields
+   vector superfields
+   chiral superfields
+    Create Substitution rules
+Generate Parameter Dependences
+Set Information for Rotations
+Generate cubic Dynkins
+Checking Anomalies
+     No (bminl)^3 Gauge Anomaly
+     No (bminl)x(gravity)^2 Anomaly
+     No (left)^3 Gauge Anomaly
+     No (right)^3 Gauge Anomaly
+     No (color)^3 Gauge Anomaly
+     No (left)^2 x bminl Gauge Anomaly
+     No (right)^2 x bminl Gauge Anomaly
+     No (color)^2 x bminl Gauge Anomaly
+     No Witten Anomaly (left)
+     No Witten Anomaly (right)
+Calc Superpotential
+   Defined Mu3 as Symmetric
+   Defined B[Mu3] as Symmetric
+   Defined f as Symmetric
+   Defined T[f] as Symmetric
+   Defined AlphaOm as AntiSymmetric
+   Defined T[AlphaOm] as AntiSymmetric
+Checking charge conservation of superpotential
+     No violation of charge conservation in superpotential
+     No violation of a global in superpotential
+Calc F-Terms
+Calc Fermion-Scalar
+Calc Soft Breaking
+   Defined mqL2 as Hermitian
+   Defined mqR2 as Hermitian
+   Defined mlL2 as Hermitian
+   Defined mlR2 as Hermitian
+   Defined mPhi2 as Hermitian
+Calc Kinetic Terms
+Calc D-Terms
+Calc Gaugino Interactions
+Calculate Vector Boson - Gaugino - Interactions
+Calculate Vector Boson Self Interactions
+Calc Gauge Transformations
 Calc Complete Lagrangian
 
+-----------------------------------
 Evolve States: GaugeES
-Rotate Lagrangian: Dynamic[DynamicRotateLag[1]]/14
-Derive ghost terms: 
-  ... generate gauge fixing terms: Dynamic[DynamicGFnr[GaugeES]]/4 (
- 
->   Dynamic[DynamicGFname[GaugeES]])
-  ... calculate Ghost interactions
+-----------------------------------
+Calc Ghost Interactions
 Calc Mixings of Matter Fields
-Save information (Dynamic[DynamicSaveInfo[GaugeES]])
+Save Model Information: GaugeES
+      TadpoleEquations
+      Interactions
+      Split Lagrangian
 
+-----------------------------------
 Evolve States: EWSB
+-----------------------------------
 Parametrize Higgs Sector
-   Update gauge transformations: Dynamic[DynamicUGT[UGTvev[2]]]/108 (
- 
->   Dynamic[DynamicUGTname[UGTvev[2]]])
-Calc mass matrices gauge sector: Dynamic[DynamicMMgaugeNr[EWSB]]/2(
- 
->   Dynamic[DynamicMMgaugeName[EWSB]])
-   Update gauge transformations: Dynamic[DynamicUGT[UGTgaugeMM[2]]]/116 (
- 
->   Dynamic[DynamicUGTname[UGTgaugeMM[2]]])
-Rotate Lagrangian: Dynamic[DynamicRotateLag[2]]/14
-Derive ghost terms: 
-  ... generate gauge fixing terms: Dynamic[DynamicGFnr[EWSB]]/5 (
- 
->   Dynamic[DynamicGFname[EWSB]])
-  ... calculate Ghost interactions
+Update Gauge Transformations
+Update Gauge Transformations
+Calc Ghost Interactions
 Calc Mixings of Matter Fields
-   Calculate mass matrices Dynamic[DynamicNrMass[{{{SdeltaRm, 
- 
->        conj[SdeltaRbarp]}, {conj[SdeltaRm], SdeltaRbarp}}, 
- 
->      {{SomegaRm, conj[SomegaRp]}, {conj[SomegaRm], SomegaRp}}, 
- 
->      {{fWR0, FomegaR0}, {fWR0, FomegaR0}}, 
- 
->      {{fWRm, FomegaRm}, {fWRp, FomegaRp}}, {{SdL}, {conj[SdL]}}, 
- 
->      {{SuL}, {conj[SuL]}}, {{SdR}, {conj[SdR]}}, {{SuR}, {conj[SuR]}}, 
- 
->      {{SeL}, {conj[SeL]}}, {{SeR}, {conj[SeR]}}, {{SvL}, {conj[SvL]}}, 
- 
->      {{SvR}, {conj[SvR]}}, {{SHd0, conj[SHu0]}, {conj[SHd0], SHu0}}, 
- 
->      {{SHdm, conj[SHup]}, {conj[SHdm], SHup}}, 
- 
->      {{SomegaLm, conj[SomegaLp]}, {conj[SomegaLm], SomegaLp}}, 
- 
->      {{SdeltaLp, conj[SdeltaLbarm]}, {conj[SdeltaLp], SdeltaLbarm}}, 
- 
->      {{SdeltaLpp, conj[SdeltaLbarmm]}, {conj[SdeltaLpp], SdeltaLbarmm}}, 
- 
->      {{SdeltaL0, conj[SdeltaLbar0]}, {conj[SdeltaL0], SdeltaLbar0}}, 
- 
->      {{SdeltaRmm, conj[SdeltaRbarpp]}, {conj[SdeltaRmm], SdeltaRbarpp}}, 
- 
->      {{SdeltaR0, conj[SdeltaRbar0]}, {conj[SdeltaR0], SdeltaRbar0}}}]]/20 (
- 
->   Dynamic[DynamicNameMass[{{{SdeltaRm, conj[SdeltaRbarp]}, 
- 
->       {conj[SdeltaRm], SdeltaRbarp}}, 
- 
->      {{SomegaRm, conj[SomegaRp]}, {conj[SomegaRm], SomegaRp}}, 
- 
->      {{fWR0, FomegaR0}, {fWR0, FomegaR0}}, 
- 
->      {{fWRm, FomegaRm}, {fWRp, FomegaRp}}, {{SdL}, {conj[SdL]}}, 
- 
->      {{SuL}, {conj[SuL]}}, {{SdR}, {conj[SdR]}}, {{SuR}, {conj[SuR]}}, 
- 
->      {{SeL}, {conj[SeL]}}, {{SeR}, {conj[SeR]}}, {{SvL}, {conj[SvL]}}, 
- 
->      {{SvR}, {conj[SvR]}}, {{SHd0, conj[SHu0]}, {conj[SHd0], SHu0}}, 
- 
->      {{SHdm, conj[SHup]}, {conj[SHdm], SHup}}, 
- 
->      {{SomegaLm, conj[SomegaLp]}, {conj[SomegaLm], SomegaLp}}, 
- 
->      {{SdeltaLp, conj[SdeltaLbarm]}, {conj[SdeltaLp], SdeltaLbarm}}, 
- 
->      {{SdeltaLpp, conj[SdeltaLbarmm]}, {conj[SdeltaLpp], SdeltaLbarmm}}, 
- 
->      {{SdeltaL0, conj[SdeltaLbar0]}, {conj[SdeltaL0], SdeltaLbar0}}, 
- 
->      {{SdeltaRmm, conj[SdeltaRbarpp]}, {conj[SdeltaRmm], SdeltaRbarpp}}, 
- 
->      {{SdeltaR0, conj[SdeltaRbar0]}, {conj[SdeltaR0], SdeltaRbar0}}}]])
-   Update gauge transformations: Dynamic[DynamicUGT[UGTmatterMM[2]]]/134 (
- 
->   Dynamic[DynamicUGTname[UGTmatterMM[2]]])
+Calc Mass Matrices
+    For {SdeltaRm, conj[SdeltaRbarp]}
+    For {SomegaRm, conj[SomegaRp]}
+    For {fWR0, FomegaR0}
+    For {fWRm, FomegaRm}{fWRp, FomegaRp}
+    For {SdL}
+    For {SuL}
+    For {SdR}
+    For {SuR}
+    For {SeL}
+    For {SeR}
+    For {SvL}
+    For {SvR}
+    For {SHd0, conj[SHu0]}
+    For {SHdm, conj[SHup]}
+    For {SomegaLm, conj[SomegaLp]}
+    For {SdeltaLp, conj[SdeltaLbarm]}
+    For {SdeltaLpp, conj[SdeltaLbarmm]}
+    For {SdeltaL0, conj[SdeltaLbar0]}
+    For {SdeltaRmm, conj[SdeltaRbarpp]}
+    For {SdeltaR0, conj[SdeltaRbar0]}
+Update Gauge Transformations
 Calculate Tadpole Equations
-Save information (Dynamic[DynamicSaveInfo[EWSB]])
+Save Model Information: EWSB
+      TadpoleEquations
+      Interactions
+      Split Lagrangian
 
 ModelFile::NoGoldstone: 
    No Goldstone boson for (possibly) massive gauge boson VWR0 defined.
 
+-----------------------------------
 Finishing
+-----------------------------------
 Calculate final Lagrangian
-Cleaning up
-   ... add matrix products
-   ... checking for massless particles
-   ... calculating tree level masses (Dynamic[DynamicCalcTreeMasses])
-   ... simplify mass matrices
-Numerical calculations (if necessary)
-   ... checking for spectrum file: Dynamic[DynamicSpectrumFileInput]
-   ... reading parameter values and dependences
-   ... calculate mixing matrices
+Add Matrix Products
+Checking for massless particles
+Calculating Tree Level Masses
+     For GaugeES
+     For EWSB
+Simplify Mass Matrices
+Checking for Spectrum File
+     No Spectrum File defined
+Reading Parameter Values and Dependences
+Calculate Mixing Matrices
 Checking for CP even and odd scalars
 
-All Done. Omega is ready!
-(Model initialized in 378.885s)
+All Done... Omega is ready!
 
 
 Are you unfamiliar with SARAH? Use SARAH`FirstSteps
@@ -205,12 +174,7 @@ Out[3]= {{YQ[index1, index2, 1],
 >    {g2, -------}}
              2
 
-In[4]:= Generate SPheno Source Code
-Performing necessary calculations
- ... can't extract tree level contributions to delta(rho) because gauge group\
- 
->   'left' or 'hypercharge' not defined; assuming zero
-Checking model for missing definitions
+In[4]:= Checking model for missing definitions
 
 CheckModelFiles::MissingParticle: 
    The following particle are not defined in ParticleDefinitions in
@@ -234,70 +198,89 @@ CheckModelFiles::MissingOutputNameParameter:
     {gBL, g2, g3, Mdelta, B[Mdelta], <<46>>, UDL0, UDRmm, UDR0}
 Generate Directories
 Building Particle List
-Calculate supersymmetric RGEs
+--------------------------------
+Calculate supersymmetric RGEs   
+--------------------------------
 Making Lists of Particles and Couplings
 Calculating anomalous Dimensions
 Calculate Beta Functions for trilinear Superpotential parameters
-   Calculating Dynamic[DynamicProgressRGE[YIJK]]/5.(
- 
->   Dynamic[DynamicCoupProgess[YIJK]])
 Calculate Beta Functions for bilinear Superpotential parameters
-   Calculating Dynamic[DynamicProgressRGE[MUIJ]]/3.(
- 
->   Dynamic[DynamicCoupProgess[MUIJ]])
 Calculate Beta Functions for linear Superpotential parameters
-   Nothing to do.
 Calculate Beta Functions for trilinear soft breaking parameters
-   Calculating Dynamic[DynamicProgressRGE[TIJK]]/5.(
- 
->   Dynamic[DynamicCoupProgess[TIJK]])
 Calculate Beta Functions for bilinear soft breaking parameters
-   Calculating Dynamic[DynamicProgressRGE[BIJ]]/3.(
- 
->   Dynamic[DynamicCoupProgess[BIJ]])
 Calculate Beta Functions for linear soft breaking parameters
-   Nothing to do.
 Calculate Traces for soft-scalar masses
-   Calculating: Dynamic[DynamicCoupProgess[trace]]
 Calculate Beta Functions for scalar soft breaking masses
-   Calculating Dynamic[DynamicProgressRGE[M2IJ]]/11.(
- 
->   Dynamic[DynamicCoupProgess[M2IJ]])
 Calculate Beta Functions for Gaugino masses
-   Calculating Dynamic[DynamicProgressRGE[MI]]/4.(
- 
->   Dynamic[DynamicCoupProgess[MI]])
 Calculate Beta Functions for Gauge Couplings
-   Calculating Dynamic[DynamicProgressRGE[GAUGE]]/3.(
- 
->   Dynamic[DynamicCoupProgess[GAUGE]])
 Calculate Beta Functions for 4-point Superpotential parameters
-   Nothing to do.
 Calculate Beta Functions for 4-point soft breaking parameters
-   Nothing to do.
 Calculate Beta Functions for VEVs
-   Calculating Dynamic[DynamicProgressRGE[VEV]]/1.(
- 
->   Dynamic[DynamicCoupProgess[VEV]])
 
-Finished with the calculation of the RGEs. Time needed: 384.43s
+Finished with the calculation of the RGEs
 The results are saved in /home/fnstaub/Documents/Uni/SARAH/sarah4/Output/Omeg\
  
 >    a-Regime-1/RGEs/
-
-Preparing SPheno code
-  Build parameter lists
-Write RGEs
-  Processing RGEs running up: Dynamic[DynamicRGEup] 
- 
->   Dynamic[DynamicRGEbeta[numberLow]]
-  Processing RGEs running including VEVs: Dynamic[DynamicRGEall] 
- 
->   Dynamic[DynamicRGEbeta[numberAllwithVEVs]]
-Write Tree Level-Masses
-  Getting needed Information
-  Writing routine for calculating all masses
-  Writing all masses: Dynamic[DynamicMassNr]/38(Dynamic[DynamicMassName])
+--------------------------------
+Generate SPheno Source Code
+--------------------------------
+Build parameter lists
+-----------------------------------
+Write RGEs for Low Scale Parameters
+-----------------------------------
+Write Function GToParameters
+Write Function ParametersToG
+Write RGE Function
+-------------------------------
+Write RGEs including VEVs      
+-------------------------------
+Write Function GToParameters
+Write Function ParametersToG
+Write RGE Function
+----------------------------------------------
+Writing Routines for Tree Level-Masses
+----------------------------------------------
+Getting needed Information
+Writing Routine for Calculating all Masses
+Write Tree-Level Masses for BinoR1
+Write Tree-Level Masses for WinoLr1
+Write Tree-Level Masses for GluR1
+Write Tree-Level Masses for Fd1r1
+Write Tree-Level Masses for Fu1r1
+Write Tree-Level Masses for Fd2r1
+Write Tree-Level Masses for Fu2r1
+Write Tree-Level Masses for Fe1r1
+Write Tree-Level Masses for FvL1
+Write Tree-Level Masses for Fe2r1
+Write Tree-Level Masses for FvR1
+Write Tree-Level Masses for H0r1
+Write Tree-Level Masses for HCr1
+Write Tree-Level Masses for DL3r1
+Write Tree-Level Masses for DL1r1
+Write Tree-Level Masses for DL2r1
+Write Tree-Level Masses for DR1r1
+Write Tree-Level Masses for DR2r1
+Write Tree-Level Masses for DR3r1
+Write Tree-Level Masses for Om1r1
+Write Tree-Level Masses for Om2r1
+Write Tree-Level Masses for SomegaL0
+Write Tree-Level Masses for sigmaOmR
+Write Tree-Level Masses for phiOmR
+Write Tree-Level Masses for VB
+Write Tree-Level Masses for VWL
+Write Tree-Level Masses for VG
+Write Tree-Level Masses for VWRm
+Write Tree-Level Masses for VWR0
+Writing Subroutine for Calculating MHpm1R1
+Writing Subroutine for Calculating MHpm2R1
+Writing Subroutine for Calculating MCha1r1
+Writing Subroutine for Calculating MSH0r1
+Writing Subroutine for Calculating MSHCr1
+Writing Subroutine for Calculating MSDLpR1
+Writing Subroutine for Calculating MSDLppR1
+Writing Subroutine for Calculating MSDL0r1
+Writing Subroutine for Calculating MSDRmmR1
+Writing Subroutine for Calculating {MVWRm}
 
 Intersection::normal: 
    Nonatomic expression expected at position 1 in Intersection[List].
@@ -305,23 +288,24 @@ Intersection::normal:
 Part::partd: Part specification List[[3]] is longer than depth of object.
 
 Part::partd: Part specification List[[3]] is longer than depth of object.
-Write routine for tadpole equations
-  Writing solver for tadpole equations 
-  Writing tadpole equations 
+--------------------------------------
+Writing Routines for Tadpole Equations 
+--------------------------------------
+Writing solver for tadpole equations 
+Writing tadpole equations 
 --------------------------------------
 Writing SPheno Shifts for Parameters 
 --------------------------------------
 Subroutine for Shifts up and dowm
 
-Finished! SPheno code generated in 814.391s
-Output saved in /home/fnstaub/Documents/Uni/SARAH/sarah4/Output/Omega-Regime-\
+Finished! Output is in /home/fnstaub/Documents/Uni/SARAH/sarah4/Output/Omega-\
  
->    1/EWSB/SPheno/
+>    Regime-1/EWSB/SPheno/
 
 The following steps are now necessary to implement the model in SPheno: 
   1. Copy the created files to a new subdirectory "/Omega" of your SPheno\
  
->    3.3.0 (or later) installation
+>    3.2.4 (or later) installation
   2. Compile the model by using 
         make Model=Omega
      in the main directory of SPheno

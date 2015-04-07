@@ -38,8 +38,7 @@ ParameterDefinitions = {
                            
 {vd,        { Description -> "Down-VEV"}}, 
 {vu,        { Description -> "Up-VEV"}},       
-{v,         { Description -> "EW-VEV",
-              DependenceNum -> Sqrt[4*Mass[VZ]^2/(g1^2+g2^2)]}},
+{v,         { Description -> "EW-VEV"}},
              
 {\[Beta],   { Description -> "Pseudo Scalar mixing angle"  }},             
 {TanBeta,   { Description -> "Tan Beta" }},              

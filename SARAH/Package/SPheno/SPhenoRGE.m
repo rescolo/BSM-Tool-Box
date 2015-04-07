@@ -22,7 +22,7 @@
 GenerateSPhenoRGEs:=Block[{i, currentRegime,readRegime},
 $sarahCurrentSPhenoDir=ToFileName[{$sarahCurrentOutputDir,"SPheno"}];
 (*CreateDirectory[$sarahCurrentSPhenoDir];*)
-Print[StyleForm["Write RGEs","Section",FontSize->12]];
+
 sphenoRGE=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"RGEs_"<>ModelName<>".f90"]];
 
 SPhenoParameters=Join[SPhenoParameters,{{Tr1,{gaugenr},{AnzahlGauge}}}];
@@ -35,28 +35,12 @@ listBeta1Loop = {};
 listBeta2Loop = {};
 
 If[ThreeIndexParametersInvolved===True,
-BetaLijklSave=BetaLijkl;
-BetaYijkSave=BetaYijk;
-BetaTijkSave=BetaTijk;
-BetaMuijSave=BetaMuij;
-BetaBijSave=BetaBij;
-BetaMiSave=BetaMi;
-BetaDGiSave=BetaDGi;
-BetaFIiSave=BetaFIi;
-Betam2ijSave=Betam2ij;
-BetaGaugeSave=BetaGauge;
-BetaVEVSave=BetaVEV;
-TraceAbbrSave=TraceAbbr;
-GijSave=Gij;
-
 BetaLijkl=BetaLijkl3I;
 BetaYijk=BetaYijk3I;
 BetaTijk=BetaTijk3I;
 BetaMuij=BetaMuij3I;
 BetaBij=BetaBij3I;
 BetaMi=BetaMi3I;
-BetaFIi=BetaFIi3I;
-BetaDGi=BetaDGi3I;
 Betam2ij=Betam2ij3I;
 BetaGauge=BetaGauge3I;
 BetaVEV=BetaVEV3I;
@@ -130,12 +114,6 @@ listBeta1Loop  = Join[listBeta1Loop ,Transpose[BetaDGi][[2]]];
 listBeta2Loop  = Join[listBeta2Loop ,Transpose[BetaDGi][[3]]];
 ];
 
-If[Length[BetaFIi]!= 0,
-listAllParameters =Join[listAllParameters ,Transpose[BetaFIi][[1]]];
-listBeta1Loop  = Join[listBeta1Loop ,Transpose[BetaFIi][[2]]];
-listBeta2Loop  = Join[listBeta2Loop ,Transpose[BetaFIi][[3]]];
-];
-
 
 
 
@@ -175,34 +153,22 @@ i++;];
 
 
 
-(*
 Print["-----------------------------------"];
 Print["Write RGEs for Low Scale Parameters"];
 Print["-----------------------------------"];
-*)
 
-DynamicRGEbeta[numberLow]="";
-Print["  Processing RGEs running up: ",Dynamic[DynamicRGEup]," ",Dynamic[DynamicRGEbeta[numberLow]]];
-
-DynamicRGEup="Generating abbreviations";
 subSPhenoMatTr={};
 GenerateSPhenoAbbr[list1LoopLow,list2LoopLow];
 
 numberLow=GetNumberParameters[lowScaleNames];
 
-DynamicRGEup="Writing GToParameters";
 WriteGToParameters[lowScaleNames,numberLow];
-DynamicRGEup="Writing ParametersToG";
 WriteParametersToG[lowScaleNames,numberLow];
-
 
 If[FreeQ[list1LoopLow,Tr1]==False,
 subSPhenoMatTr={};
-DynamicRGEup="Generating abbreviations";
 GenerateSPhenoAbbr[Join[list1LoopLow,Transpose[TraceAbbr[[1]]/.{}->{{{},{}}}][[2]]/.{{}}->{}],Join[list2LoopLow,Transpose[TraceAbbr[[2]]/.{}->{{{},{}}}][[2]]/.{{}}->{} ]];
-DynamicRGEup="Writing Beta-Functions";
 WriteSPhenoRGE[lowScaleNames,list1LoopLow,list2LoopLow,{},TraceAbbr,numberLow];,
-DynamicRGEup="Writing Beta-Functions";
 WriteSPhenoRGE[lowScaleNames,list1LoopLow,list2LoopLow,{},{},numberLow];
 ];
 
@@ -211,31 +177,23 @@ WriteSPhenoRGE[lowScaleNames,list1LoopLow,list2LoopLow,{},{},numberLow];
 
 If[AllRGEsRunning===False,
 
-(*
 Print["-------------------------------"];
 Print["Write RGEs for all Parameters"];
 Print["-------------------------------"];
-*)
-DynamicRGEbeta[numberAll]="";
-Print["  Processing RGEs running down: ",Dynamic[DynamicRGEdown]," ",Dynamic[DynamicRGEbeta[numberAll]]];
+
 (* All RGEs  *)
 
 subSPhenoMatTr={};
 If[Head[TraceAbbr]===List,
-DynamicRGEdown="Generating abbreviations";
 GenerateSPhenoAbbr[Join[listBeta1Loop,Transpose[TraceAbbr[[1]]/.{}->{{{},{}}}][[2]]]/.{{}}->{},Join[listBeta2Loop,Transpose[TraceAbbr[[2]] /.{}->{{{},{}}}][[2]]/.{{}}->{} ]];, 
-DynamicRGEdown="Generating abbreviations";
 GenerateSPhenoAbbr[listBeta1Loop/.{{}}->{},listBeta2Loop/.{{}}->{} ];
 ];
 
 numberAll = GetNumberParameters[listAllParameters];
 
-DynamicRGEup="Writing GToParameters";
 WriteGToParameters[listAllParameters,numberAll];
-DynamicRGEup="Writing ParametersToG";
 WriteParametersToG[listAllParameters,numberAll];
 
-DynamicRGEdown="Writing Beta-Functions";
 WriteSPhenoRGE[listAllParameters,listBeta1Loop ,listBeta2Loop ,{},If[Head[TraceAbbr]===List,TraceAbbr,{}], numberAll];,
 
 numberAll = numberLow;
@@ -248,13 +206,9 @@ numberAll = numberLow;
 
 
 If[Length[NeededAnaDimsForVEVs]>0 ,
-(*
 Print["-------------------------------"];
 Print["Write RGEs including VEVs      "];
 Print["-------------------------------"];
-*)
-
-
 
 subSPhenoMatTr={};
 listAllParametersAndVEVs = listAllParameters;
@@ -270,21 +224,14 @@ i++;];
 
  numberAllwithVEVs = numberAll +GetNumberParameters[Transpose[BetaVEV][[1]]/. A_[i1]->A];
 
-DynamicRGEbeta[numberAllwithVEVs]="";
-Print["  Processing RGEs running including VEVs: ",Dynamic[DynamicRGEall]," ",Dynamic[DynamicRGEbeta[numberAllwithVEVs]]];
-
 If[RGEsForVEVs=!=False,
-DynamicRGEall="Generating abbreviations";
 If[Head[TraceAbbr]===List,
 GenerateSPhenoAbbr[Join[listBeta1LoopVEVs,Transpose[TraceAbbr[[1]]/.{}->{{{},{}}}][[2]]/.{{}}->{}],Join[listBeta2LoopVEVs,Transpose[TraceAbbr[[2]]/.{}->{{{},{}}}][[2]]/.{{}}->{} ]];,
 GenerateSPhenoAbbr[listBeta1LoopVEVs/.{{}}->{},listBeta2LoopVEVs/.{{}}->{} ];
 ];
-DynamicRGEall="Writing GToParameters";
 WriteGToParameters[listAllParametersAndVEVs,numberAllwithVEVs ];
-DynamicRGEall="Writing ParametersToG";
 WriteParametersToG[listAllParametersAndVEVs,numberAllwithVEVs ];
 
-DynamicRGEall="Writing Beta-Functions";
 WriteSPhenoRGE[listAllParametersAndVEVs,listBeta1LoopVEVs,listBeta2LoopVEVs ,{},If[Head[TraceAbbr]===List,TraceAbbr,{}], numberAllwithVEVs];
 ];,
 numberAllwithVEVs = numberAll;
@@ -511,7 +458,7 @@ WriteString[sphenoRGE, "End Subroutine Chop2_CT \n\n"];
 
 WriteGToParameters[parameterList_, numberParameters_] :=Block[{i,i1,i2},
 
-(* Print["Write Function GToParameters"]; *)
+Print["Write Function GToParameters"];
 
 MakeSubroutineTitle["GToParameters"<>ToString[numberParameters]<>SubNr,parameterList, {"g"},{},sphenoRGE];
 
@@ -599,7 +546,7 @@ WriteString[sphenoRGE, "End Subroutine GToParameters"<> ToString[numberParameter
 
 WriteParametersToG[parameterList_, numberParameters_] :=Block[{i,i1,i2},
 
-(* Print["Write Function ParametersToG"]; *)
+Print["Write Function ParametersToG"];
 
 MakeSubroutineTitle["ParametersToG"<>ToString[numberParameters]<>SubNr,parameterList, {},{"g"}, sphenoRGE];
 
@@ -700,7 +647,7 @@ WriteString[sphenoRGE, "End Subroutine ParametersToG" <> ToString[numberParamete
 
 WriteSPhenoRGE[listParameters_, OneLoop_, TwoLoop_, AddInvolvedParameters_,spuren_,nr_]:=Block[{i,i1,i2},
 
-(* Print["Write RGE Function"]; *)
+Print["Write RGE Function"];
 
 
 WriteString[sphenoRGE,"Subroutine rge"<>ToString[nr]<>SubNr<>"(len, T, GY, F) \n"];
@@ -992,8 +939,6 @@ WriteString[sphenoRGE, "End If \n \n \n"];
 
 
 For[i=1,i<=Length[listParameters],
-DynamicRGEbeta[nr]="("<>ToString[i]<>"/"<>ToString[Length[listParameters]]<>")";
-
 If[listDy==={{},{}},
 WriteBetaFunction[listParameters[[i]],OneLoop[[i]] //. subSPhenoMatTr ,TwoLoop[[i]] //. subSPhenoMatTr, False];,
 If[Length[Expand[OneLoop[[i]]] //. subSPhenoMatTr]<20,
@@ -1002,7 +947,6 @@ WriteBetaFunction[listParameters[[i]],Expand[OneLoop[[i]]] //. subSPhenoMatTr ,E
 ];
 ];
 i++;];
-DynamicRGEbeta[nr]="(All Done)";
 
 
 

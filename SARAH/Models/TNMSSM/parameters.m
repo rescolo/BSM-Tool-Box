@@ -82,8 +82,7 @@ ParameterDefinitions = {
                    
               
 {ThetaW,    { Description -> "Weinberg-Angle",
-             DependenceNum -> None,
-	      Value -> 0.511621}},                           
+             DependenceNum -> ArcSin[Sqrt[1 - (Mass[VWm]^2 - g2^2*vT^2)/Mass[VZ]^2]]}},                           
 
 {PhaseGlu,  { Description -> "Gluino-Phase" }},   
 

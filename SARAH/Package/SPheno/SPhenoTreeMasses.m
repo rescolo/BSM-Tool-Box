@@ -19,22 +19,17 @@
 
 
 
-GenerateSPhenoTreeMasses[Eigenstates_]:=Block[{i,j, currentRegime, readRegime},
-(*
+GenerateSPhenoTreeMasses[Eigenstates_]:=Block[{i, currentRegime, readRegime},
 Print["----------------------------------------------"];
 Print["Writing Routines for Tree Level-Masses"];
 Print["----------------------------------------------"];
-*)
-Print[StyleForm["Write Tree Level-Masses","Section",FontSize->12]];
+
  
 $sarahCurrentSPhenoDir=ToFileName[{$sarahCurrentOutputDir,"SPheno"}];
 (* CreateDirectory[$sarahCurrentSPhenoDir]; *)
 sphenoTree=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"SusyMasses_"<>ModelName<>".f90"]];
 
 listRGEparameters = listAllParameters;
-
-listBrokenGaugeCouplings=DeleteCases[Transpose[BetaGauge][[1]],strongCoupling];
-subStableVEVs=Flatten[{Table[{listBrokenGaugeCouplings[[i]]^x_ listVEVs[[j]]^y_ -> listBrokenGaugeCouplings[[i]]^x listVEVsStable[[j]]^y,a__ listBrokenGaugeCouplings[[i]] listVEVs[[j]]^y_ -> a listBrokenGaugeCouplings[[i]] listVEVsStable[[j]]^y},{i,1,Length[listBrokenGaugeCouplings]},{j,1,Length[listVEVs]}],Table[{listBrokenGaugeCouplings[[i]]^x_ listVEVs[[j]]listVEVs[[k]] -> listBrokenGaugeCouplings[[i]]^x listVEVsStable[[j]]listVEVsStable[[k]],a__ listBrokenGaugeCouplings[[i]] listVEVs[[j]]listVEVs[[k]] -> a listBrokenGaugeCouplings[[i]] listVEVsStable[[j]]listVEVsStable[[k]]},{i,1,Length[listBrokenGaugeCouplings]},{j,1,Length[listVEVs]},{k,1,Length[listVEVs]}]}];
 
 If[IntermediateScale ===True && Head[HeavyFields]=!=List,
 WriteCalcTreeMassesDummy;,
@@ -45,20 +40,10 @@ If[IntermediateScale =!=True,
 WriteSusyMassesHeader;
 ];
 
-MassesForEffpot=False;
 WriteCalcAllTreeMasses;
-
-If[IntermediateScale =!= True,
-MassesForEffpot=True;
-WriteCalcAllTreeMasses;
-MassesForEffpot=False;
-];
 
 If[IntermediateScale =!=True,
 WriteMassRoutines; 
-MassesForEffpot=True;
-WriteMassRoutines; 
-MassesForEffpot=False;
 WriteCalcAllTreeMassesSM;
 ];
 
@@ -71,6 +56,7 @@ i++;];
 ];
 
 GenerateSortGoldstones[Eigenstates];
+
 
 If[IntermediateScale =!= True,
 WriteString[sphenoTree,"\n"];
@@ -85,13 +71,11 @@ Close[sphenoTree];
 
 InitSPhenoTreeMasses[Eigenstates_]:=Block[{i,j,k, type,massMatrixTemp},
 
-Print["  Getting needed Information"]; 
+Print["Getting needed Information"]; 
 
 massesTree={};
 mixTree={};
 mixVB = {};
-
-AllMassesSPheno={};
 
 For[k=1,k<=Length[NameOfStates],
 If[Head[DEFINITION[NameOfStates[[k]]][MatterSector]]===List,
@@ -169,13 +153,11 @@ SPhenoParameters = Join[SPhenoParameters,{{CurrentMass,{generation},{Length[mass
 parameters = Join[parameters,{{CurrentMass,{generation},{Length[massesTree[[i]]]}},{CurrentMass2,{generation},{Length[massesTree[[i]]]}}}];
 If[mixParameter2=!=None,
 NewMassParameters = Join[NewMassParameters,{CurrentMass,CurrentMass2,mixParameter1,mixParameter2}];
-AllMassesSPheno=Join[AllMassesSPheno,{CurrentMass,CurrentMass2}];
 NewMasses = Join[NewMasses,{{CurrentMass,Length[massesTree[[i]]]}}];
 If[FreeQ[SMParticles,currentName]==False,
 NewMassParametersSM = Join[NewMassParametersSM,{CurrentMass,CurrentMass2,mixParameter1,mixParameter2}];
 ];,
 NewMassParameters = Join[NewMassParameters,{CurrentMass,CurrentMass2,mixParameter1}];
-AllMassesSPheno=Join[AllMassesSPheno,{CurrentMass,CurrentMass2}];
 If[FreeQ[SMParticles,currentName]==False,
 NewMassParametersSM = Join[NewMassParametersSM,{CurrentMass,CurrentMass2,mixParameter1}];
 ];
@@ -205,7 +187,6 @@ CurrentMass= SPhenoMass[listNotMixedMasses[[i,1]]];
 CurrentMass2= SPhenoMassSq[listNotMixedMasses[[i,1]]];
 
 NewMassParameters = Join[NewMassParameters,{CurrentMass,CurrentMass2}];
-AllMassesSPheno=Join[AllMassesSPheno,{CurrentMass,CurrentMass2}];
 NewMasses = Join[NewMasses,{{CurrentMass,getGenSPheno[listNotMixedMasses[[i,1]]]}}];
 realVar = Join[realVar,{CurrentMass,CurrentMass2}];
 SPhenoParameters = Join[SPhenoParameters,{{CurrentMass,{generation},{getGenSPheno[listNotMixedMasses[[i,1]]]}},{CurrentMass2,{generation},{getGenSPheno[listNotMixedMasses[[i,1]]]}}}];
@@ -226,7 +207,6 @@ For[i=1,i<=Length[mixVB],
 ListTreeVB = Join[ListTreeVB,{{StringReplace[ToString[Intersection[getBlank/@mixVB[[i,2]]]],{","->"","{"->"","}"->""," "->""}], Transpose[Select[parameters,(FreeQ[MassMatrix[mixVB[[i,2,1]]],#[[1]]]==False)&]][[1]],SPhenoForm[mixVB[[i,3]]],SPhenoForm/@DeleteCases[Intersection[SPhenoMass/@getBlank/@mixVB[[i,2]]],0.],SPhenoForm/@DeleteCases[Intersection[SPhenoMassSq/@getBlank/@mixVB[[i,2]]],0.],AssociatedMixingAngles[mixVB[[i,3]]],MassMatrix[mixVB[[i,2,1]]],mixVB[[i,2]]}}];
 NewMassParameters=Join[NewMassParameters,DeleteCases[Flatten[{Intersection[SPhenoMass/@getBlank/@mixVB[[i,2]]],Intersection[SPhenoMassSq/@getBlank/@mixVB[[i,2]]],mixVB[[i,3]],AssociatedMixingAngles[mixVB[[i,3]]]}],0.]];
 realVar = Join[realVar,DeleteCases[Flatten[{Intersection[SPhenoMass/@getBlank/@mixVB[[i,2]]],Intersection[SPhenoMassSq/@getBlank/@mixVB[[i,2]]]}],0.]];
-AllMassesSPheno=Join[AllMassesSPheno,DeleteCases[Flatten[{Intersection[SPhenoMass/@getBlank/@mixVB[[i,2]]],Intersection[SPhenoMassSq/@getBlank/@mixVB[[i,2]]]}],0.]];
 
 If[FreeQ[subAlways,Last[mixVB[[i]]]],
 pos=Position[paraDef,Last[mixVB[[i]]]];
@@ -267,7 +247,7 @@ ExistingParameters = Complement[ExistingParameters,NewMassParameters];
 
 WriteSusyMassesHeader :=Block[{},
 
-Print["  Writing header"];
+Print["Writing Header"];
 
 WriteCopyRight[sphenoTree];
 
@@ -281,8 +261,6 @@ WriteString[sphenoTree, "!Use StandardModel \n \n \n"];
 WriteString[sphenoTree, "Logical :: SignOfMassChanged =.False.  \n"];
 WriteString[sphenoTree, "Logical :: SignOfMuChanged =.False.  \n"];
 
-(* WriteString[sphenoTree, "Real(dp) :: epsM = 1.0E-5_dp  \n"]; *)
-
 WriteString[sphenoTree, "Contains \n \n"];
 
 
@@ -290,14 +268,9 @@ WriteString[sphenoTree, "Contains \n \n"];
 ];
 
 
-WriteCalcAllTreeMasses:=Block[{i2,suffix},
+WriteCalcAllTreeMasses:=Block[{i2},
 
-Print["  Writing routine for calculating all masses"];
-
-If[MassesForEffpot===True,
-suffix="EffPot";,
-suffix="";
-];
+Print["Writing Routine for Calculating all Masses"];
 
 subCouplingsSPheno={};
 For[i2=1,i2<=4,
@@ -306,7 +279,7 @@ i2++;];
 
 If[IntermediateScale === True,
 MakeSubroutineTitle["TreeMassesRegime"<>ToString[RegimeNr],Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},sphenoTree];,
-MakeSubroutineTitle["TreeMasses"<>suffix,Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},sphenoTree];
+MakeSubroutineTitle["TreeMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"GenerationMixing","kont"},sphenoTree];
 ];
 
 WriteString[sphenoTree, "Implicit None \n \n"];
@@ -334,16 +307,13 @@ WriteString[sphenoTree, FortranLineBreak[SPhenoForm[NewNumericalDependences[[i,1
 i++;];
 
 For[i=1,i<=Length[ListTreeVB],
-MakeCall["Calculate"<>ListTreeVB[[i,1]]<>suffix,ListTreeVB[[i,2]],{},Flatten[{ListTreeVB[[i,3]],ListTreeVB[[i,4]],ListTreeVB[[i,5]],SPhenoForm/@ListTreeVB[[i,6]],"kont"}],sphenoTree];
+MakeCall["Calculate"<>ListTreeVB[[i,1]],ListTreeVB[[i,2]],{},Flatten[{ListTreeVB[[i,3]],ListTreeVB[[i,4]],ListTreeVB[[i,5]],SPhenoForm/@ListTreeVB[[i,6]],"kont"}],sphenoTree];
 i++;];
  
 (* Print["Write other Tree-Level Masses"]; *)
 
-Print["  Writing all masses: ",Dynamic[DynamicMassNr],"/",Length[listNotMixedMasses]+Length[ListTree],"(",Dynamic[DynamicMassName],")"];
 For[i=1,i<=Length[listNotMixedMasses],
-DynamicMassNr=i;
-DynamicMassName=listNotMixedMasses[[i,1]];
-(* Print["Write Tree-Level Masses for ",listNotMixedMasses[[i,1]] ]; *)
+Print["Write Tree-Level Masses for ",listNotMixedMasses[[i,1]] ];
 Switch[getType[listNotMixedMasses[[i,1]]],
 F,
 If[Length[Dimensions[listNotMixedMasses[[i,5]]]]==2,
@@ -363,7 +333,6 @@ MakeSPhenoCoupling[listNotMixedMasses[[i,4]]   /. subCouplingsSPheno ,ToString[S
 If[FreeQ[ParticlePhases,listNotMixedMasses[[i,1]]]==False,
 pos = Position[ParticlePhases,listNotMixedMasses[[i,1]]][[1,1]];
 WriteString[sphenoTree,SPhenoForm[ParticlePhases[[pos,2]]] <> " = Abs("<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]  <>")/"<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]  <>"\n"];
-WriteString[sphenoTree,SPhenoForm[ParticlePhases[[pos,2]]] <> " = Sqrt("<>SPhenoForm[ParticlePhases[[pos,2]]]<>")\n"];
 ];
 
 
@@ -379,77 +348,14 @@ If[FreeQ[listNotMixedMasses[[i,4]],sum],
 WriteString[sphenoTree,SPhenoMassSq[listNotMixedMasses[[i,1]],i1] <>"= "<>SPhenoForm[listNotMixedMasses[[i,4]] /. {gt1->i1, gt2->i1} ]  <>" \n"];,
 MakeSPhenoCoupling[listNotMixedMasses[[i,4]] /. {gt1->i1, gt2->i1} ,SPhenoMassSq[listNotMixedMasses[[i,1]],i1],sphenoTree];
 ];
-
-WriteString[sphenoTree, "  If ("<>SPhenoMassSq[listNotMixedMasses[[i,1]],i1]<>".ne."<>SPhenoMassSq[listNotMixedMasses[[i,1]],i1]<>") Then \n"];
-WriteString[sphenoTree, "      Write(*,*) 'NaN appearing in "<>SPhenoMassSq[listNotMixedMasses[[i,1]],i1]<>"' \n"];
-WriteString[sphenoTree, "      Call TerminateProgram \n"];
-WriteString[sphenoTree, "    End If \n"];
-WriteString[sphenoTree, "  If ("<>SPhenoMassSq[listNotMixedMasses[[i,1]],i1]<>".Ge.0._dp) Then \n"];
-WriteString[sphenoTree,"        "<>SPhenoMass[listNotMixedMasses[[i,1]],i1] <>"= sqrt("<>SPhenoMassSq[listNotMixedMasses[[i,1]],i1] <>") \n"];
-WriteString[sphenoTree, "  Else \n"];
-If[MassesForEffpot===False,
-WriteString[sphenoTree, "    If (ErrorLevel.Ge.0) Then \n"];
-WriteString[sphenoTree, "      Write(10,*) 'Warning from "<>SPhenoMassSq[listNotMixedMasses[[i,1]],i1]<>"' \n"];
-WriteString[sphenoTree, "      Write(10,*) 'mass squarred is negative: ',"<>SPhenoMassSq[listNotMixedMasses[[i,1]],i1]<>" \n"];
-WriteString[sphenoTree, "    End If \n"];
-];
-If[MassesForEffpot===False,
-WriteString[sphenoTree,"     Write(ErrCan,*) 'Warning from routine "<>SPhenoMassSq[listNotMixedMasses[[i,1]],i1]<>"' \n"];
-WriteString[sphenoTree,"     Write(ErrCan,*) 'in the calculation of the masses' \n"];
-WriteString[sphenoTree,"     Write(ErrCan,*) 'occurred a negative mass squared!' \n"];
-WriteString[sphenoTree,"     Write(ErrCan,*) "<>SPhenoMassSq[listNotMixedMasses[[i,1]],i1]<>" \n"];
-WriteString[sphenoTree,"     Write(*,*) 'Warning from routine "<>SPhenoMassSq[listNotMixedMasses[[i,1]],i1]<>"' \n"];
-WriteString[sphenoTree,"     Write(*,*) 'in the calculation of the masses' \n"];
-WriteString[sphenoTree,"     Write(*,*) 'occurred a negative mass squared!' \n"];
-WriteString[sphenoTree,"     Write(*,*) "<>SPhenoMassSq[listNotMixedMasses[[i,1]],i1]<>" \n"];
-];
-If[MassesForEffpot=!=True,
-WriteString[sphenoTree,"        "<>SPhenoMass[listNotMixedMasses[[i,1]],i1] <>"= 1._dp \n"];
-WriteString[sphenoTree,"        "<>SPhenoMassSq[listNotMixedMasses[[i,1]],i1] <>"= 1._dp \n"];
-WriteString[sphenoTree,"   SignOfMassChanged = .True. \n"];
-];
-WriteString[sphenoTree, " End if \n"];
-
-
+WriteString[sphenoTree,SPhenoMass[listNotMixedMasses[[i,1]],i1] <>"= sqrt("<>SPhenoMassSq[listNotMixedMasses[[i,1]],i1] <>") \n"];
 WriteString[sphenoTree,"End Do \n \n"];,
 If[listNotMixedMasses[[i,4]]=!=0,
 If[FreeQ[listNotMixedMasses[[i,4]],sum],
 WriteString[sphenoTree,FortranLineBreak[ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]]<>" = "<>SPhenoForm[listNotMixedMasses[[i,4]] /.subCouplingsSPheno],5]  <>" \n"];,
 MakeSPhenoCoupling[listNotMixedMasses[[i,4]] /. subCouplingsSPheno ,ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]],sphenoTree];
 ]; 
-
-WriteString[sphenoTree, "  If ("<>ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]]<>".ne."<>ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]]<>") Then \n"];
-WriteString[sphenoTree, "      Write(*,*) 'NaN appearing in "<>ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]]<>"' \n"];
-WriteString[sphenoTree, "      Call TerminateProgram \n"];
-WriteString[sphenoTree, "    End If \n"];
-WriteString[sphenoTree, "  If ("<>ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]]<>".Ge.0._dp) Then \n"];
 WriteString[sphenoTree,ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]<>" = sqrt("<>ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]]  <>") \n"];
-WriteString[sphenoTree, "  Else \n"];
-If[MassesForEffpot===False,
-WriteString[sphenoTree, "    If (ErrorLevel.Ge.0) Then \n"];
-WriteString[sphenoTree, "      Write(10,*) 'Warning from "<>ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]]<>"' \n"];
-WriteString[sphenoTree, "      Write(10,*) 'mass squarred is negative: ',"<>ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]]<>" \n"];
-WriteString[sphenoTree, "    End If \n"];
-];
-If[MassesForEffpot===False,
-WriteString[sphenoTree,"     Write(ErrCan,*) 'Warning from routine "<>ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]]<>"' \n"];
-WriteString[sphenoTree,"     Write(ErrCan,*) 'in the calculation of the masses' \n"];
-WriteString[sphenoTree,"     Write(ErrCan,*) 'occurred a negative mass squared!' \n"];
-WriteString[sphenoTree,"     Write(ErrCan,*) "<>ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]]<>" \n"];
-WriteString[sphenoTree,"     Write(*,*) 'Warning from routine "<>ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]]<>"' \n"];
-WriteString[sphenoTree,"     Write(*,*) 'in the calculation of the masses' \n"];
-WriteString[sphenoTree,"     Write(*,*) 'occurred a negative mass squared!' \n"];
-WriteString[sphenoTree,"     Write(*,*) "<>ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]]<>" \n"];
-];
-If[MassesForEffpot=!=True,
-WriteString[sphenoTree,"        "<>ToString[SPhenoMass[listNotMixedMasses[[i,1]]]] <>"= 1._dp \n"];
-WriteString[sphenoTree,"        "<>ToString[SPhenoMassSq[listNotMixedMasses[[i,1]]]] <>"= 1._dp \n"];
-WriteString[sphenoTree,"   SignOfMassChanged = .True. \n"];
-];
-WriteString[sphenoTree, " End if \n\n\n"];
-
-
-
 ];
 ];
 ];
@@ -457,18 +363,15 @@ WriteString[sphenoTree, " End if \n\n\n"];
 i++;];
 
 For[i=1,i<=Length[ListTree],
-DynamicMassNr=i+Length[listNotMixedMasses];
-DynamicMassName=ListTree[[i,1]];
-
 If[FreeQ[GoldstoneGhost,ListMassES[[i,1]]]==False,
 WriteString[sphenoTree, "kontSave = kont \n"];
 ];
 Switch[ListTree[[i,4]],
 ScalarMass,
-MakeCall["Calculate"<>ListTree[[i,1]]<>suffix,Flatten[{ListTree[[i,5]],ListTree[[i,2]],ListTree[[i,6]],ListTree[[i,7]]}],{},{"kont"},sphenoTree];,
-FermionMassSymm,MakeCall["Calculate"<>ListTree[[i,1]]<>suffix,Flatten[{ListTree[[i,5]],ListTree[[i,2]],ListTree[[i,6]]}],{},{"kont"},sphenoTree];
+MakeCall["Calculate"<>ListTree[[i,1]],Flatten[{ListTree[[i,5]],ListTree[[i,2]],ListTree[[i,6]],ListTree[[i,7]]}],{},{"kont"},sphenoTree];,
+FermionMassSymm,MakeCall["Calculate"<>ListTree[[i,1]],Flatten[{ListTree[[i,5]],ListTree[[i,2]],ListTree[[i,6]]}],{},{"kont"},sphenoTree];
 WriteString[sphenoTree,SPhenoForm[ListTree[[i,7]]] <>" = "<>SPhenoForm[ListTree[[i,6]]]  <>"**2 \n"];,
-FermionMassNonSymm,MakeCall["Calculate"<>ListTree[[i,1]]<>suffix,Flatten[{ListTree[[i,5]],ListTree[[i,2,1]],ListTree[[i,2,2]],ListTree[[i,6]]}],{},{"kont"},sphenoTree]; 
+FermionMassNonSymm,MakeCall["Calculate"<>ListTree[[i,1]],Flatten[{ListTree[[i,5]],ListTree[[i,2,1]],ListTree[[i,2,2]],ListTree[[i,6]]}],{},{"kont"},sphenoTree]; 
 WriteString[sphenoTree,SPhenoForm[ListTree[[i,7]]] <>" = "<>SPhenoForm[ListTree[[i,6]]]  <>"**2 \n"];
 ];
 
@@ -476,24 +379,21 @@ If[FreeQ[GoldstoneGhost,ListMassES[[i,1]]]==False,
 WriteString[sphenoTree, "kont = kontSave \n"];
 ];
 i++;];
-DynamicMassName="All Done";
 
 WriteString[sphenoTree, "\n \n "];
 
 
 If[SPhenoOnlyForHM=!=True,
 
-If[MassesForEffpot=!=True,
 If[IntermediateScale === True,
 MakeCall["SortGoldstones"<>ToString[RegimeNr],NewMassParameters,{},{"kont"},sphenoTree];,
 MakeCall["SortGoldstones",NewMassParameters,{},{"kont"},sphenoTree];
-];
 ];
 
 If[IntermediateScale =!= True,
 
 If[NonSUSYModel=!=True,
-WriteString[sphenoTree,"If ((HighScaleModel.Eq.\"LOW\").and.(.not.SUSYrunningFromMZ)) Then \n "];
+WriteString[sphenoTree,"If (HighScaleModel.Eq.\"LOW\") Then \n "];
 ];
 WriteString[sphenoTree,"If (SignOfMassChanged) Then  \n"];
 WriteString[sphenoTree," If (.Not.IgnoreNegativeMasses) Then \n"];
@@ -520,7 +420,7 @@ WriteString[sphenoTree,"End if \n "];
 ];
 
 
-If[MassesForEffpot=!=True,
+
 WriteString[sphenoTree, "\n ! -------------------------------- \n"];
 WriteString[sphenoTree, "! Setting Goldstone masses \n"];
 WriteString[sphenoTree, "! -------------------------------- \n \n"];
@@ -534,10 +434,8 @@ WriteString[sphenoTree,SPhenoMassSq[GoldstoneGhost[[i,2,0]],GoldstoneGhost[[i,2,
 ];
 i++;];
 ];
-];
-If[MassesForEffpot=!=True,
+
 WriteSetDependentParameters[sphenoTree];
-];
 
 WriteString[sphenoTree, "Iname = Iname - 1 \n \n"];
 If[IntermediateScale === True,
@@ -545,7 +443,7 @@ If[IntermediateScale === True,
 WriteString[sphenoTree, "Contains \n \n"];
 WriteMassRoutines; 
 WriteString[sphenoTree, "End Subroutine  TreeMassesRegime"<>ToString[RegimeNr]<>" \n \n \n"];,
-WriteString[sphenoTree, "End Subroutine  TreeMasses"<>suffix<>" \n \n \n"];
+WriteString[sphenoTree, "End Subroutine  TreeMasses \n \n \n"];
 ];
 
 
@@ -555,7 +453,7 @@ WriteString[sphenoTree, "End Subroutine  TreeMasses"<>suffix<>" \n \n \n"];
 
 WriteCalcAllTreeMassesDummy:=Block[{i2},
 
-Print["  Writing routine for calculating SM masses"];
+Print["Writing Routine for Calculating all Masses"];
 
 
 MakeSubroutineTitle["TreeMassesRegime"<>ToString[RegimeNr],{},{},{"GenerationMixing","kont"},sphenoTree];
@@ -567,41 +465,32 @@ WriteString[sphenoTree, "End Subroutine  TreeMassesRegime"<>ToString[RegimeNr]<>
 
 ];
 
-WriteMassRoutines :=Block[{suffix},
+WriteMassRoutines :=Block[{},
 For[i=1,i<=Length[ListTree],
-(* Print["Writing Subroutine for Calculating ",ListTree[[i,1]]]; *)
+Print["Writing Subroutine for Calculating ",ListTree[[i,1]]];
 Switch[ListTree[[i,4]],
-ScalarMass,
-If[MassesForEffpot===True && getGenSPhenoStart[ListMassES[[i,1]]]>1,
-WriteTreeMassFunctionScalarGoldstone[ListTree[[i,1]],ListMassES[[i,1]], SPhenoForm[ListTree[[i,2]]], ListTree[[i,3]],ListTree[[i,5]]];,
-WriteTreeMassFunctionScalar[ListTree[[i,1]],ListMassES[[i,1]], SPhenoForm[ListTree[[i,2]]], ListTree[[i,3]],ListTree[[i,5]]];
-];,
+ScalarMass,WriteTreeMassFunctionScalar[ListTree[[i,1]],ListMassES[[i,1]], SPhenoForm[ListTree[[i,2]]], ListTree[[i,3]],ListTree[[i,5]]];,
 FermionMassSymm,WriteTreeMassFunctionFermionSymm[ListTree[[i,1]],ListMassES[[i,1]], SPhenoForm[ListTree[[i,2]]], ListTree[[i,3]],ListTree[[i,5]]];,
 FermionMassNonSymm,WriteTreeMassFunctionFermionNonSymm[ListTree[[i,1]],ListMassES[[i,1]], SPhenoForm[ListTree[[i,2,1]]],SPhenoForm[ListTree[[i,2,2]]], ListTree[[i,3]],ListTree[[i,5]]];
 ];
 i++;];
 
 For[i=1,i<=Length[ListTreeVB],
-(* Print["Writing Subroutine for Calculating ",ListTreeVB[[i,4]]]; *)
+Print["Writing Subroutine for Calculating ",ListTreeVB[[i,4]]];
 WriteTreeMassFunctionVector[ListTreeVB[[i,1]],ListTreeVB[[i,3]], ListTreeVB[[i,4]], ListTreeVB[[i,6]],ListTreeVB[[i,7]],ListTreeVB[[i,2]],ListTreeVB[[i,8]]];
 i++;];
 
 ];
 
 
-WriteTreeMassFunctionScalar[Name_,particle_,MixingName_,MatrixFunction_,Parameters_]:=Block[{i2,i3,pos,suffix,subVEVfixed},
-If[MassesForEffpot===True,
-suffix="EffPot";
-subVEVfixed=subStableVEVs;,
-suffix="";
-subVEVfixed={};
-];
-MakeSubroutineTitle["Calculate"<>Name<>suffix,Parameters,{},{MixingName,Name,Name<>"2","kont"},sphenoTree];
+WriteTreeMassFunctionScalar[Name_,particle_,MixingName_,MatrixFunction_,Parameters_]:=Block[{i2,i3,pos},
+
+MakeSubroutineTitle["Calculate"<>Name,Parameters,{},{MixingName,Name,Name<>"2","kont"},sphenoTree];
 
 MakeVariableList[Parameters,", Intent(in)",sphenoTree];
 WriteString[sphenoTree, "Integer, Intent(inout) :: kont \n"];
 WriteString[sphenoTree, "Integer :: i1,i2,i3,i4, ierr \n"];
-WriteString[sphenoTree,"Integer :: j1,j2,j3,j4, pos \n"];
+WriteString[sphenoTree,"Integer :: j1,j2,j3,j4 \n"];
 
 dimMatrix = ToString[Dimensions[MatrixFunction][[1]]];
 WriteString[sphenoTree, "Real(dp), Intent(out) :: "<> Name <>"("<>dimMatrix <>"), " ];
@@ -612,14 +501,6 @@ WriteString[sphenoTree, "Complex(dp), Intent(out) :: "<> MixingName<>"("<>dimMat
 WriteString[sphenoTree, "Complex(dp) :: mat"<>"("<>dimMatrix<>","<>dimMatrix<>")  \n\n"];,
 WriteString[sphenoTree, "Real(dp), Intent(out) :: "<> MixingName<>"("<>dimMatrix <>","<>dimMatrix <>") \n \n"];
 WriteString[sphenoTree, "Real(dp) :: mat"<>"("<>dimMatrix<>","<>dimMatrix<>")  \n\n"];
-];
-
-If[MassesForEffpot===True,
-WriteString[sphenoTree, "Real(dp) :: "<> Name <>"2temp("<>dimMatrix <>"), Q2 \n" ];
-If[FreeQ[realVar,ToExpression[MixingName]],
-WriteString[sphenoTree, "Complex(dp) :: "<> MixingName<>"temp("<>dimMatrix <>","<>dimMatrix <>"), "<> MixingName<>"temp2("<>dimMatrix <>","<>dimMatrix <>") \n \n"];,
-WriteString[sphenoTree, "Real(dp) :: "<> MixingName<>"temp("<>dimMatrix <>","<>dimMatrix <>"),"<> MixingName<>"temp2("<>dimMatrix <>","<>dimMatrix <>") \n \n"];
-];
 ];
 
 WriteString[sphenoTree, "Real(dp) ::  test(2) \n\n"];
@@ -635,7 +516,7 @@ WriteString[sphenoTree, "NameOfUnit(Iname) = '"<>"Calculate"<> Name<>"'\n \n"];
 
 For[i2=1,i2<=ToExpression[dimMatrix],
 For[i3=i2,i3<=ToExpression[dimMatrix],
-MakeSPhenoCoupling[MatrixFunction[[i2,i3]] /. subVEVfixed,"mat("<>ToString[i2]<>","<>ToString[i3]<>")",sphenoTree];
+MakeSPhenoCoupling[MatrixFunction[[i2,i3]],"mat("<>ToString[i2]<>","<>ToString[i3]<>")",sphenoTree];
 i3++;];
 i2++;];
 
@@ -655,29 +536,6 @@ WriteString[sphenoTree, "\n \n"];
 If[FreeQ[QuadruplePrecision,particle],stringQP="";,stringQP="QP";];
 
  WriteString[sphenoTree, "Call EigenSystem"<>stringQP<>"(mat,"<> Name <>"2,"<>  MixingName <>",ierr,test) \n \n \n"]; 
-
-If[MassesForEffpot===True &&  FreeQ[realVar,ToExpression[MixingName]],
-WriteString[sphenoTree,"! Fix order\n"];
-WriteString[sphenoTree,"  "<>MixingName<>"temp2="<>MixingName<>"\n"];
-WriteString[sphenoTree,"Do i1=1,"<>dimMatrix<>"\n"];
-WriteString[sphenoTree,"  pos=Maxloc(Abs("<>MixingName<>"temp2(i1,:)),1)\n"];
-WriteString[sphenoTree,"  "<>MixingName<>"temp(pos,:)="<>MixingName<>"(i1,:)\n"];
-WriteString[sphenoTree,"  "<>Name<>"2temp(pos)="<>Name<>"2(i1)\n"];
-WriteString[sphenoTree,"  "<>MixingName<>"temp2(:,pos)=0._dp\n"];
-WriteString[sphenoTree,"End do\n"];
-WriteString[sphenoTree,"  "<>Name<>"2 = "<>Name<>"2temp\n"];
-WriteString[sphenoTree,"  "<>MixingName<>" = "<>MixingName<>"temp\n"];
-];
-
-If[MassesForEffpot===True,
-WriteString[sphenoTree,"! Fix phases\n"];
-WriteString[sphenoTree,"Do i1=1,"<>dimMatrix<>"\n"];
-WriteString[sphenoTree,"  pos=Maxloc(Abs("<>MixingName<>"(i1,:)),1)\n"];
-WriteString[sphenoTree,"  If (Real("<>MixingName<>"(i1,pos),dp).lt.0._dp) Then\n"];
-WriteString[sphenoTree,"    "<>MixingName<>"(i1,:)=-"<>MixingName<>"(i1,:)\n"];
-WriteString[sphenoTree,"  End if\n"];
-WriteString[sphenoTree,"End do\n"];
-];
 
 WriteString[sphenoTree,"If ((ierr.Eq.-8).Or.(ierr.Eq.-9)) Then \n"];
 WriteString[sphenoTree,"  Write(ErrCan,*) \"Possible numerical problem in \"//NameOfUnit(Iname) \n"];
@@ -700,10 +558,9 @@ If[FreeQ[ConditionForMassOrdering,particle]==False,
 pos =Position[ConditionForMassOrdering,particle][[1,1]];
 WriteString[sphenoTree,ConditionForMassOrdering[[pos,2]]];
 ];
+
 WriteString[sphenoTree, "Do i1=1,"<>dimMatrix<> "\n"];
-If[MassesForEffpot===False,
-WriteString[sphenoTree, "  If (Abs("<>Name<>"2(i1)).Le.MaxMassNumericalZero) "<>Name<>"2(i1) = 1.E-10_dp \n"]; 
-];
+WriteString[sphenoTree, "  If (Abs("<>Name<>"2(i1)).Le.1.E-5_dp) "<>Name<>"2(i1) = 1.E-10_dp \n"]; 
 WriteString[sphenoTree, "  If ("<>Name<>"2(i1).ne."<>Name<>"2(i1)) Then \n"];
 WriteString[sphenoTree, "      Write(*,*) 'NaN appearing in '//NameOfUnit(Iname) \n"];
 WriteString[sphenoTree, "      Call TerminateProgram \n"];
@@ -711,14 +568,11 @@ WriteString[sphenoTree, "    End If \n"];
 WriteString[sphenoTree, "  If ("<>Name<>"2(i1).Ge.0._dp) Then \n"];
 WriteString[sphenoTree, "  "<>Name <>"(i1)=Sqrt("<>Name <> "2(i1) ) \n"];
 WriteString[sphenoTree, "  Else \n"];
-If[MassesForEffpot===False,
 WriteString[sphenoTree, "    If (ErrorLevel.Ge.0) Then \n"];
 WriteString[sphenoTree, "      Write(10,*) 'Warning from Subroutine '//NameOfUnit(Iname) \n"];
 WriteString[sphenoTree, "      Write(10,*) 'a mass squarred is negative: ',i1,"<>Name<>"2(i1) \n"];
 WriteString[sphenoTree, "    End If \n"];
-];
 WriteString[sphenoTree, "  "<>Name <>" = 1._dp \n"];
-If[MassesForEffpot===False,
 WriteString[sphenoTree,"     Write(ErrCan,*) 'Warning from routine '//NameOfUnit(Iname) \n"];
 WriteString[sphenoTree,"     Write(ErrCan,*) 'in the calculation of the masses' \n"];
 WriteString[sphenoTree,"     Write(ErrCan,*) 'occurred a negative mass squared!' \n"];
@@ -727,224 +581,28 @@ WriteString[sphenoTree,"     Write(*,*) 'Warning from routine '//NameOfUnit(Inam
 WriteString[sphenoTree,"     Write(*,*) 'in the calculation of the masses' \n"];
 WriteString[sphenoTree,"     Write(*,*) 'occurred a negative mass squared!' \n"];
 WriteString[sphenoTree,"     Write(*,*) i1,"<>Name<>"2(i1) \n"];
-];
-If[MassesForEffpot===False,
 WriteString[sphenoTree, "  "<>Name<>"2(i1) = 1._dp \n"];
 WriteString[sphenoTree,"   SignOfMassChanged = .True. \n"];
-];
 WriteString[sphenoTree, "! kont = -104 \n"];
 WriteString[sphenoTree, " End if \n"];
 WriteString[sphenoTree, "End Do \n"];
 
 
 WriteString[sphenoTree, "Iname = Iname - 1 \n \n"];
-WriteString[sphenoTree, "End Subroutine " <> "Calculate"<>Name <>suffix <>" \n\n"];
+WriteString[sphenoTree, "End Subroutine " <> "Calculate"<>Name <> " \n\n"];
 
 
 ];
 
 
-WriteTreeMassFunctionScalarGoldstone[Name_,particle_,MixingName_,MatrixFunction_,Parameters_]:=Block[{i2,i3,pos,suffix,subVEVfixed},
-If[MassesForEffpot===True,
-suffix="EffPot";
-subVEVfixed=subStableVEVs;
-subVEVfixedAll = Table[listVEVs[[i]]->ToExpression[ToString[listVEVs[[i]]]<>"Fix"],{i,1,Length[listVEVs]}],
-suffix="";
-subVEVfixed={};
-];
-MakeSubroutineTitle["Calculate"<>Name<>suffix,Parameters,{},{MixingName,Name,Name<>"2","kont"},sphenoTree];
+WriteTreeMassFunctionFermionSymm[Name_,particle_,MixingName_,MatrixFunction_,Parameters_]:=Block[{i2,i3},
 
-MakeVariableList[Parameters,", Intent(in)",sphenoTree];
-WriteString[sphenoTree, "Integer, Intent(inout) :: kont \n"];
-WriteString[sphenoTree, "Integer :: i1,i2,i3,i4, ierr, pos \n"];
-WriteString[sphenoTree,"Integer :: j1,j2,j3,j4 \n"];
-
-dimMatrix = ToString[Dimensions[MatrixFunction][[1]]];
-WriteString[sphenoTree, "Real(dp), Intent(out) :: "<> Name <>"("<>dimMatrix <>"), " ];
-WriteString[sphenoTree,  Name <>"2("<>dimMatrix <>") \n" ];
-
-If[FreeQ[realVar,ToExpression[MixingName]],
-WriteString[sphenoTree, "Complex(dp), Intent(out) :: "<> MixingName<>"("<>dimMatrix <>","<>dimMatrix <>") \n \n"];
-WriteString[sphenoTree, "Complex(dp) :: "<> MixingName<>"FIX("<>dimMatrix <>","<>dimMatrix <>") \n \n"];
-WriteString[sphenoTree, "Complex(dp) :: mat"<>"("<>dimMatrix<>","<>dimMatrix<>")  \n\n"];,
-WriteString[sphenoTree, "Real(dp), Intent(out) :: "<> MixingName<>"("<>dimMatrix <>","<>dimMatrix <>") \n \n"];
-WriteString[sphenoTree, "Real(dp) :: "<> MixingName<>"FIX("<>dimMatrix <>","<>dimMatrix <>") \n \n"];
-WriteString[sphenoTree, "Real(dp) :: mat"<>"("<>dimMatrix<>","<>dimMatrix<>")  \n\n"];
-];
-
-WriteString[sphenoTree, "Real(dp) ::  test(2), Q2 \n\n"];
-
-If[FreeQ[ConditionForMassOrdering,particle]==False,
-WriteString[sphenoTree, "Real(dp) :: "<> Name <>"2temp("<>dimMatrix <>") \n" ];
-WriteString[sphenoTree, "Complex(dp) :: "<> MixingName<>"temp("<>dimMatrix <>","<>dimMatrix <>") \n \n"];
-];
-
-
-WriteString[sphenoTree, "Iname = Iname + 1 \n"];
-WriteString[sphenoTree, "NameOfUnit(Iname) = '"<>"Calculate"<> Name<>"'\n \n"];
-
-(*
-WriteString[sphenoTree, "! Get rotation matrix at the minimum \n"];
-For[i2=1,i2<=ToExpression[dimMatrix],
-For[i3=i2,i3<=ToExpression[dimMatrix],
-MakeSPhenoCoupling[MatrixFunction[[i2,i3]] /. subVEVfixedAll /. RXi[a__]->0,"mat("<>ToString[i2]<>","<>ToString[i3]<>")",sphenoTree];
-i3++;];
-i2++;];
-
-WriteString[sphenoTree, "\n \n "];
-
-WriteString[sphenoTree,"Do i1=2,"<>dimMatrix <>"\n"];
-WriteString[sphenoTree, "  Do i2 = 1, i1-1 \n"];
-If[FreeQ[realVar,ToExpression[MixingName]],
-WriteString[sphenoTree, "  mat(i1,i2) = Conjg(mat(i2,i1)) \n"];,
-WriteString[sphenoTree, "  mat(i1,i2) = mat(i2,i1) \n"];
-];
-WriteString[sphenoTree, "  End do \n"];
-WriteString[sphenoTree, "End do \n"]; 
-
-WriteString[sphenoTree, "\n \n"];
-
-If[FreeQ[QuadruplePrecision,particle],stringQP="";,stringQP="QP";];
-
- WriteString[sphenoTree, "Call EigenSystem"<>stringQP<>"(mat,"<> Name <>"2,"<>  MixingName <>"FIX,ierr,test) \n \n \n"]; 
-
-
-WriteString[sphenoTree, "! Get rotation mass matrix away from the minimum \n"];
-*)
-
-For[i2=1,i2<=ToExpression[dimMatrix],
-For[i3=i2,i3<=ToExpression[dimMatrix],
-MakeSPhenoCoupling[MatrixFunction[[i2,i3]] /. subVEVfixed /. RXi[a__]->0,"mat("<>ToString[i2]<>","<>ToString[i3]<>")",sphenoTree];
-i3++;];
-i2++;];
-
-
-WriteString[sphenoTree, "\n \n "];
-
-WriteString[sphenoTree,"Do i1=2,"<>dimMatrix <>"\n"];
-WriteString[sphenoTree, "  Do i2 = 1, i1-1 \n"];
-If[FreeQ[realVar,ToExpression[MixingName]],
-WriteString[sphenoTree, "  mat(i1,i2) = Conjg(mat(i2,i1)) \n"];,
-WriteString[sphenoTree, "  mat(i1,i2) = mat(i2,i1) \n"];
-];
-WriteString[sphenoTree, "  End do \n"];
-WriteString[sphenoTree, "End do \n"]; 
-
-WriteString[sphenoTree, "\n \n"];
-
-(*
-WriteString[sphenoTree, "mat = MatMul(MatMul("<>  MixingName <>"FIX, mat), Transpose("<>  MixingName <>"FIX)) \n"];
-*)
-(*
-WriteString[sphenoTree, "! Put mixing with Goldstones to zero\n"];
-For[i2=1,i2<=getGenSPhenoStart[particle]-1,
-For[i3=i2+1,i3<=ToExpression[dimMatrix],
-WriteString[sphenoTree,"mat("<>ToString[i2]<>","<>ToString[i3]<>") = 0._dp \n"];
-WriteString[sphenoTree,"mat("<>ToString[i3]<>","<>ToString[i2]<>") = 0._dp \n"];
-i3++;];
-i2++;];
-*)
-
- WriteString[sphenoTree, "Call EigenSystem"<>stringQP<>"(mat,"<> Name <>"2,"<>  MixingName <>",ierr,test) \n \n \n"];
-
-(* WriteString[sphenoTree,MixingName <>"= MatMul("<>MixingName<>","<>MixingName<>"Fix) \n"]; *)
-If[MassesForEffpot===True,
-WriteString[sphenoTree,"! Fix phases\n"];
-WriteString[sphenoTree,"Do i1=1,"<>dimMatrix<>"\n"];
-WriteString[sphenoTree,"  pos=Maxloc(Abs("<>MixingName<>"(i1,:)),1)\n"];
-WriteString[sphenoTree,"  If (Real("<>MixingName<>"(i1,pos),dp).lt.0._dp) Then\n"];
-WriteString[sphenoTree,"    "<>MixingName<>"(i1,:)=-"<>MixingName<>"(i1,:)\n"];
-WriteString[sphenoTree,"  End if\n"];
-WriteString[sphenoTree,"End do\n"];
-];
-
-(*
-For[i2=1,i2<=getGenSPhenoStart[particle]-1,
-WriteString[sphenoTree, Name <>"2("<>ToString[i2]<>") = 0._dp \n"];
-i2++;];
-*)
-
-WriteString[sphenoTree,"If ((ierr.Eq.-8).Or.(ierr.Eq.-9)) Then \n"];
-WriteString[sphenoTree,"  Write(ErrCan,*) \"Possible numerical problem in \"//NameOfUnit(Iname) \n"];
-WriteString[sphenoTree,"  If (ErrorLevel.Eq.2) Then \n"];
-WriteString[sphenoTree,"  Write(*,*) \"Possible numerical problem in \"//NameOfUnit(Iname) \n"];
-WriteString[sphenoTree,"    Call TerminateProgram \n"];
-WriteString[sphenoTree,"  End If \n"];
-WriteString[sphenoTree, "  ierr = 0 \n"];
-WriteString[sphenoTree, "End If \n \n"];
-
-WriteString[sphenoTree, "If ((ierr.Ne.0.).And.(ErrorLevel.Ge.-1)) Then \n"];
-WriteString[sphenoTree, "  Write(10,*) 'Warning from Subroutine '//NameOfUnit(Iname) \n"];
-WriteString[sphenoTree, "  Write(10,*) 'Diagonalization failed, ierr : ',ierr \n"];
-WriteString[sphenoTree, "  kont = ierr \n"];
-WriteString[sphenoTree, "  Iname = Iname - 1 \n"];
-WriteString[sphenoTree, "  Return \n"];
-WriteString[sphenoTree, "End If \n\n\n"];
-
-(*
-If[FreeQ[ConditionForMassOrdering,particle]==False,pos =Position[ConditionForMassOrdering,particle][[1,1]];WriteString[sphenoTree,ConditionForMassOrdering[[pos,2]]];];
-*)
-
-
-WriteString[sphenoTree, "Do i1=1,"<>dimMatrix<> "\n"];
-If[MassesForEffpot===False,
-WriteString[sphenoTree, "  If (Abs("<>Name<>"2(i1)).Le.MaxMassNumericalZero) "<>Name<>"2(i1) = 1.E-10_dp \n"]; 
-];
-WriteString[sphenoTree, "  If ("<>Name<>"2(i1).ne."<>Name<>"2(i1)) Then \n"];
-WriteString[sphenoTree, "      Write(*,*) 'NaN appearing in '//NameOfUnit(Iname) \n"];
-WriteString[sphenoTree, "      Call TerminateProgram \n"];
-WriteString[sphenoTree, "    End If \n"];
-WriteString[sphenoTree, "  If ("<>Name<>"2(i1).Ge.0._dp) Then \n"];
-WriteString[sphenoTree, "  "<>Name <>"(i1)=Sqrt("<>Name <> "2(i1) ) \n"];
-WriteString[sphenoTree, "  Else \n"];
-If[MassesForEffpot===False,
-WriteString[sphenoTree, "    If (ErrorLevel.Ge.0) Then \n"];
-WriteString[sphenoTree, "      Write(10,*) 'Warning from Subroutine '//NameOfUnit(Iname) \n"];
-WriteString[sphenoTree, "      Write(10,*) 'a mass squarred is negative: ',i1,"<>Name<>"2(i1) \n"];
-WriteString[sphenoTree, "    End If \n"];
-];
-WriteString[sphenoTree, "  "<>Name <>" = 1._dp \n"];
-If[MassesForEffpot===False,
-WriteString[sphenoTree,"     Write(ErrCan,*) 'Warning from routine '//NameOfUnit(Iname) \n"];
-WriteString[sphenoTree,"     Write(ErrCan,*) 'in the calculation of the masses' \n"];
-WriteString[sphenoTree,"     Write(ErrCan,*) 'occurred a negative mass squared!' \n"];
-WriteString[sphenoTree,"     Write(ErrCan,*) i1,"<>Name<>"2(i1) \n"];
-WriteString[sphenoTree,"     Write(*,*) 'Warning from routine '//NameOfUnit(Iname) \n"];
-WriteString[sphenoTree,"     Write(*,*) 'in the calculation of the masses' \n"];
-WriteString[sphenoTree,"     Write(*,*) 'occurred a negative mass squared!' \n"];
-WriteString[sphenoTree,"     Write(*,*) i1,"<>Name<>"2(i1) \n"];
-];
-If[MassesForEffpot===False,
-WriteString[sphenoTree, "  "<>Name<>"2(i1) = 1._dp \n"];
-WriteString[sphenoTree,"   SignOfMassChanged = .True. \n"];
-];
-WriteString[sphenoTree, "! kont = -104 \n"];
-WriteString[sphenoTree, " End if \n"];
-WriteString[sphenoTree, "End Do \n"];
-
-
-WriteString[sphenoTree, "Iname = Iname - 1 \n \n"];
-WriteString[sphenoTree, "End Subroutine " <> "Calculate"<>Name <>suffix <>" \n\n"];
-
-
-];
-
-
-WriteTreeMassFunctionFermionSymm[Name_,particle_,MixingName_,MatrixFunction_,Parameters_]:=Block[{i2,i3,suffix,subVEVfixed},
-
-If[MassesForEffpot===True,
-suffix="EffPot";
-subVEVfixed=subStableVEVs;,
-suffix="";
-subVEVfixed={};
-];
-
-MakeSubroutineTitle["Calculate"<>Name<>suffix ,Parameters,{},{MixingName,Name,"kont"},sphenoTree];
+MakeSubroutineTitle["Calculate"<>Name,Parameters,{},{MixingName,Name,"kont"},sphenoTree];
 
 MakeVariableList[Parameters," ,Intent(in)",sphenoTree];
 
 WriteString[sphenoTree, "Integer, Intent(inout) :: kont \n"];
-WriteString[sphenoTree, "Integer :: i1,i2,i3,i4, ierr, pos \n"];
+WriteString[sphenoTree, "Integer :: i1,i2,i3,i4, ierr \n"];
 WriteString[sphenoTree,"Integer :: j1,j2,j3,j4 \n"];
 
 dimMatrix = ToString[Dimensions[MatrixFunction][[1]]];
@@ -966,7 +624,7 @@ WriteString[sphenoTree, "NameOfUnit(Iname) = '"<>"Calculate"<> Name<>"'\n \n"];
 
 For[i2=1,i2<=ToExpression[dimMatrix],
 For[i3=i2,i3<=ToExpression[dimMatrix],
-MakeSPhenoCoupling[MatrixFunction[[i2,i3]]/.subVEVfixed,"mat("<>ToString[i2]<>","<>ToString[i3]<>")",sphenoTree];
+MakeSPhenoCoupling[MatrixFunction[[i2,i3]],"mat("<>ToString[i2]<>","<>ToString[i3]<>")",sphenoTree];
 i3++;];
 i2++;];
 
@@ -987,8 +645,8 @@ WriteString[sphenoTree, "If (Maxval(Abs(Aimag(mat))).Eq.0._dp) Then \n"];
 WriteString[sphenoTree, "Call EigenSystem"<>stringQP<>"(Real(mat,dp),Eig,"<>  MixingName <>"a,ierr,test) \n \n "];
 
 WriteString[sphenoTree, "  Do i1=1,"<>dimMatrix <>"\n"];
-(* WriteString[sphenoTree, "   If (Eig(i1).Lt.0._dp) Then \n"]; *)
-WriteString[sphenoTree, "   If ((Eig(i1).Lt.0._dp).or.(Abs(eig(i1)).lt.1E-15)) Then \n"];
+(* WriteString[sphenoTree, "   If (Eig(i1).Lt.0._dp.And.(RotateNegativeFermionMasses)) Then \n"]; *)
+WriteString[sphenoTree, "   If (Eig(i1).Lt.0._dp) Then \n"];
 WriteString[sphenoTree, "    "<>Name<>"(i1) = - Eig(i1) \n"];
 WriteString[sphenoTree, "    "<>MixingName<>"(i1,:) = (0._dp,1._dp)*" <>MixingName <>"a(i1,:) \n"];
 WriteString[sphenoTree, "   Else \n"];
@@ -996,21 +654,6 @@ WriteString[sphenoTree, "    "<>Name<>"(i1) = Eig(i1) \n"];
 WriteString[sphenoTree, "    "<>MixingName<>"(i1,:) = "<>MixingName<>"a(i1,:)\n"];
 WriteString[sphenoTree, "    End If \n"];
 WriteString[sphenoTree, "   End Do \n \n"];
-
-If[MassesForEffpot===True,
-WriteString[sphenoTree, "  Do i1=1,"<>dimMatrix <>"\n"];
-WriteString[sphenoTree, "   pos=Maxloc(Abs("<>MixingName<>"(i1,:)),1) \n"];
-WriteString[sphenoTree, "   If (Abs(Real("<>MixingName<>"(i1,pos),dp)).gt.Abs(Aimag("<>MixingName<>"(i1,pos)))) Then \n"];
-WriteString[sphenoTree, "      If (Real("<>MixingName<>"(i1,pos),dp).lt.0._dp) Then \n"];
-WriteString[sphenoTree, "        "<>MixingName<>"(i1,:)=-"<>MixingName<>"(i1,:) \n"];
-WriteString[sphenoTree, "       End If \n"];
-WriteString[sphenoTree, "    Else \n"];
-WriteString[sphenoTree, "      If (Aimag("<>MixingName<>"(i1,pos)).lt.0._dp) Then \n"];
-WriteString[sphenoTree, "        "<>MixingName<>"(i1,:)=-"<>MixingName<>"(i1,:) \n"];
-WriteString[sphenoTree, "      End If \n"];
-WriteString[sphenoTree, "    End If \n"];
-WriteString[sphenoTree, " End Do \n \n"];
-];
 
 WriteString[sphenoTree, "Do i1=1,"<>ToString[ToExpression[dimMatrix]-1]<>"\n"];
 WriteString[sphenoTree, "  Do i2=i1+1,"<>dimMatrix <>"\n"];
@@ -1039,9 +682,8 @@ WriteString[sphenoTree, "If (Abs(mat2(i1,i1)).gt.0._dp) Then \n"];
 WriteString[sphenoTree, "  phaseM = Sqrt( mat2(i1,i1) / Abs(mat2(i1,i1))) \n"];
 WriteString[sphenoTree, "  "<>MixingName<>"(i1,:)= phaseM * "<>MixingName<>"(i1,:) \n"];
 WriteString[sphenoTree, "End if \n"];
-WriteString[sphenoTree, "  If ((Abs(Eig(i1)).Le.MaxMassNumericalZero).and.(Eig(i1).lt.0._dp)) Eig(i1) = Abs(Eig(i1))+1.E-10_dp \n"]; 
+WriteString[sphenoTree, "  If ((Abs(Eig(i1)).Le.1.E-8_dp).and.(Eig(i1).lt.0._dp)) Eig(i1) = Abs(Eig(i1))+1.E-10_dp \n"]; 
 WriteString[sphenoTree, "  If (Eig(i1).Le.0._dp) Then \n"];
-If[MassesForEffpot===False,
 WriteString[sphenoTree, "    If (ErrorLevel.Ge.0) Then \n"];
 WriteString[sphenoTree, "      Write(10,*) 'Warning from Subroutine '//NameOfUnit(Iname) \n"];
 WriteString[sphenoTree, "      Write(10,*) 'a mass squarred is negative: ',i1,Eig(i1) \n"];
@@ -1057,11 +699,8 @@ WriteString[sphenoTree,"     Write(*,*) 'Warning from routine '//NameOfUnit(Inam
 WriteString[sphenoTree,"     Write(*,*) 'in the calculation of the masses' \n"];
 WriteString[sphenoTree,"     Write(*,*) 'occurred a negative mass squared!' \n"];
 WriteString[sphenoTree,"     Write(*,*) i1,Eig(i1) \n"];
-];
-If[MassesForEffpot===False,
 WriteString[sphenoTree, "  Eig(i1) = 1._dp \n"];
 WriteString[sphenoTree,"   SignOfMassChanged = .True. \n"];
-];
 WriteString[sphenoTree, "! kont = -104 \n"];
 WriteString[sphenoTree, " End if \n"];
 
@@ -1093,22 +732,15 @@ WriteString[sphenoTree,ConditionForMassOrdering[[pos,2]]];
 
 
 WriteString[sphenoTree, "Iname = Iname - 1 \n \n"];
-WriteString[sphenoTree, "End Subroutine " <> "Calculate"<>Name <>suffix <> " \n\n"];
+WriteString[sphenoTree, "End Subroutine " <> "Calculate"<>Name <> " \n\n"];
 
 
 ];
 
 
-WriteTreeMassFunctionFermionNonSymm[Name_,particle_,MixingName1_,MixingName2_,MatrixFunction_,Parameters_]:=Block[{i2,i3,suffix,subVEVfixed},
+WriteTreeMassFunctionFermionNonSymm[Name_,particle_,MixingName1_,MixingName2_,MatrixFunction_,Parameters_]:=Block[{i2,i3},
 
-If[MassesForEffpot===True,
-suffix="EffPot";
-subVEVfixed=subStableVEVs;,
-suffix="";
-subVEVfixed={};
-];
-
-MakeSubroutineTitle["Calculate"<>Name<>suffix ,Parameters,{},{MixingName1,MixingName2,Name,"kont"},sphenoTree];
+MakeSubroutineTitle["Calculate"<>Name,Parameters,{},{MixingName1,MixingName2,Name,"kont"},sphenoTree];
 
 
 MakeVariableList[Parameters,",Intent(in)",sphenoTree];
@@ -1144,7 +776,7 @@ WriteString[sphenoTree, MixingName2 <>" = 0._dp \n"];
 
 For[i2=1,i2<=ToExpression[dimMatrix],
 For[i3=1,i3<=ToExpression[dimMatrix],
-MakeSPhenoCoupling[MatrixFunction[[i2,i3]]/. subVEVfixed,"mat("<>ToString[i2]<>","<>ToString[i3]<>")",sphenoTree];
+MakeSPhenoCoupling[MatrixFunction[[i2,i3]],"mat("<>ToString[i2]<>","<>ToString[i3]<>")",sphenoTree];
 i3++;];
 i2++;];
 
@@ -1154,7 +786,6 @@ If[FreeQ[QuadruplePrecision,particle],stringQP="";,stringQP="QP";];
 
 
 WriteString[sphenoTree, "mat2 = Matmul(Transpose(Conjg(mat)),mat) \n"];
-
 WriteString[sphenoTree, "If (Maxval(Abs(Aimag(mat2))).Eq.0._dp) Then \n"];
 WriteString[sphenoTree, "Call EigenSystem"<>stringQP<>"(Real(mat2,dp),"<>Name<>"2,"<>  MixingName2 <>"1,ierr,test) \n"];
 WriteString[sphenoTree, MixingName2<>"2 = "<>MixingName2<>"1 \n"];
@@ -1173,7 +804,6 @@ WriteString[sphenoTree, "End If \n \n"];
 
 
 WriteString[sphenoTree, "mat2 = Matmul(mat,Transpose(Conjg(mat))) \n"];
-
 WriteString[sphenoTree, "If (Maxval(Abs(Aimag(mat2))).Eq.0._dp) Then \n"];
 WriteString[sphenoTree, "Call EigenSystem"<>stringQP"(Real(mat2,dp),"<>Name<>"2,"<>  MixingName1 <>"1,ierr,test) \n \n \n"];
 WriteString[sphenoTree, MixingName1<>"2 = "<>MixingName1<>"1 \n"];
@@ -1212,9 +842,8 @@ WriteString[sphenoTree, "  If ("<>Name<>"2(i1).ne."<>Name<>"2(i1)) Then \n"];
 WriteString[sphenoTree, "      Write(*,*) 'NaN appearing in '//NameOfUnit(Iname) \n"];
 WriteString[sphenoTree, "      Call TerminateProgram \n"];
 WriteString[sphenoTree, "    End If \n"];
-WriteString[sphenoTree, "  If (Abs("<>Name<>"2(i1)).Le.MaxMassNumericalZero) "<>Name<>"2(i1) = Abs("<>Name<>"2(i1))+1.E-10_dp \n"]; 
+WriteString[sphenoTree, "  If (Abs("<>Name<>"2(i1)).Le.1.E-5_dp) "<>Name<>"2(i1) = Abs("<>Name<>"2(i1))+1.E-10_dp \n"]; 
 WriteString[sphenoTree, "  If ("<>Name<>"2(i1).Le.0._dp) Then \n"];
-If[MassesForEffpot===False,
 WriteString[sphenoTree, "    If (ErrorLevel.Ge.0) Then \n"];
 WriteString[sphenoTree, "      Write(10,*) 'Warning from Subroutine '//NameOfUnit(Iname) \n"];
 WriteString[sphenoTree, "      Write(10,*) 'a mass squarred is negative: ',i1,"<>Name<>"2(i1) \n"];
@@ -1230,10 +859,8 @@ WriteString[sphenoTree,"     Write(*,*) 'Warning from routine '//NameOfUnit(Inam
 WriteString[sphenoTree,"     Write(*,*) 'in the calculation of the masses' \n"];
 WriteString[sphenoTree,"     Write(*,*) 'occurred a negative mass squared!' \n"];
 WriteString[sphenoTree,"     Write(*,*) i1,"<>Name<>"2(i1) \n"];
-];
-If[MassesForEffpot===False,
 WriteString[sphenoTree, "  "<>Name<>"2(i1) = 1._dp \n"];
-WriteString[sphenoTree,"   SignOfMassChanged = .True. \n"];];
+WriteString[sphenoTree,"   SignOfMassChanged = .True. \n"];
 WriteString[sphenoTree, "! kont = -104 \n"];
 WriteString[sphenoTree, " End if \n"];
 
@@ -1258,7 +885,7 @@ WriteString[sphenoTree,ConditionForMassOrdering[[pos,2]]];
 
 
 WriteString[sphenoTree, "Iname = Iname - 1 \n \n"];
-WriteString[sphenoTree, "End Subroutine " <> "Calculate"<>Name <>suffix <> " \n\n"];
+WriteString[sphenoTree, "End Subroutine " <> "Calculate"<>Name <> " \n\n"];
 
 
 ];
@@ -1280,16 +907,8 @@ WriteString[file,SPhenoForm[SPhenoMassSq[BottomQuark]] <> "(1:3) = mf_d**2 \n"];
 
 
 
-WriteTreeMassFunctionVector[Name_,MixingName_,ResMasses_,Angles_,MatrixFunction_,Parameters_,AllInvFields_]:=Block[{i,i2,i3,pos,suffix,subVEVfixed},
-
-If[MassesForEffpot===True,
-suffix="EffPot";
-subVEVfixed=subStableVEVs;,
-suffix="";
-subVEVfixed={};
-];
-
-MakeSubroutineTitle["Calculate"<>Name<>suffix ,Parameters,{},Flatten[{MixingName,ResMasses,Table[ResMasses[[i2]]<>"2",{i2,1,Length[ResMasses]}],SPhenoForm/@Angles,"kont"}],sphenoTree];
+WriteTreeMassFunctionVector[Name_,MixingName_,ResMasses_,Angles_,MatrixFunction_,Parameters_,AllInvFields_]:=Block[{i,i2,i3,pos},
+MakeSubroutineTitle["Calculate"<>Name,Parameters,{},Flatten[{MixingName,ResMasses,Table[ResMasses[[i2]]<>"2",{i2,1,Length[ResMasses]}],SPhenoForm/@Angles,"kont"}],sphenoTree];
 
 MakeVariableList[Parameters,", Intent(in)",sphenoTree];
 If[Angles=!={},
@@ -1326,7 +945,7 @@ WriteString[sphenoTree, "NameOfUnit(Iname) = '"<>"Calculate"<> Name<>"'\n \n"];
 
 For[i2=1,i2<=ToExpression[dimMatrix],
 For[i3=i2,i3<=ToExpression[dimMatrix],
-MakeSPhenoCoupling[MatrixFunction[[i2,i3]]/.subVEVfixed,"mat("<>ToString[i2]<>","<>ToString[i3]<>")",sphenoTree];
+MakeSPhenoCoupling[MatrixFunction[[i2,i3]],"mat("<>ToString[i2]<>","<>ToString[i3]<>")",sphenoTree];
 i3++;];
 i2++;];
 
@@ -1377,14 +996,11 @@ WriteString[sphenoTree, "    End If \n"];
 WriteString[sphenoTree, "  If ("<>Name<>"2(i1).Ge.0._dp) Then \n"];
 WriteString[sphenoTree, "  "<>Name <>"(i1) =Sqrt("<>Name <> "2(i1) ) \n"];
 WriteString[sphenoTree, "  Else \n"];
-If[MassesForEffpot===False,
 WriteString[sphenoTree, "    If (ErrorLevel.Ge.0) Then \n"];
 WriteString[sphenoTree, "      Write(10,*) 'Warning from Subroutine '//NameOfUnit(Iname) \n"];
 WriteString[sphenoTree, "      Write(10,*) 'a mass squarred is negative: ',i1,"<>Name<>"2(i1) \n"];
 WriteString[sphenoTree, "    End If \n"];
-];
 WriteString[sphenoTree, "  "<>Name <>"(i1)= 1._dp \n"];
-If[MassesForEffpot===False,
 WriteString[sphenoTree, "  "<>Name <>"2(i1)= 1._dp  \n"];
 WriteString[sphenoTree,"     Write(ErrCan,*) 'Warning from routine '//NameOfUnit(Iname) \n"];
 WriteString[sphenoTree,"     Write(ErrCan,*) 'in the calculation of the masses' \n"];
@@ -1394,12 +1010,9 @@ WriteString[sphenoTree,"     Write(*,*) 'Warning from routine '//NameOfUnit(Inam
 WriteString[sphenoTree,"     Write(*,*) 'in the calculation of the masses' \n"];
 WriteString[sphenoTree,"     Write(*,*) 'occurred a negative mass squared!' \n"];
 WriteString[sphenoTree,"     Write(*,*) i1,"<>Name<>"2(i1) \n"];
-];
 WriteString[sphenoTree, "  "<>Name <>"(i1)= 1._dp \n"];
-If[MassesForEffpot===False,
 WriteString[sphenoTree, "  "<>Name <>"2(i1) = 1._dp  \n"];
 WriteString[sphenoTree,"   SignOfMassChanged = .True. \n"];
-];
 WriteString[sphenoTree, "! kont = -104 \n"];
 WriteString[sphenoTree, " End if \n"];
 WriteString[sphenoTree, "End Do \n \n"];
@@ -1412,17 +1025,14 @@ WriteString[sphenoTree, SPhenoForm[SPhenoMassSq[getBlank[AllInvFields[[i]]]]] <>
 i++;];
 
 For[i=1,i<=Length[Angles],
-If[MassesForEffpot=!=True,
 WriteString[sphenoTree, SPhenoForm[Angles[[i]]] <>" = "<>SPhenoForm[Angles[[i]] /. subDependencesSPheno] <>"\n"];
-];
 i++;];
-
 
 WriteString[sphenoTree, "\n "];
 
 
 WriteString[sphenoTree, "Iname = Iname - 1 \n \n"];
-WriteString[sphenoTree, "End Subroutine " <> "Calculate"<>Name <>suffix <> " \n\n"];
+WriteString[sphenoTree, "End Subroutine " <> "Calculate"<>Name <> " \n\n"];
 
 
 ];
@@ -1430,7 +1040,7 @@ WriteString[sphenoTree, "End Subroutine " <> "Calculate"<>Name <>suffix <> " \n\
 
 WriteCalcAllTreeMassesSM:=Block[{i2},
 
-Print["  Writing routine for calculating SM masses"];
+Print["Writing Routine for Calculating all Masses"];
 
 subCouplingsSPheno={};
 For[i2=1,i2<=4,
@@ -1493,13 +1103,9 @@ MakeCall["Calculate"<>ListTreeVB[[i,1]],ListTreeVB[[i,2]],{},Flatten[{ListTreeVB
 i++;];
 
 
-(* Print["Write other Tree-Level Masses"]; *)
-
-Print["  Writing SM Masses: ",Dynamic[DynamicMassSMNr],"/",Length[listNotMixedMasses],"(",Dynamic[DynamicMassNameSM],")"];
+Print["Write other Tree-Level Masses"];
 
 For[i=1,i<=Length[listNotMixedMasses],
-DynamicMassSMNr=i;
-DynamicMassNameSM=listNotMixedMasses[[i,1]];
 If[FreeQ[SMParticles, listNotMixedMasses[[i,1]]]==False,
 Switch[getType[listNotMixedMasses[[i,1]]],
 F,
@@ -1552,7 +1158,7 @@ WriteString[sphenoTree,ToString[SPhenoMass[listNotMixedMasses[[i,1]]]]<>" = sqrt
 ];
 ];
 i++;];
-DynamicMassNameSM="All Done";
+
 
 WriteString[sphenoTree, "Iname = Iname - 1 \n \n"];
 

@@ -43,13 +43,9 @@ CreateDirectory[$sarahCurrentLoopDir];
 Print["Generate interaction list"];
 MakeCouplingLists;
 
-(*
 Print["------------------------------------"];
 Print["Calculate Loop Corrections"];
 Print["------------------------------------"];
-*)
-
-Print[StyleForm["Calculate 1-loop corrections","Section",FontSize->12]];
 
 CalculatedSelfEnergy={};
 GaugeMassES={};
@@ -74,17 +70,21 @@ realVar = Join[realVar,{ToExpression["U"<>ToString[Particles[Current][[i,1]] ]]}
 i++;];
 
 
-Print["  For rotated fields"];
-(* Print["------------------------------------"]; *)
+Print["     For Rotated  Fields"];
+Print["------------------------------------"];
 OneLoopMassMatrices[Eigenstates];
 getUnmixedMasses[Eigenstates];
 
-Print["  For tadpoles"];
-(* Print["------------------------------------"]; *)
+Print[""];
+Print[""];
+Print["     For Tadpoles"];
+Print["------------------------------------"];
 OneLoopTadpoles[Eigenstates];
 
-Print["  For gauge eigenstates"];
-(* Print["------------------------------------"]; *)
+Print[""];
+Print[""];
+Print["     For Gauge Eigenstates"];
+Print["------------------------------------"];
 OneLoopNotMixed[listNotMixedMasses, Eigenstates];
 OneLoopSelfEnergy[Eigenstates]=CalculatedSelfEnergy;
 
@@ -110,7 +110,7 @@ Tadpoles1LoopList[Eigenstates]={};
 
 SelfEnergy1LoopList[Eigenstates]={};
 
-Print["   Simplify expression"];
+Print["Simplify Expression"];
 
 SA`LoopMassesParticle={};
 
@@ -175,14 +175,10 @@ CalculatedLoopCorrections=Eigenstates;
 
 CorrectionList = Table[0,{Length[particles]}];
 OneLoopProp = Table[0,{Length[particles]}];
-Print["    ... processing: ",Dynamic[DynamicOneLoopNameNM],"(",Dynamic[DynamicOneLoopNrNM],"/",Length[particles],")"];
 For[i=1,i<=Length[particles],
-DynamicOneLoopNrNM=i;
-DynamicOneLoopNameNM=particles[[i,1]];
 If[FreeQ[massless,particles[[i,1]]]==True,
 particle=particles[[i,1]] /. diracSubBack1[Eigenstates] /. diracSubBack2[Eigenstates];
-(* Print["    Calculate One Loop Self Energy of ",particle]; *)
-
+Print["    Calculate One Loop Self Energy of ",particle];
 Switch[getType[particle],
   S,temp=Join[ThreeParticleVertex2[particle],FourParticleVertex2[particle]];,
   V,temp=Join[ThreeParticleVertex2[particle],FourParticleVertex2[particle]];,
@@ -240,16 +236,10 @@ SelfEnergyUnmixed[Eigenstates]=OneLoopProp;
 
 CorrectionList = Table[0,{Length[particles]}];
 OneLoopProp = Table[0,{Length[particles]}];
-
-Print["    ... processing: ",Dynamic[DynamicOneLoopNameFM],"(",Dynamic[DynamicOneLoopNrFM],"/",Length[particles],")"];
-
 For[i=1,i<=Length[particles],
 particle1=particles[[i,1]] /. diracSubBack1[Eigenstates] /. diracSubBack2[Eigenstates];
 particle2=particles[[i,2]] /. diracSubBack1[Eigenstates] /. diracSubBack2[Eigenstates];
-(* Print["    Calculate One Loop Self Energy of ",particle]; *)
-DynamicOneLoopNrFM=i;
-DynamicOneLoopNameFM=particle;
-
+Print["    Calculate One Loop Self Energy of ",particle];
 
 temp=InsFields[{{C[particle1,FieldToInsert[1],AntiField[FieldToInsert[2]]],C[AntiField[particle2],AntiField[FieldToInsert[1]],FieldToInsert[2]]},{Internal[1]->FieldToInsert[1],Internal[2]->FieldToInsert[2],External[1]->particle1,External[2]->AntiField[particle2]}}];
 temp = Join[temp,
@@ -311,15 +301,12 @@ If[Head[basis]=!=List,basis={};];
 CorrectedMassMatrices=Table[0,{Length[basis]}];
 CorrectionList=Table[0,{Length[basis]}];
 
-Print["  ... processing: ",Dynamic[DynamicOneLoopNameMM],"(",Dynamic[DynamicOneLoopNrMM],"/",Length[basis],")"];
+
 
  For[i=1,i<=Length[basis], 
-DynamicOneLoopNrMM=i;
 If[Length[basis[[i,2,1]]]==0,
-DynamicOneLoopNameMM=basis[[i,2,1]] /. diracSubBack1[Eigenstates] /. diracSubBack2[Eigenstates];
-(*Print["    Calculate One Loop Self Energy of ",basis[[i,2,1]] /. diracSubBack1[Eigenstates] /. diracSubBack2[Eigenstates]];*),
-DynamicOneLoopNameMM=basis[[i,2,1,1]] /. diracSubBack1[Eigenstates] /. diracSubBack2[Eigenstates];
-(*Print["    Calculate One Loop Self Energy of ",basis[[i,2,1,1]] /. diracSubBack1[Eigenstates] /. diracSubBack2[Eigenstates]];*)
+Print["    Calculate One Loop Self Energy of ",basis[[i,2,1]] /. diracSubBack1[Eigenstates] /. diracSubBack2[Eigenstates]];,
+Print["    Calculate One Loop Self Energy of ",basis[[i,2,1,1]] /. diracSubBack1[Eigenstates] /. diracSubBack2[Eigenstates]];
 ];
 
 If[Length[Dimensions[basis[[i,2]]]]==1,
@@ -408,8 +395,6 @@ SA`vevsForLoop=vevs;
 neededVerticesForTadpoles={};
 CorrectionListTadpoles={};
 
-Print["    ... processing: ",Dynamic[DynamicOneLoopTadName],"(",Dynamic[DynamicOneLoopTadNr],"/",Dynamic[DynamicOneLoopTadNrAll],")"];
-
 If[Head[vevs]===List && vevs=!={},
 scalars=Transpose[Transpose[vevs][[4]]][[1]];
 vevNames=Transpose[Transpose[vevs][[2]]][[1]];
@@ -417,12 +402,8 @@ TadpolesLoop ={};
 ScalarsForTadpoles={};
 UnrotatedFieldsTadpoles={};
 listVEVseparated={};
-
 For[i=1,i<=Length[vevNames],
 particle = scalars[[i]];
-DynamicOneLoopTadNrAll=Length[vevNames];
-DynamicOneLoopTadNr=i;
-DynamicOneLoopTadName=particle;
 
 If[FreeQ[basis,particle]==False,
 pos = Position[basis,particle][[1,1]];

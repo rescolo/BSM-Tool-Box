@@ -50,29 +50,17 @@ Block[{$Path={$sarahSPhenoPackageDir}},
 
  <<SPhenoHiggsCS`; 
 <<SPhenoTadpoles`;
-
-<<SPhenoEffPot`;
-<<SPheno2LPole`;
 ];
 
-Options[MakeSPheno]={Eigenstates->EWSB,TwoLoop->True,ReadLists->False, InputFile->"SPheno.m", StandardCompiler->"gfortran",IncludeFlavorKit->True};
+Options[MakeSPheno]={Eigenstates->EWSB,TwoLoop->True,ReadLists->False, InputFile->"SPheno.m", StandardCompiler->"gfortran"};
 
-MakeSPheno[opt___ ]:=MakeSPhenoOutput[Eigenstates/.{opt}/.Options[MakeSPheno],TwoLoop/.{opt}/.Options[MakeSPheno],ReadLists/.{opt}/.Options[MakeSPheno],InputFile/.{opt}/.Options[MakeSPheno],StandardCompiler/.{opt}/.Options[MakeSPheno],IncludeFlavorKit/.{opt}/.Options[MakeSPheno]];
+MakeSPheno[opt___ ]:=MakeSPhenoOutput[Eigenstates/.{opt}/.Options[MakeSPheno],TwoLoop/.{opt}/.Options[MakeSPheno],ReadLists/.{opt}/.Options[MakeSPheno],InputFile/.{opt}/.Options[MakeSPheno],StandardCompiler/.{opt}/.Options[MakeSPheno]];
 
-MakeSPhenoOutput[Eigenstates_, TwoL_,ReadL_, inputfile_,scompiler_,flavorkit_]:=Block[{i,i1,i2,temp,startedtime},
-startedtime=TimeUsed[];
-Print[StyleForm["Generate SPheno Source Code","Section"]];
-
-Print[StyleForm["Performing necessary calculations","Section",FontSize->10]];
-
+MakeSPhenoOutput[Eigenstates_, TwoL_,ReadL_, inputfile_,scompiler_]:=Block[{i,i1,i2,temp},
 SPhenoFile=ToFileName[{$sarahCurrentModelDir},inputfile];
 SetOptions[CalcRGEs,WriteFunctionsToRun->False];
 SPheno`Eigenstates=Eigenstates;
 SA`CurrentStates=Eigenstates;
-
-If[flavorkit===False || SkipFlavorKit===True,
-SkipFlavorKit=True;
-];
 
 AbortStartSPheno=False;
 SARAHFortran=True;
@@ -90,10 +78,6 @@ Print["File for SPheno-Output does not exist!"];
 AbortStartSPheno=True;,
 Get[SPhenoFile];
 If[SA`Version === "SARAHVERSION",FlagLoopContributions=True;];
-];
-
-If[UseHiggs2LoopMSSM===True || Use2LoopFromLiterature===True,
-UseHiggs2LoopMSSM=True;
 ];
 
 If[Head[BoundaryRenScale]===List  && SupersymmetricModel==False,
@@ -174,14 +158,9 @@ If[FileExistsQ[$sarahCurrentSPhenoDir]=!=True,
 CreateDirectory[$sarahCurrentSPhenoDir];
 ];
 
-(*
 Print["--------------------------------"];
 Print["Generate SPheno Source Code"];
 Print["--------------------------------"];
-*)
-
-Print[];
-Print[StyleForm["Preparing SPheno code","Section",FontSize->12]];
 
 SPhenoParameters = parameters;
 
@@ -222,12 +201,10 @@ MakeSPhenoFortran;
 
 
 SameTadpoleSolutions=False;
-SeveralIndependentTadpoleSolutionsSave=SeveralIndependentTadpoleSolutions;
 If[Head[ParametersToSolveTadpolesLowScaleInput]===List && FreeQ[Particles[ALL],VEV]===False && UseGivenTadpoleSolutionLowScale=!=True && Complement[ParametersToSolveTadpoles,ParametersToSolveTadpolesLowScaleInput]=!={},
 SolveTadpoleEquation[Eigenstates,ParametersToSolveTadpolesLowScaleInput];
 
 SeveralIndependentTadpoleSolutionsLowScale = SeveralIndependentTadpoleSolutions;
-SeveralIndependentTadpoleSolutions=SeveralIndependentTadpoleSolutionsSave;
 SubSolutionsTadpolesTreeLowScale = SubSolutionsTadpolesTree; 
 SubSolutionsTadpolesLoopLowScale = SubSolutionsTadpolesLoop;,
 SameTadpoleSolutions=True;
@@ -339,10 +316,6 @@ GenerateSPhenoSusyDecays[Eigenstates];
 GenerateSPhenoBR[Eigenstates];
 ];
 
-If[SupersymmetricModel=!=False,
-GenerateSPhenoEffPot;
-GenerateSPheno2LPole;
-];
 GenerateSPhenoLoopMasses[Eigenstates];
 
 If[SPhenoOnlyForHM=!=True,
@@ -395,19 +368,6 @@ WriteMetaInformation[RegimeNr,Eigenstates];
 ];
 
 
-If[ThreeIndexParametersInvolved===True,
-BetaLijkl=BetaLijklSave;
-BetaYijk=BetaYijkSave;
-BetaTijk=BetaTijkSave;
-BetaMuij=BetaMuijSave;
-BetaBij=BetaBijSave;
-BetaMi=BetaMiSave;
-Betam2ij=Betam2ijSave;
-BetaGauge=BetaGaugeSave;
-BetaVEV=BetaVEVSave;
-TraceAbbr=TraceAbbrSave;
-Gij=GijSave;
-];
 
 If[SA`SPhenoCleanUp==True,
 SARAHFortran=False;
@@ -415,11 +375,10 @@ parameters= parametersSave;
 ];
 
 Print[""];
-Print["Finished! SPheno code generated in ",TimeUsed[]-startedtime,"s"];
-Print["Output saved in ",StyleForm[$sarahCurrentSPhenoDir,"Section",FontSize->10] ];
+Print["Finished! Output is in ",$sarahCurrentSPhenoDir ];
 Print[""];
 Print["The following steps are now necessary to implement the model in SPheno: "];
-Print["  1. Copy the created files to a new subdirectory \"/",NameForModel,"\" of your SPheno "<>ToString[StyleForm["3.3.6 (or later)","Section",FontSize->10]]<>" installation"];
+Print["  1. Copy the created files to a new subdirectory \"/",NameForModel,"\" of your SPheno 3.3.0 (or later) installation"];
 Print["  2. Compile the model by using "];
 Print["        make Model=",NameForModel];
 Print["     in the main directory of SPheno"];
@@ -435,8 +394,8 @@ WriteString[DirectoryNamesFile,"NumberNeutralHiggs="<>ToString[SA`NumberNeutralH
 
 
 SolveTadpoleEquation[Eigenstates_,parameters_]:=Block[{i,j,k,off,TEquLocal, subReal,i1,i2,temp,pos,parName},
-Print["  Solve tadpole equations for: ",parameters,"  (",Dynamic[DynamicStatusSPhenoTad[parameters]],") "];
-DynamicStatusSPhenoTad[parameters]="preparing equations";
+Print["Solve Tadpole equations for given parameters"];
+
 resLoop={};
 resTree={};
 EquLoop={};
@@ -540,19 +499,7 @@ subReal = Join[subReal,{conj[parameters[[i]]]->parameters[[i]], conj[parameters[
 temp = parameters[[i]] /. a_[b_Integer]->a  /. a_[b_Integer,c_Integer]->a;
 If[Head[temp]=!=Symbol,
 subSPhenoForm=Join[subSPhenoForm,{temp-> ToExpression[SPhenoForm[temp]]}];
-subSPhenoFormBack=Join[subSPhenoFormBack,{ToExpression[SPhenoForm[temp]]->temp}];,
-If[FreeQ[ParameterDefinitions,T[temp]] ==False && FreeQ[parameters,T[temp]],
-subSPhenoForm=Join[subSPhenoForm,{T[temp]-> ToExpression[SPhenoForm[T[temp]]]}];
-subSPhenoFormBack=Join[subSPhenoFormBack,{ToExpression[SPhenoForm[T[temp]]]->T[temp]}];
-];
-If[FreeQ[ParameterDefinitions,B[temp]] ==False && FreeQ[parameters,B[temp]],
-subSPhenoForm=Join[subSPhenoForm,{B[temp]-> ToExpression[SPhenoForm[B[temp]]]}];
-subSPhenoFormBack=Join[subSPhenoFormBack,{ToExpression[SPhenoForm[B[temp]]]->B[temp]}];
-];
-If[FreeQ[ParameterDefinitions,L[temp]] ==False && FreeQ[parameters,L[temp]],
-subSPhenoForm=Join[subSPhenoForm,{L[temp]-> ToExpression[SPhenoForm[L[temp]]]}];
-subSPhenoFormBack=Join[subSPhenoFormBack,{ToExpression[SPhenoForm[L[temp]]]->L[temp]}];
-];
+subSPhenoFormBack=Join[subSPhenoFormBack,{ToExpression[SPhenoForm[temp]]->temp}];
 ];
 If[getDimSPheno[parameters[[i]]]=!={1} && getDimSPheno[parameters[[i]]]=!={} && getDimSPheno[parameters[[i]]]=!={0},
 If[Length[getDimSPheno[parameters[[i]]]]==1,subGenParameters = Join[subGenParameters,{parameters[[i]]-> Table[parameters[[i]][k],{k,1,getDimSPheno[parameters[[i]]][[1]]}]}];];
@@ -582,7 +529,7 @@ SquaredParameterInvolved++;
 i++;];
 
 
-DynamicStatusSPhenoTad[parameters]="solve equations";
+
 resTree=Solve[EquTree,Flatten[(parameters /.subReImPar    /. subGenParameters /. subSPhenoForm)]]/. subSPhenoFormBack;
 resLoop=Solve[EquLoop,Flatten[(parameters /.subReImPar  /. subGenParameters /. subSPhenoForm )]] /. subSPhenoFormBack;
 
@@ -620,7 +567,6 @@ SubSolutionsTadpolesLoop = Join[SubSolutionsTadpolesLoop,{resLoop[[j]]}];
 ];
 j++;];
 i++;];,
-SeveralIndependentTadpoleSolutions=False;
 SubSolutionsTadpolesLoop=Flatten[resLoop] ;
 SubSolutionsTadpolesTree=Flatten[resTree]; 
 ];
@@ -630,8 +576,7 @@ If[SubSolutionsTadpolesLoop=={},
 Message[SPheno::Tadpoles, parameters];
 ];
 
-(* Print["   Simplify solutions"]; *)
-DynamicStatusSPhenoTad[parameters]="simplify solutions";
+Print["   Simplify solutions"];
 
 If[SPhenoOnlyForHM=!=True,
 If[SA`SimplifyTadpoleSolutions=!=False,
@@ -717,7 +662,7 @@ If[OffSetTW ===0, SA`OffTW = "0._dp";,SA`OffTW=SPhenoForm[OffSetTW];];
 ];
 
 
-Print["  Build parameter lists"];
+Print["Build parameter lists"];
 SeveralBoundaryConditions=False;
 
 realVar = Join[realVar,{RealParameters}];
@@ -781,14 +726,14 @@ If[AllFermion[[i]]=!=TopQuark,ListDecayParticles = Join[ListDecayParticles,{AllF
 i++;];
 ];
 
-(* If[InlcudeBeta3Bscalar===True, *)
+If[InlcudeBeta3Bscalar===True,
 For[i=1,i<=Length[AllScalarNonSM],
 If[FreeQ[massless,AllScalarNonSM[[i]]] && AllScalarNonSM[[i]]=!=HiggsBoson && AllScalarNonSM[[i]]=!=PseudoScalar && AllScalarNonSM[[i]]=!=ChargedHiggs,
 ListDecayParticles3B= Join[ListDecayParticles3B,{{AllScalarNonSM[[i]],ToString[AllScalarNonSM[[i]]]<>"_"<>ModelName<>".f90"}}];
 ];
 i++;];
-(* ]; *)
-  ]; 
+];
+ ];
 
 If[getGen[Electron]>3,
 If[TwoBDList===Automatic, ListDecayParticles = Join[ListDecayParticles,{Electron}];];
@@ -938,15 +883,6 @@ NeededParametersForRGEs= Join[NeededParametersForRGEs,{{BetaDGi[[i,1]],getInvolv
 i++;];
 ];
 
-If[Length[BetaFIi]!= 0,
-tempList=Transpose[BetaFIi][[1]]/. Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1 /. Delta[a__]->1;
-HighScaleParameter = Join[HighScaleParameter,tempList];
-
-For[i=1,i<=Length[BetaFIi],
-NeededParametersForRGEs= Join[NeededParametersForRGEs,{{BetaFIi[[i,1]],getInvolvedParameters[BetaFIi[[i]]]}}];
-i++;];
-];
-
 If[Length[BetaLi]!= 0,
 If[SupersymmetricModel===True,
 tempList=Transpose[Transpose[listWone/. Delta[a__]->1 /. epsTensor[a__]->1 /. InvMat[a__][b__]->1][[2]]][[2]] /. Delta[a__]->1;,
@@ -1071,15 +1007,9 @@ AllRGEsRunning=False;
 CheckSMrges:=Block[{},
 AddOHDM = False;
 If[SupersymmetricModel===True,
-If[AuxiliaryHyperchargeCoupling=!=True,
 If[Select[{"Up-Yukawa-Coupling","Down-Yukawa-Coupling","Lepton-Yukawa-Coupling","Hypercharge-Coupling","Left-Coupling","Strong-Coupling"},(FreeQ[ParameterDefinitions,#])& ] === {}  && (FreeQ[ParameterDefinitions,"Down-VEV"]==False || FreeQ[ParameterDefinitions,"EW-VEV"]),
 AddSMrunning = True;,
 AddSMrunning=False;
-];,
-If[Select[{"Up-Yukawa-Coupling","Down-Yukawa-Coupling","Lepton-Yukawa-Coupling","Left-Coupling","Strong-Coupling"},(FreeQ[ParameterDefinitions,#])& ] === {}  && (FreeQ[ParameterDefinitions,"Down-VEV"]==False || FreeQ[ParameterDefinitions,"EW-VEV"]),
-AddSMrunning = True;,
-AddSMrunning=False;
-];
 ];
 AddOHDM = False;,
 If[Select[{"Up-Yukawa-Coupling","Down-Yukawa-Coupling","Lepton-Yukawa-Coupling","Hypercharge-Coupling","Left-Coupling","Strong-Coupling","Down-VEV","Up-VEV"},(FreeQ[ParameterDefinitions,#])& ] === {} ,
@@ -1253,7 +1183,7 @@ Switch[$OperatingSystem,
 	Run["/Applications/Mathematica.app/Contents/MacOS/MathKernel < SARAH-Intermediate.m > "<>outputfile];,
 _,
 	If[Run["math"]=!=0,
-	unknown::system="Not possible to start second Kernel. Please write a mail to florian.staub@cern.ch.";
+	unknown::system="Not possible to start second Kernel. Please write a mail to fnstaub@th.physik.uni-bonn.de.";
 	Message[unknown::system];
 	];
 ];
@@ -1458,12 +1388,7 @@ Return[temp];
 CreateHiggs2Loop :=Block[{i1,i2},
 sphenoHiggs2Loop=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"TwoLoopHiggsMass_SARAH.f90"]];
 AppendSourceCode["TwoLoopHiggsMass.f90",sphenoHiggs2Loop];
-Close[sphenoHiggs2Loop];
-
-sphenoHiggs2Loopasat=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"effpotasat.f"]];
-AppendSourceCode["effpotasat.f",sphenoHiggs2Loopasat];
-Close[sphenoHiggs2Loopasat];
-
+Close[sphenoHiggs2Loop]
 ];
 
 

@@ -19,13 +19,18 @@ int (*pinfAux_int)(int nsub, int nprtcl, int*spin2,int*color,int*neutral);
 char ** polarized_int;
 char ** varName_int;
 
-double (*sqme_int)(int nsub,double GG,REAL*momenta,REAL*cb_coeff,int * err);
+double (*sqme_int)(int nsub,double GG, REAL * momenta, int * err);
 int (*calcFunc_int)(void);
 double *BWrange_int;
 int *twidth_int, *gtwidth_int, *gswidth_int;
 REAL *va_int;
 
-colorBasis * cb_int;
+void (*build_cb_int)(int nsub); 
+void (*destroy_cb_int)(void);    
+int *cb_pow_int;   
+int *cb_nc_int; 
+int ** cb_chains_int;
+REAL ** cb_coeff_int;
 
 #include"../../include/num_out.h"
 
@@ -52,7 +57,12 @@ void link_process( CalcHEP_interface * interface)
   gswidth_int=    interface->gswidth;
   va_int=         interface->va;
 
-  cb_int=   interface->cb;
+  build_cb_int=   interface->build_cb;
+  destroy_cb_int= interface->destroy_cb;
+  cb_pow_int=     interface->cb_pow;
+  cb_nc_int=      interface->cb_nc;
+  cb_chains_int=  interface->cb_chains;
+  cb_coeff_int=   interface->cb_coeff;
   
   *(interface->aWidth)=&aWidth;
   hiddenf=realloc(hiddenf,nfunc_int);

@@ -3,12 +3,11 @@ Off[General::spell]
 Model`Name = "MSSMBpV";
 Model`NameLaTeX ="MSSM with baryon number violation";
 Model`Authors = "F.Staub";
-Model`Date = "2014-09-05";
+Model`Date = "2012-09-01";
 
 (* 2013-09-01: changing to new conventions for Superfields, Superpotential and global symmetries *)
-(* 2014-09-05: turned off CalcHep and WHIZARD output for MakeAll[] *)
 
-SetOptions[MakeAll,IncludeCalcHep->False,IncludeWHIZARD->False];
+
 
 (*-------------------------------------------*)
 (*   Particle Content*)

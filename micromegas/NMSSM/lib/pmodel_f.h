@@ -9,10 +9,9 @@ extern void o1contents_(int *file);
        integer file
 */ 
 
-extern int nmssmewsb_(void);
+extern int nmssmewsb_(int*mode);
 extern int  nmssmsugra_(double *m0, double* mhf, double* a0, double* tb,double*sgn,
-                        double*Lambda, double *aLambda, double*aKappa, 
-                        double*xif,double *xis,double*muP,double*msPQ,double*M3HQ);
+                        double*Lambda, double *aLambda, double*aKappa);
 extern int readslha_(char * fname, int len);
 extern int readvarnmssm_(char *fname, int len);
 

@@ -32,14 +32,11 @@ Options[MakeFeynArts]={AddCounterTerms->False};
 
 MakeFeynArts[opt___]:=MakeFeynArtsFunc[AddCounterTerms /. {opt} /. Options[MakeFeynArts]];
 
-MakeFeynArtsFunc[AddCounterT_]:=Block[{i,j,term,startedtime},
-(*
+MakeFeynArtsFunc[AddCounterT_]:=Block[{i,j,term},
 Print["------------------------------"];
 Print[" Creating FeynArts Model File "];
 Print["------------------------------"];
-*)
-startedtime=TimeUsed[];
-Print[StyleForm["Generate FeynArts model files","Section"]];
+
 
 SA`subParameterNames={};
 
@@ -81,10 +78,7 @@ FeynArtsVertices;
 WriteModelFA;
 
 Print[""];
-
-
-Print["Done. FeynArts files generated in ",TimeUsed[]-startedtime,"s"];
-Print["Output is saved in ", StyleForm[$sarahCurrentFeynArtsDir,"Section",FontSize->10]];
+Print["Done. Output is in ", $sarahCurrentFeynArtsDir];
 
 If[WriteModelDirectories==True,
 WriteString[DirectoryNamesFile,"FeynArtsDir="<>ToString[$sarahCurrentFeynArtsDir] <>"\n"];
@@ -787,15 +781,15 @@ WriteString[outputfile, "(* ----------------------------------------------------
 FAindices = Intersection[FAindices/. {generation-> ToExpression["I"<>ToString[x]<>"Gen"], color->Colour} /. ToExpression["I"<>ToString[Gluino]<>"Gen"]-> Gluon /. ToExpression["I"<>ToString[VG]<>"Gen"]-> Gluon  /. ToExpression["I"<>ToString[getGhost[VectorG]]<>"Gen"]-> Gluon //. adjcolor->Gluon //. subGenInd  ];
 
 For[i=1,i<= Length[FAindices],
-WriteString[outputfile,"IndexRange[  Index["<>StringReplace[ToString[FAindices[[i,1]]],ToString[Gluon]->"Gluon"] <>"]  ] ="];
+WriteString[outputfile,"IndexRange[  Index["<>ToString[FAindices[[i,1]]] <>"]  ] ="];
 If[FAindices[[i,3]]==True,
- WriteString[outputfile,"Range["<>StringReplace[ToString[FAindices[[i,2]]],ToString[Gluon]->"Gluon"] <>"]; \n"];,
-WriteString[outputfile,"NoUnfold[Range["<>StringReplace[ToString[FAindices[[i,2]]],ToString[Gluon]->"Gluon"] <>"]]; \n"];
+ WriteString[outputfile,"Range["<>ToString[FAindices[[i,2]]]<>"]; \n"];,
+WriteString[outputfile,"NoUnfold[Range["<>ToString[FAindices[[i,2]]]<>"]]; \n"];
 ];
 
 If[FAindices[[i,4]]===greekIndex,
-WriteString[outputfile,"IndexStyle[  Index["<>StringReplace[ToString[FAindices[[i,1]]],ToString[Gluon]->"Gluon"]  <>", i_Integer ] ] := Greek[i];  \n"];,
-WriteString[outputfile,"IndexStyle[  Index["<>StringReplace[ToString[FAindices[[i,1]]],ToString[Gluon]->"Gluon"]  <>", i_Integer ] ] := Alph[ 8+i];  \n"];
+WriteString[outputfile,"IndexStyle[  Index["<>ToString[FAindices[[i,1]]] <>", i_Integer ] ] := Greek[i];  \n"];,
+WriteString[outputfile,"IndexStyle[  Index["<>ToString[FAindices[[i,1]]] <>", i_Integer ] ] := Alph[ 8+i];  \n"];
 ];
 
 i++;];
@@ -835,9 +829,9 @@ For[i=1,i<= Length[M$ClassesDescription],
 WriteString[outputfile, ToString[InputForm[M$ClassesDescription[[i,1]]]]<>" == {"];
 For[j=1,j<=6,
 If[j==4,
-WriteString[outputfile,StringReplace[ ToString[InputForm[M$ClassesDescription[[i,2,j,1]]]] <>"->" <> M$ClassesDescription[[i,2,j,2]],ToString[Gluon]->"Gluon"]];
+WriteString[outputfile, ToString[InputForm[M$ClassesDescription[[i,2,j,1]]]] <>"->" <> M$ClassesDescription[[i,2,j,2]]];
 ;,
-WriteString[outputfile, StringReplace[ ToString[InputForm[M$ClassesDescription[[i,2,j]]]],ToString[Gluon]->"Gluon"]];
+WriteString[outputfile, ToString[InputForm[M$ClassesDescription[[i,2,j]]]]];
 ];
 If[j==6,WriteString[outputfile,"}"];,WriteString[outputfile,",\n"];];
 j++;];

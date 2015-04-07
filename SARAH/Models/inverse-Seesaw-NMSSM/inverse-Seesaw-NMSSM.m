@@ -3,7 +3,7 @@ Off[General::spell]
 Model`Name = "NInvSeesaw";
 Model`NameLaTeX ="Inverse Seesaw NMSSM";
 Model`Authors = "A.Vicente, F.Staub";
-Model`Date = "2014-09-05";
+Model`Date = "2012-09-01";
 
 
 (* 2013-09-01: changing to new conventions for Superfields, Superpotential and global symmetries *)
@@ -51,7 +51,7 @@ SuperFields[[10]] ={x, 3, x,            0, 1,  1, RpM, Z3t,  1/2};
 (*------------------------------------------------------*)
 
 SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Lambda] s.Hu.Hd \
-                 + \[Kappa]/3 s.s.s  + Yv v.l.Hu + \[Lambda]N s.v.x + MUX/2 x.x;
+                  \[Kappa]/3 s.s.s  + Yv v.l.Hu + \[Lambda]N s.v.x + MUX/2 x.x;
 
 
 (*----------------------------------------------*)

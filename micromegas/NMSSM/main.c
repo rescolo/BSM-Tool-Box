@@ -19,21 +19,21 @@
       /* Display  deltarho, B_>sgamma, Bs->mumu, gmuon and
          check LEP mass limits 
       */ 
-//#define HIGGSBOUNDS "../Packages/HiggsBounds-4.2.0"
-//#define HIGGSSIGNALS "../Packages/HiggsSignals-1.3.0"      
       
-      
+//#define HIGGSBOUNDS "../Packages/HiggsBounds-4.1.0"
+//#define HIGGSSIGNALS "../Packages/HiggsSignals-1.2.0"      
+
 #define OMEGA            
       /* Calculate relic density and display contribution of
          individual channels 
       */
-#define INDIRECT_DETECTION  
+//#define INDIRECT_DETECTION  
       /* Compute spectra of gamma/positron/neutrinos
          for DM annihilation; calculate <sigma*v> and
          integrate gamma signal over DM galactic squared
          density for given line of sight.  
       */
-//#define LOOPGAMMA
+//#define LoopGAMMA
       
 /*#define RESET_FORMFACTORS  */
       /* Modify default nucleus form factors, 
@@ -48,11 +48,8 @@
       /* Calculate number of events for 1kg*day 
          and recoil energy distibution for various nuclei
       */
-#define NEUTRINO
- /*  Neutrino signal of DM annihilation in Sun and Earth */
-       
-      
-/*#define DECAYS */
+#define NEUTRINO 
+#define DECAYS
     /* Calculate decay widths and branchings  */
 
 /*#define CROSS_SECTIONS */
@@ -61,11 +58,12 @@
       */
 /*===== end of Modules  ======*/
 
-#define CLEAN
-
 /*===== Options ========*/
 /* #define SHOWPLOTS */
      /* Display  graphical plots on the screen */ 
+
+#define CLEAN to clean intermediate files
+
 
 /*===== End of DEFINE  settings ===== */
 
@@ -76,24 +74,20 @@
 
 
 int main(int argc,char** argv)
-{
-  int err,nw;
+{  int err,nw;
    char cdmName[10];
    int spin2, charge3,cdim;
-   double laMax;   
 
-  ForceUG=0;  /* to Force Unitary Gauge assign 1 */
-//   VWdecay=0; VZdecay=0;
-   
+
+  ForceUG=1;   // to Force Unitary Gauge assign 1 
+  
 #ifdef SUGRA
 {
   double m0,mhf,a0,tb;
   double Lambda, aLambda,aKappa,sgn;
-  double mXiF=0,mXiS=0,muP=0,msP=0,m3h=0;
 
   if(argc<7) 
   { 
-
     printf(" This program needs 6 parameters:\n"
            "   m0      common scalar mass at GUT scale\n"
            "   mhf     common gaugino mass at GUT scale\n"
@@ -126,7 +120,7 @@ int main(int argc,char** argv)
      if(argc>11){ sscanf(argv[11],"%lf",&alfSMZ); assignValW("alfSMZ",alfSMZ);}
   }
 
-  err=nmssmSUGRA( m0,mhf, a0,tb, sgn,  Lambda, aLambda, aKappa,mXiF,mXiS,muP,msP,m3h);
+  err=nmssmSUGRA( m0,mhf, a0,tb, sgn,  Lambda, aLambda, aKappa); 
 }
 #elif defined(EWSB)
 {
@@ -137,11 +131,11 @@ int main(int argc,char** argv)
       exit(1);
   }
 
-  err=readVar(argv[1]);
+  err=readVarNMSSM(argv[1]);
   
   if(err==-1)     {printf("Can not open the file\n"); exit(1);}
   else if(err>0)  { printf("Wrong file contents at line %d\n",err);exit(1);}          
-  err=nmssmEWSB();  
+  err=nmssmEWSB(0);  
 }
 #else
 {
@@ -153,22 +147,22 @@ int main(int argc,char** argv)
       exit(1);
    }  
    
-   printf("Initial file  \"%s\"\n",argv[1]);
-     
-   err=readSLHA(argv[1]);
-   
-   
-   if(err) exit(2);
+   printf("Initial file  \"%s\"\n",argv[1]); 
+   err=lesHinput(argv[1]);
 }
 
 #endif
 
   slhaWarnings(stdout);
+  
   if(err) exit(1);
 
   err=sortOddParticles(cdmName);
 
+
   if(err) { printf("Can't calculate %s\n",cdmName); return 1;}
+
+  err=calcMainFunc();   
 
   qNumbers(cdmName,&spin2, &charge3, &cdim);
   printf("\nDark matter candidate is '%s' with spin=%d/2\n",
@@ -178,16 +172,16 @@ int main(int argc,char** argv)
   if(strcmp(cdmName,"~o1")) printf(" ~o1 is not CDM\n"); 
                     else o1Contents(stdout);
 
-/*  printVar(stdout);  */
+// If you would like to use widths calculated by NMSSMTools, 
+// uncomment the line below
 
- 
+//   slhaRead("decay",1+8);
 
 #ifdef MASSES_INFO
 {
   printf("\n=== MASSES OF HIGGS AND SUSY PARTICLES: ===\n");
   printHiggs(stdout);
   printMasses(stdout,1);
-  
 }
 #endif
 
@@ -244,7 +238,7 @@ int main(int argc,char** argv)
      system("cat spectr decay > HS.in");
      HBblocks("HS.in");
      system("echo 'BLOCK DMASS\n 25 " dMh " '>> HS.in");
-     System(HIGGSSIGNALS "/HiggsSignals" DataSet Method  PDF " SLHA 5 1 HS.in > hs.stdout");
+     System(HIGGSSIGNALS "/HiggsSignals" DataSet Method  PDF " SLHA 3 1 HS.in > hs.stdout");
      System("grep -A 10000  HiggsSignalsResults HS.in > HS.out");
      slhaRead("HS.out",1+4);
      printf("  Number of observables %.0f\n",slhaVal("HiggsSignalsResults",0.,1,7));
@@ -258,20 +252,23 @@ int main(int argc,char** argv)
 #endif
 
 
-
 #ifdef OMEGA
 { int fast=1;
-  double Beps=1.E-4, cut=0.01;
-  double Omega,Xf;   
-  printf("\n==== Calculation of relic density =====\n");
-// to exclude processes with virtual W/Z in DM   annihilation
-  VWdecay=0; VZdecay=0; cleanDecayTable();  
+  double Beps=1.E-3, cut=0.01;
+  double Omega,Xf;
+  
+// to exclude processes with virtual W/Z in DM   annihilation      
+    VZdecay=0; VWdecay=0; cleanDecayTable(); 
+
+// to include processes with virtual W/Z  also  in co-annihilation 
+//   VZdecay=2; VWdecay=2; cleanDecayTable(); 
+     
+  printf("\n==== Calculation of relic density =====\n");  
   Omega=darkOmega(&Xf,fast,Beps);
   printf("Xf=%.2e Omega=%.2e\n",Xf,Omega);
   printChannels(Xf,cut,Beps,1,stdout);
-  
-// to restore default switches  
-  VZdecay=1; VWdecay=1; cleanDecayTable();  
+ 
+  VZdecay=1; VWdecay=1; cleanDecayTable();  // restore default  
 }
 #endif
 
@@ -284,7 +281,7 @@ int main(int argc,char** argv)
   double SpA[NZ],SpE[NZ],SpP[NZ];
   double FluxA[NZ],FluxE[NZ],FluxP[NZ];
 //  double * SpNe=NULL,*SpNm=NULL,*SpNl=NULL;
-double SpNe[NZ],SpNm[NZ],SpNl[NZ];
+  double SpNe[NZ],SpNm[NZ],SpNl[NZ];
   double Etest=Mcdm/2;
   
 printf("\n==== Indirect detection =======\n");  
@@ -297,19 +294,18 @@ printf("\n==== Indirect detection =======\n");
                        2-includes gammas for 2->2+gamma
                        4-print cross sections             
     */
-  printf("sigmav=%.2E[cm^3/s]\n",sigmaV);  
 
   if(SpA)
   { 
      double fi=0.1,dfi=0.05; /* angle of sight and 1/2 of cone angle in [rad] */ 
 
      gammaFluxTab(fi,dfi, sigmaV, SpA,  FluxA);
-     printf("Photon flux  for angle of sight f=%.2f[rad]\n"
+     printf("\nPhoton flux  for angle of sight f=%.2f[rad]\n"
      "and spherical region described by cone with angle %.2f[rad]\n",fi,2*dfi);
      
 #ifdef SHOWPLOTS
      sprintf(txt,"Photon flux[cm^2 s GeV]^{1} at f=%.2f[rad], cone angle %.2f[rad]",fi,2*dfi);
-     displaySpectrum(FluxA,txt,Emin,Mcdm);
+     displaySpectrum(FluxA,txt,Emin,Mcdm,1);
 #endif
      printf("Photon flux = %.2E[cm^2 s GeV]^{-1} for E=%.1f[GeV]\n",SpectdNdE(Etest, SpA), Etest);       
   }
@@ -318,9 +314,9 @@ printf("\n==== Indirect detection =======\n");
   { 
     posiFluxTab(Emin, sigmaV, SpE,  FluxE);
 #ifdef SHOWPLOTS     
-    displaySpectrum(FluxE,"positron flux [cm^2 s sr GeV]^{-1}" ,Emin,Mcdm);
+    displaySpectrum(FluxE,"positron flux [cm^2 s sr GeV]^{-1}" ,Emin,Mcdm,1);
 #endif
-    printf("Positron flux  =  %.2E[cm^2 sr s GeV]^{-1} for E=%.1f[GeV] \n",
+    printf("\nPositron flux  =  %.2E[cm^2 sr s GeV]^{-1} for E=%.1f[GeV] \n",
     SpectdNdE(Etest, FluxE),  Etest);           
   }
   
@@ -328,15 +324,15 @@ printf("\n==== Indirect detection =======\n");
   { 
     pbarFluxTab(Emin, sigmaV, SpP, FluxP  ); 
 #ifdef SHOWPLOTS    
-     displaySpectrum(FluxP,"antiproton flux [cm^2 s sr GeV]^{-1}" ,Emin,Mcdm);
+     displaySpectrum(FluxP,"antiproton flux [cm^2 s sr GeV]^{-1}" ,Emin,Mcdm,1);
 #endif
-    printf("Antiproton flux  =  %.2E[cm^2 sr s GeV]^{-1} for E=%.1f[GeV] \n",
+    printf("\nAntiproton flux  =  %.2E[cm^2 sr s GeV]^{-1} for E=%.1f[GeV] \n",
     SpectdNdE(Etest, FluxP),  Etest);             
   }
 }  
 #endif
 
-#ifdef LOOPGAMMA  
+#ifdef LoopGAMMA  
   { double vcs_gg,vcs_gz;
     if(loopGamma(&vcs_gg, &vcs_gz )==0)
     {
@@ -368,18 +364,13 @@ printf("\n==== Indirect detection =======\n");
 
     calcScalarQuarkFF(0.553,18.9,45.5,26.);
 
+//  To restore default form factors of  version 2  call 
+//  calcScalarQuarkFF(0.553,18.9,55.,243.5);
+ 
+
   printf("protonFF (new)     d %E, u %E, s %E\n",ScalarFFPd, ScalarFFPu,ScalarFFPs);                               
   printf("neutronFF(new)     d %E, u %E, s %E\n",ScalarFFNd, ScalarFFNu,ScalarFFNs);
 
-
-
-/* Option to change parameters of DM velocity  distribution  */   
-   SetfMaxwell(220.,600.);
-/* 
-    dN  ~  exp(-v^2/arg1^2)*Theta(v-arg2)  d^3v     
-    Earth velocity with respect to Galaxy defined by 'Vearth' parameter.
-    All parameters are  in [km/s] units.       
-*/
 }
 #endif
 
@@ -390,7 +381,7 @@ printf("\n==== Indirect detection =======\n");
 
 printf("\n==== Calculation of CDM-nucleons amplitudes  =====\n");   
 
-    nucleonAmplitudes(CDM1,FeScLoop, pA0,pA5,nA0,nA5);
+    nucleonAmplitudes(FeScLoop, pA0,pA5,nA0,nA5);
     printf("CDM-nucleon micrOMEGAs amplitudes:\n");
     printf("proton:  SI  %.3E  SD  %.3E\n",pA0[0],pA5[0]);
     printf("neutron: SI  %.3E  SD  %.3E\n",nA0[0],nA5[0]); 
@@ -447,55 +438,54 @@ printf("\n======== Direct Detection ========\n");
 #endif
   
 }
-#endif 
-
+#endif
+ 
 #ifdef NEUTRINO
 { double nu[NZ], nu_bar[NZ],mu[NZ];
   double Ntot;
   int forSun=1;
   double Emin=0.01;
-  
- printf("\n===============Neutrino Telescope=======  for  "); 
- if(forSun) printf("Sun\n"); else printf("Earth\n");  
+
+  printf("\n===============Neutrino Telescope=======  for  ");
+  if(forSun) printf("Sun\n"); else printf("Earth\n");
 
   err=neutrinoFlux(Maxwell,forSun, nu,nu_bar);
 #ifdef SHOWPLOTS
-  displaySpectrum(nu,"nu flux from Sun [1/Year/km^2/GeV]",Emin,Mcdm);
-  displaySpectrum(nu_bar,"nu-bar from Sun [1/Year/km^2/GeV]",Emin,Mcdm);
+  displaySpectrum(nu,"nu flux from Sun [1/Year/km^2/GeV]",Emin,Mcdm,1);
+  displaySpectrum(nu_bar,"nu-bar from Sun [1/Year/km^2/GeV]",Emin,Mcdm,1);
 #endif
 { double Ntot;
-  double Emin=1; //GeV
+  double Emin=10; //GeV
   spectrInfo(Emin/Mcdm,nu, &Ntot,NULL);
-    printf(" E>%.1E GeV neutrino flux       %.2E [1/Year/km^2] \n",Emin,Ntot);
+    printf(" E>%.1E GeV neutrino flux       %.3E [1/Year/km^2] \n",Emin,Ntot);
   spectrInfo(Emin/Mcdm,nu_bar, &Ntot,NULL);
-    printf(" E>%.1E GeV anti-neutrino flux  %.2E [1/Year/km^2]\n",Emin,Ntot);  
-} 
-  
+    printf(" E>%.1E GeV anti-neutrino flux  %.3E [1/Year/km^2]\n",Emin,Ntot);
+}
+
 /* Upward events */
-  
+
   muonUpward(nu,nu_bar, mu);
 #ifdef SHOWPLOTS  
-  displaySpectrum(mu,"Upward muons[1/Year/km^2/GeV]",1,Mcdm/2);
+  displaySpectrum(mu,"Upward muons[1/Year/km^2/GeV]",1,Mcdm/2,1);
 #endif
   { double Ntot;
     double Emin=1; //GeV
     spectrInfo(Emin/Mcdm,mu, &Ntot,NULL);
-    printf(" E>%.1E GeV Upward muon flux    %.2E [1/Year/km^2]\n",Emin,Ntot);
-  } 
-  
+    printf(" E>%.1E GeV Upward muon flux    %.3E [1/Year/km^2]\n",Emin,Ntot);
+  }
+
 /* Contained events */
   muonContained(nu,nu_bar,1., mu);
 #ifdef SHOWPLOTS  
-  displaySpectrum(mu,"Contained  muons[1/Year/km^3/GeV]",Emin,Mcdm); 
+  displaySpectrum(mu,"Contained  muons[1/Year/km^3/GeV]",Emin,Mcdm,1);
 #endif
   { double Ntot;
     double Emin=1; //GeV
     spectrInfo(Emin/Mcdm,mu, &Ntot,NULL);
-    printf(" E>%.1E GeV Contained muon flux %.2E [1/Year/km^3]\n",Emin,Ntot);
-  }  
-}        
-#endif 
-
+    printf(" E>%.1E GeV Contained muon flux %.3E [1/Year/km^3]\n",Emin,Ntot);
+  }
+}
+#endif
 
 #ifdef DECAYS
 {  
@@ -506,18 +496,18 @@ printf("\n======== Direct Detection ========\n");
    printf("\nParticle decays\n"); 
    pname = "h1";
     width=pWidth(pname,&L);
-    printf("%s->%d*x :   total width=%E \n and Branchings:\n",pname,dim,width);
+    printf("%s :   total width=%.3E \n and Branchings:\n",pname,width);
     printTxtList(L,stdout);
 
-   pname = "l";
-    width=pWidth(pname,&L);
-    printf("%s->%d*x :   total width=%E \n and Branchings:\n",pname,dim,width);
-    printTxtList(L,stdout);
-    printf("Br(e,Ne,nl)= %E\n",findBr(L,"e,Ne,nl"));
+   printf("\nParticle decays\n");
+   pname = "ha";
+   width=pWidth(pname,&L);
+   printf("%s-> :   total width=%.3E \n and Branchings:\n",pname,width);
+   printTxtList(L,stdout);
 
    pname = "~o2";
     width=pWidth(pname,&L);
-    printf("%s->%d*x :   total width=%E \n and Branchings:\n",pname,dim,width);
+    printf("%s:   total width=%.3E \n and Branchings:\n",pname,width);
     printTxtList(L,stdout);
 }
 #endif
@@ -533,7 +523,7 @@ printf(" e^+, e^- annihilation\n");
   Helicity[0]=0.5;    /* helicity : spin projection on direction of motion   */    
   Helicity[1]=-0.5;   /* helicities ={ 0.5, -0.5} corresponds to vector state */
   printf("Process e,E->2*x at Pcm=%.3E GeV\n",Pcm);
-  cc=newProcess("e%,E%->2*x","eE_2x");
+  cc=newProcess("e%,E%->2*x");
   if(cc)
   { int ntot,l;
     char * name[4];
@@ -552,12 +542,11 @@ printf(" e^+, e^- annihilation\n");
 }
 #endif
 
-#ifdef CLEAN
-  killPlots();
-  system("rm -f inp spectr nngg.out ");
-#endif
+#ifdef CLEAN 
+  system("rm -f inp spectr decay omega nngg.out HB.slha  Key.dat");
+  system("rm -f HB.in HB.out HS.in HS.out hb.stdout hs.stdout debug_channels.txt debug_predratio.txt");   
+#endif 
 
   return 0;
-
 }
 

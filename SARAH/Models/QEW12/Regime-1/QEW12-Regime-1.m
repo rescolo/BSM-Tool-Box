@@ -7,8 +7,6 @@ Model`NameLaTeX ="SMxEW Quiver Gauge Model";
 Model`Authors = "Aoife Bharucha, Andreas Goudelis, Moritz McGarrie";
 Model`Date = "2012-18-11";
 
-(* 2014-08-19 (F. Staub): forcing generators of SU(3) to be equivalent to Gell-Mann matrices *) 
-
 
 (*****************************************)
 (* Gauge structure and gauge superfields *)
@@ -45,9 +43,6 @@ Fields[[10]] = {conj[eR3],  1,  e3,   0, 1,   1, 1, 1};
 Fields[[11]] = {{Hd0, Hdm}, 1,  Hd,   0, 1,-1/2, 2, 1};
 Fields[[12]] = {{Hup, Hu0}, 1,  Hu,   0, 1, 1/2, 2, 1};
   
-(* Force generators of SU(3) to be Gell-Mann matrices *)
-Lambda={{{0,1,0},{1,0,0},{0,0,0}},{{0,-I,0},{I,0,0},{0,0,0}},{{1,0,0},{0,-1,0},{0,0,0}},{{0,0,1},{0,0,0},{1,0,0}},{{0,0,-I},{0,0,0},{I,0,0}},{{0,0,0},{0,0,1},{0,1,0}},{{0,0,0},{0,0,-I},{0,I,0}},1/Sqrt[3] {{1,0,0},{0,1,0},{0,0,-2}}};
-
 
 
 

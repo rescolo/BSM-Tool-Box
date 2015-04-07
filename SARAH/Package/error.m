@@ -51,7 +51,7 @@ FeynArts::NumberDefinedTwiceV ="Particle number `` defined twice for Vectors";
 
 MassMatrix::OnlyZero = "The mass matrix for `` contains only zero elements";
 
-Lagrange::ChargeViolation ="Warning! `` not conserved in ``";
+Lagrange::ChargeViolation ="Warning! `` not conserved";
 Lagrange::MaybeChargeViolation ="Conservation of  `` depends on choice of ``";
 Lagrange::ViolationGlobal ="Warning! Global symmetry `` not conserved";
 
@@ -143,7 +143,7 @@ TadpoleEquation::usage="TadpoleEquation[vev] returns the tadpole equation for th
 CalcRGEs::usage = "CalcRGEs[Options] calculates the Renormalization Group Equations for the considered model. Use Options[CalcRGEs] to get a list with all possible options. See also \"CalcRGEs::notes\" for more information";
 CalcLoopCorrections::usage = "CalcLoopCorrections[Eigenstates,Options] calculates the one-loop corrections to self-energis and tadpoles for the given Eigenstates. Use Options[CalcLoopCorrections] for a list for all options. See also \"CalcLoopCorrections::notes\ for more information.";
 
-SA`CommandsOutput={MakeAll::usage,MakeSPheno::usage,MakeCHep::usage,MakeFeynArts::usage,MakeUFO::usage,MakeTeX::usage,MakeWHIZARD::usage};
+SA`CommandsOutput={MakeAll::usage,MakeSPheno::usage,MakeCHep::usage,MakeFeynArts::usage,MakeTeX::usage,MakeWHIZARD::usage};
 SA`CommandsCalculation={MassMatrix::usage,MassMatrices::usage, TadpoleEquation::usage,TadpoleEquations::usage,Vertex::usage,MakeVertexList::usage,  CalcRGEs::usage,CalcLoopCorrections::usage,Tadpoles1LoopList::usage,Tadpoles1LoopSum::usage,SelfEnergy1LoopList::usage, SelfEnergy1LoopSum::usage,CheckIrrepSUN::usage};
 SA`CommandsChecks={CheckModel::usage,ShowSuperpotentialContractions::usage};
 SA`CommandsModel={Particles::usage,SARAHparameters::usage,getGen::usage,getFla::usage,getType::usage,getIndizes::usage,getRParity::usage,getDescriptionParameter::usage,getDescriptionField::usage};
@@ -168,7 +168,6 @@ MakeAll::usage = "MakeAll[Options] creates the output for SPheno, CalcHep, FeynA
 ModelOutput::usage="ModelOutput[Eigenstates,Options] produces for the given Eigenstates the specified Output. This can be a LaTeX, FeynArts or CalcHep file. Use Options[ModelOutput] to get a list with all possible options. See also \"MakeAll::notes\" for more information";
 MakeFeynArts::usage="MakeFeynArts[Options] writes a FeynArts Model file. Use Options[MakeFeynArts] to get a list with all possible options.  See also \"MakeFeynArts::notes\" for more information";
 MakeTeX::usage="MakeTeX[Options] writes a LaTeX file. Use Options[MakeTeX] to get a list with all possible options. See also \"MakeTeX::notes\" for more information";
-MakeUFO::usage="MakeUFO[Options] writes a model file in UFO format. Use Options[MakeUFO] to get a list with all possible options. See also \"MakeUFO::notes\" for more information";
 MakeCHep::usage="MakeCHep[Options] writes a CalcHep Model file. Use Options[MakeCHep] to get a list with all possible options. See also \"MakeCHep::notes\" for more information";
 MakeWHIZARD::usage ="MakeWHIZARD[Options] writes model files for WHIZARD and Omega. Use Options[MakeWHIZARD] to get a list with all possible options. See also \"MakeWHIZARD::notes\" for more information"; 
 MakeSPheno::usage="MakeSPheno[Options] creates source code to implement the current model in SPheno. Use Options[MakeSPheno] to get a list with all possible options. See also \"MakeSPheno::notes\" for more information";
@@ -232,10 +231,6 @@ automatically by the WHIZARD build system. \n
 \t Defines the version of WHIZARD for which the model file is generated. \n
 (v) \"ReadLists\", Values: \"True\" or\"False\", Default: \"False\" \n
 \t This setting controls whether the cached results from a previous calculation should be used.";
-
-MakeUFO::notes= "The options of MakeUFO are the following: \n
-(i) \"Exclude\", Values: list of generic type, Default: \"{SSSS,GGS,GGV}\" \n
-\t Defines, which generic diagrams are excluded when writing the model file.";
 
 MakeCHep::notes = "The options of MakeCHep are the following: \n
 (i) \"FeynmanGauge\", Values: \"True\" or \"False\", Default: \"True\" \n
@@ -375,7 +370,7 @@ Print[" - For an overview about the most important commands use ",StyleForm["SAR
 Print[" - Run the examples delivered with the package."];
 Print[""];
 Print["If you have any questions or feedback, please send an eMail to"];
-Print["florian.staub@cern.ch"];
+Print["fnstaub@th.physik.uni-bonn.de"];
 ];
 
 
@@ -416,38 +411,31 @@ CheckModelFiles::WrongPDGIX="The number of PDG.IX numbers defined for the follow
 CheckModelFiles::MissingLH="For the following parameters is no LesHouches Block defined: ``";
 
 SARAH`Commands:=Block[{i},
-(*
 Print["---------------------------------------------------------------"];
 Print["Commands to produce output for other tools"];
 Print["---------------------------------------------------------------"];
-*)
-Print[StyleForm["Commands to produce output for other tools","Section",FontSize->12]];
 For[i=1,i<=Length[SA`CommandsOutput],
 Print[SA`CommandsOutput[[i]]];
 i++;];
 
-(*
+
 Print["---------------------------------------------------------------"];
 Print["Commands to perform calculations and to get physical information"];
 Print["---------------------------------------------------------------"];
-*)
-Print[StyleForm["Commands to perform calculations and to get physical information","Section",FontSize->12]];
 For[i=1,i<=Length[SA`CommandsCalculation],
 Print[SA`CommandsCalculation[[i]]];
 i++;];
 
-(*Print["---------------------------------------------------------------"];
+Print["---------------------------------------------------------------"];
 Print["Commands to get information about the particles and parameters "];
-Print["---------------------------------------------------------------"];*)
-Print[StyleForm["Commands to get information about the particles and parameters","Section",FontSize->12]];
+Print["---------------------------------------------------------------"];
 For[i=1,i<=Length[SA`CommandsModel],
 Print[SA`CommandsModel[[i]]];
 i++;];
 
-(*Print["---------------------------------------------------------------"];
+Print["---------------------------------------------------------------"];
 Print["Commands to perform checks of the model   "];
-Print["---------------------------------------------------------------"];*)
-Print[StyleForm["Commands to perform checks of the model","Section",FontSize->12]];
+Print["---------------------------------------------------------------"];
 For[i=1,i<=Length[SA`CommandsChecks],
 Print[SA`CommandsChecks[[i]]];
 i++;];
@@ -456,10 +444,7 @@ i++;];
 
 CheckModelFile:=Block[{i,j,k,l},
 
-PrintDebug["Checking Model Files ..."];
-Print["Checking model files: ",Dynamic[DynamicCheckModelFiles]];
-
-DynamicCheckModelFiles="Processing main file";
+Print["Checking Model Files ..."];
 
 ModelFileOK=True;
 
@@ -532,10 +517,8 @@ j++;];
 i++;];
 
 If[ModelFileOK==True,
-PrintDebug["    Model File is okay"];
+Print["    Model File is okay"];
 ];
-
-DynamicCheckModelFiles="Processing particle file";
 
 ParticleFileOK=True;
 
@@ -548,23 +531,17 @@ ParticleFileOK=False;
 i++;];
 
 If[ParticleFileOK==True,
-PrintDebug["    Particle File is okay"];
+Print["    Particle File is okay"];
 ];
 
-DynamicCheckModelFiles="Processing parameter file";
 ParameterFileOK=True;
 
 
 CheckParameterDefinitions[ParameterDefinitions];
 
 If[ParameterFileOK==True,
-PrintDebug["    Parameter File is okay"];
+Print["    Parameter File is okay"];
 ];
-
-If[ParameterFileOK==True && ParticleFileOK==True && ModelFileOK==True,
-DynamicCheckModelFiles="All files okay";,
-DynamicCheckModelFiles="Found problems. Main file: "<>(ModelFileOK /. {True->"ok",False->"buggy"})<>". Particle file: "<>(ParticleFileOK /. {True->"ok",False->"buggy"})<>". Parameter file: "<>(ParameterFileOK /. {True->"ok",False->"buggy"})<>"\n";
-	];
 
 ];
 

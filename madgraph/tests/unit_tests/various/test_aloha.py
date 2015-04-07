@@ -3222,6 +3222,7 @@ entry VVS1_2_2(V2, S3, COUP1, COUP2, M1, W1,V1)
 end
 
 """
+
         self.assertEqual(text.split('\n'),goal.split('\n')) 
         text_h, text_cpp =  abstract.write(None, 'CPP')
     
@@ -3316,8 +3317,7 @@ while (i < 6)
         
         text =  abstract.write(None, 'Python')
 
-        goal = """import cmath
-import wavefunctions
+        goal = """import wavefunctions
 def VVS1_1(V2,S3,COUP,M1,W1):
     OM1 = 0.0
     if (M1): OM1=1.0/M1**2
@@ -3334,12 +3334,10 @@ def VVS1_1(V2,S3,COUP,M1,W1):
     return V1
 
 
-import cmath
 import wavefunctions
 def VVS1_2(V2,S3,COUP,M1,W1):
 
     return VVS1_1(V2,S3,COUP,M1,W1)
-import cmath
 import wavefunctions
 def VVS1_2_1(V2,S3,COUP1,COUP2,M1,W1):
     V1 = VVS1_1(V2,S3,COUP1,M1,W1)
@@ -3348,7 +3346,6 @@ def VVS1_2_1(V2,S3,COUP1,COUP2,M1,W1):
         V1[i] += tmp[i]
     return V1
 
-import cmath
 import wavefunctions
 def VVS1_2_2(V2,S3,COUP1,COUP2,M1,W1):
     V1 = VVS1_1(V2,S3,COUP1,M1,W1)
@@ -3561,11 +3558,11 @@ P1(0) = dble(V1(1))
 P1(1) = dble(V1(2))
 P1(2) = dimag(V1(2))
 P1(3) = dimag(V1(1))
-TMP1 = (P1(0)*V1(3)-P1(1)*V1(4)-P1(2)*V1(5)-P1(3)*V1(6))
-TMP0 = (V2(3)*P1(0)-V2(4)*P1(1)-V2(5)*P1(2)-V2(6)*P1(3))
-TMP3 = (P1(0)*P1(0)-P1(1)*P1(1)-P1(2)*P1(2)-P1(3)*P1(3))
-TMP2 = (V2(3)*V1(3)-V2(4)*V1(4)-V2(5)*V1(5)-V2(6)*V1(6))
-vertex = COUP*S3(3)*(-CI*(TMP0*TMP1)+CI*(TMP2*TMP3))
+ TMP1 = (P1(0)*V1(3)-P1(1)*V1(4)-P1(2)*V1(5)-P1(3)*V1(6))
+ TMP0 = (V2(3)*P1(0)-V2(4)*P1(1)-V2(5)*P1(2)-V2(6)*P1(3))
+ TMP3 = (P1(0)*P1(0)-P1(1)*P1(1)-P1(2)*P1(2)-P1(3)*P1(3))
+ TMP2 = (V2(3)*V1(3)-V2(4)*V1(4)-V2(5)*V1(5)-V2(6)*V1(6))
+ vertex = COUP*S3(3)*(-CI*(TMP0*TMP1)+CI*(TMP2*TMP3))
 end
 
 
@@ -3877,8 +3874,7 @@ class TestAlohaWriter(unittest.TestCase):
     def test_pythonwriter(self):
         """ test that python writer works """
         
-        solution ="""import cmath
-import wavefunctions
+        solution ="""import wavefunctions
 def SSS1_1(S2,S3,COUP,M1,W1):
     S1 = wavefunctions.WaveFunction(size=3)
     S1[0] = +S2[0]+S3[0]
@@ -3889,12 +3885,10 @@ def SSS1_1(S2,S3,COUP,M1,W1):
     return S1
 
 
-import cmath
 import wavefunctions
 def SSS1_2(S2,S3,COUP,M1,W1):
 
     return SSS1_1(S2,S3,COUP,M1,W1)
-import cmath
 import wavefunctions
 def SSS1_3(S2,S3,COUP,M1,W1):
 
@@ -3922,8 +3916,7 @@ def SSS1_3(S2,S3,COUP,M1,W1):
         """ test that python writer works """
 
 
-        solution ="""import cmath
-import wavefunctions
+        solution ="""import wavefunctions
 def RFSC1_1(R1,S3,COUP,M2,W2):
     F2 = wavefunctions.WaveFunction(size=6)
     F2[0] = +R1[0]+S3[0]
@@ -3953,8 +3946,7 @@ def RFSC1_1(R1,S3,COUP,M2,W2):
         self.assertEqual(split_solution, split_routine)
         self.assertEqual(len(split_routine), len(split_solution))
 
-        solution = """import cmath
-import wavefunctions
+        solution = """import wavefunctions
 def RFSC1_0(F2,R1,S3,COUP):
     TMP0 = (F2[4]*(R1[7]+R1[14]+1j*(R1[11])-R1[2])-F2[5]*(R1[3]+R1[15]+1j*(R1[10])-R1[6]))
     vertex = COUP*-1j * TMP0*S3[2]
@@ -3971,8 +3963,7 @@ def RFSC1_0(F2,R1,S3,COUP):
         self.assertEqual(split_solution, split_routine)
         self.assertEqual(len(split_routine), len(split_solution))
         
-        solution = """import cmath
-import wavefunctions
+        solution = """import wavefunctions
 def RFSC1_2(F2,S3,COUP,M1,W1):
     OM1 = 0.0
     if (M1): OM1=1.0/M1**2
@@ -4136,8 +4127,7 @@ end
     def test_pythonwriter_C(self):
         """ test that python writer works """
         aloha_lib.KERNEL.clean()
-        solution ="""import cmath
-import wavefunctions
+        solution ="""import wavefunctions
 def FFV1C1_1(F1,V3,COUP,M2,W2):
     F2 = wavefunctions.WaveFunction(size=6)
     F2[0] = +F1[0]+V3[0]
@@ -4165,8 +4155,7 @@ def FFV1C1_1(F1,V3,COUP,M2,W2):
         self.assertEqual(split_solution, split_routine)
         self.assertEqual(len(split_routine), len(split_solution))
 
-        solution ="""import cmath
-import wavefunctions
+        solution ="""import wavefunctions
 def FFV1C1_2(F2,V3,COUP,M1,W1):
     F1 = wavefunctions.WaveFunction(size=6)
     F1[0] = +F2[0]+V3[0]
@@ -4190,8 +4179,7 @@ def FFV1C1_2(F2,V3,COUP,M1,W1):
         self.assertEqual(split_solution, split_routine)
         self.assertEqual(len(split_routine), len(split_solution))
 
-        solution = """import cmath
-import wavefunctions
+        solution = """import wavefunctions
 def FFV1C1_1(F1,V3,COUP,M2,W2):
     F2 = wavefunctions.WaveFunction(size=6)
     F2[0] = +F1[0]+V3[0]
@@ -4205,7 +4193,6 @@ def FFV1C1_1(F1,V3,COUP,M2,W2):
     return F2
 
 
-import cmath
 import wavefunctions
 def FFV1_2C1_1(F1,V3,COUP1,COUP2,M2,W2):
     F2 = FFV1C1_1(F1,V3,COUP1,M2,W2)
@@ -4236,8 +4223,7 @@ def FFV1_2C1_1(F1,V3,COUP1,COUP2,M2,W2):
     def test_pythonwriter_4_fermion(self):
         """ test that python writer works """
         aloha_lib.KERNEL.clean()
-        solution ="""import cmath
-import wavefunctions
+        solution ="""import wavefunctions
 def FFFF1_1(F2,F3,F4,COUP,M1,W1):
     F1 = wavefunctions.WaveFunction(size=6)
     F1[0] = +F2[0]+F3[0]+F4[0]
@@ -4266,8 +4252,7 @@ def FFFF1_1(F2,F3,F4,COUP,M1,W1):
         self.assertEqual(split_solution, split_routine)
         self.assertEqual(len(split_routine), len(split_solution))
         
-        solution ="""import cmath
-import wavefunctions
+        solution ="""import wavefunctions
 def FFFF1C1_1(F1,F3,F4,COUP,M2,W2):
     F2 = wavefunctions.WaveFunction(size=6)
     F2[0] = +F1[0]+F3[0]+F4[0]
@@ -4297,8 +4282,7 @@ def FFFF1C1_1(F1,F3,F4,COUP,M2,W2):
         self.assertEqual(split_solution, split_routine)
         self.assertEqual(len(split_routine), len(split_solution))
        
-        solution ="""import cmath
-import wavefunctions
+        solution ="""import wavefunctions
 def FFFF1C2_1(F2,F4,F3,COUP,M1,W1):
     F1 = wavefunctions.WaveFunction(size=6)
     F1[0] = +F2[0]+F3[0]+F4[0]
@@ -4332,8 +4316,7 @@ def FFFF1C2_1(F2,F4,F3,COUP,M1,W1):
         """ test that python writer works """
         
         aloha_lib.KERNEL.clean()
-        solution ="""import cmath
-import wavefunctions
+        solution ="""import wavefunctions
 def FFV13C1_0(F2,F1,V3,COUP):
     P2 = [complex(F2[0]).real, complex(F2[1]).real, complex(F2[1]).imag, complex(F2[0]).imag]
     P3 = [complex(V3[0]).real, complex(V3[1]).real, complex(V3[1]).imag, complex(V3[0]).imag]
@@ -4773,10 +4756,10 @@ P1[1] = -F1[1].real();
 P1[2] = -F1[1].imag();
 P1[3] = -F1[0].imag();
     denom = COUP/(pow(P1[0],2)-pow(P1[1],2)-pow(P1[2],2)-pow(P1[3],2) - M1 * (M1 -cI* W1));
-    F1[2]= denom*-cI*(F2[2]*(P1[0]*(V3[2]+V3[5])+(P1[1]*-1.*(V3[3]+cI*(V3[4]))+(P1[2]*(+cI*(V3[3])-V3[4])-P1[3]*(V3[2]+V3[5]))))+(F2[3]*(P1[0]*(V3[3]-cI*(V3[4]))+(P1[1]*(V3[5]-V3[2])+(P1[2]*(-cI*(V3[5])+cI*(V3[2]))+P1[3]*(+cI*(V3[4])-V3[3]))))+M1*(F2[4]*(V3[2]-V3[5])+F2[5]*(+cI*(V3[4])-V3[3]))));
+    F1[2]= denom*cI*(F2[2]*(P1[0]*-1.*(V3[2]+V3[5])+(P1[1]*(V3[3]+cI*(V3[4]))+(P1[2]*(V3[4]-cI*(V3[3]))+P1[3]*(V3[2]+V3[5]))))+(F2[3]*(P1[0]*(+cI*(V3[4])-V3[3])+(P1[1]*(V3[2]-V3[5])+(P1[2]*(-cI*(V3[2])+cI*(V3[5]))+P1[3]*(V3[3]-cI*(V3[4])))))+M1*(F2[4]*(V3[5]-V3[2])+F2[5]*(V3[3]-cI*(V3[4])))));
     F1[3]= denom*cI*(F2[2]*(P1[0]*-1.*(V3[3]+cI*(V3[4]))+(P1[1]*(V3[2]+V3[5])+(P1[2]*(+cI*(V3[2]+V3[5]))-P1[3]*(V3[3]+cI*(V3[4])))))+(F2[3]*(P1[0]*(V3[5]-V3[2])+(P1[1]*(V3[3]-cI*(V3[4]))+(P1[2]*(V3[4]+cI*(V3[3]))+P1[3]*(V3[5]-V3[2]))))+M1*(F2[4]*(V3[3]+cI*(V3[4]))-F2[5]*(V3[2]+V3[5]))));
     F1[4]= denom*cI*(F2[4]*(P1[0]*(V3[5]-V3[2])+(P1[1]*(V3[3]+cI*(V3[4]))+(P1[2]*(V3[4]-cI*(V3[3]))+P1[3]*(V3[5]-V3[2]))))+(F2[5]*(P1[0]*(V3[3]-cI*(V3[4]))+(P1[1]*-1.*(V3[2]+V3[5])+(P1[2]*(+cI*(V3[2]+V3[5]))+P1[3]*(V3[3]-cI*(V3[4])))))+M1*(F2[2]*-1.*(V3[2]+V3[5])+F2[3]*(+cI*(V3[4])-V3[3]))));
-    F1[5]= denom*-cI*(F2[4]*(P1[0]*-1.*(V3[3]+cI*(V3[4]))+(P1[1]*(V3[2]-V3[5])+(P1[2]*(-cI*(V3[5])+cI*(V3[2]))+P1[3]*(V3[3]+cI*(V3[4])))))+(F2[5]*(P1[0]*(V3[2]+V3[5])+(P1[1]*(+cI*(V3[4])-V3[3])+(P1[2]*-1.*(V3[4]+cI*(V3[3]))-P1[3]*(V3[2]+V3[5]))))+M1*(F2[2]*(V3[3]+cI*(V3[4]))+F2[3]*(V3[2]-V3[5]))));
+    F1[5]= denom*cI*(F2[4]*(P1[0]*(V3[3]+cI*(V3[4]))+(P1[1]*(V3[5]-V3[2])+(P1[2]*(-cI*(V3[2])+cI*(V3[5]))-P1[3]*(V3[3]+cI*(V3[4])))))+(F2[5]*(P1[0]*-1.*(V3[2]+V3[5])+(P1[1]*(V3[3]-cI*(V3[4]))+(P1[2]*(V3[4]+cI*(V3[3]))+P1[3]*(V3[2]+V3[5]))))+M1*(F2[2]*-1.*(V3[3]+cI*(V3[4]))+F2[3]*(V3[5]-V3[2]))));
 }
 
 """
@@ -4794,17 +4777,17 @@ P1[1] = -F1[1].real();
 P1[2] = -F1[1].imag();
 P1[3] = -F1[0].imag();
     denom = COUP/(pow(P1[0],2)-pow(P1[1],2)-pow(P1[2],2)-pow(P1[3],2) - M1 * (M1 -cI* W1));
-    F1[2]= denom*((-cI)*((F2[2])*(((P1[0])*(((V3[2])+(V3[5])))+((P1[1])*(-1.*((V3[3])+cI*((V3[4]))))+((P1[2])*((+cI*((V3[3]))-(V3[4])))-(P1[3])*(((V3[2])+(V3[5])))))))+((F2[3])*(((P1[0])*(((V3[3])+(-cI)*((V3[4]))))+((P1[1])*(((V3[5])-(V3[2])))+((P1[2])*((+(-cI)*((V3[5]))+cI*((V3[2]))))+(P1[3])*((+cI*((V3[4]))-(V3[3])))))))+(M1)*(((F2[4])*(((V3[2])-(V3[5])))+(F2[5])*((+cI*((V3[4]))-(V3[3]))))))));
-    F1[3]= denom*(cI*((F2[2])*(((P1[0])*(-1.*((V3[3])+cI*((V3[4]))))+((P1[1])*(((V3[2])+(V3[5])))+((P1[2])*((+cI*((V3[2])+(V3[5]))))-(P1[3])*(((V3[3])+cI*((V3[4]))))))))+((F2[3])*(((P1[0])*(((V3[5])-(V3[2])))+((P1[1])*(((V3[3])+(-cI)*((V3[4]))))+((P1[2])*(((V3[4])+cI*((V3[3]))))+(P1[3])*(((V3[5])-(V3[2])))))))+(M1)*(((F2[4])*(((V3[3])+cI*((V3[4]))))-(F2[5])*(((V3[2])+(V3[5]))))))));
-    F1[4]= denom*(cI*((F2[4])*(((P1[0])*(((V3[5])-(V3[2])))+((P1[1])*(((V3[3])+cI*((V3[4]))))+((P1[2])*(((V3[4])+(-cI)*((V3[3]))))+(P1[3])*(((V3[5])-(V3[2])))))))+((F2[5])*(((P1[0])*(((V3[3])+(-cI)*((V3[4]))))+((P1[1])*(-1.*((V3[2])+(V3[5])))+((P1[2])*((+cI*((V3[2])+(V3[5]))))+(P1[3])*(((V3[3])+(-cI)*((V3[4]))))))))+(M1)*(((F2[2])*(-1.*((V3[2])+(V3[5])))+(F2[3])*((+cI*((V3[4]))-(V3[3]))))))));
-    F1[5]= denom*((-cI)*((F2[4])*(((P1[0])*(-1.*((V3[3])+cI*((V3[4]))))+((P1[1])*(((V3[2])-(V3[5])))+((P1[2])*((+(-cI)*((V3[5]))+cI*((V3[2]))))+(P1[3])*(((V3[3])+cI*((V3[4]))))))))+((F2[5])*(((P1[0])*(((V3[2])+(V3[5])))+((P1[1])*((+cI*((V3[4]))-(V3[3])))+((P1[2])*(-1.*((V3[4])+cI*((V3[3]))))-(P1[3])*(((V3[2])+(V3[5])))))))+(M1)*(((F2[2])*(((V3[3])+cI*((V3[4]))))+(F2[3])*(((V3[2])-(V3[5]))))))));
+    F1[2]= denom*-cI*(F2[2]*(P1[0]*(V3[2]+V3[5])+(P1[1]*-1.*(V3[3]+cI*(V3[4]))+(P1[2]*(+cI*(V3[3])-V3[4])-P1[3]*(V3[2]+V3[5]))))+(F2[3]*(P1[0]*(V3[3]-cI*(V3[4]))+(P1[1]*(V3[5]-V3[2])+(P1[2]*(-cI*(V3[5])+cI*(V3[2]))+P1[3]*(+cI*(V3[4])-V3[3]))))+M1*(F2[4]*(V3[2]-V3[5])+F2[5]*(+cI*(V3[4])-V3[3]))));
+    F1[3]= denom*-cI*(F2[2]*(P1[0]*(V3[3]+cI*(V3[4]))+(P1[1]*-1.*(V3[2]+V3[5])+(P1[2]*-1.*(+cI*(V3[2]+V3[5]))+P1[3]*(V3[3]+cI*(V3[4])))))+(F2[3]*(P1[0]*(V3[2]-V3[5])+(P1[1]*(+cI*(V3[4])-V3[3])+(P1[2]*-1.*(V3[4]+cI*(V3[3]))+P1[3]*(V3[2]-V3[5]))))+M1*(F2[4]*-1.*(V3[3]+cI*(V3[4]))+F2[5]*(V3[2]+V3[5]))));
+    F1[4]= denom*-cI*(F2[4]*(P1[0]*(V3[2]-V3[5])+(P1[1]*-1.*(V3[3]+cI*(V3[4]))+(P1[2]*(+cI*(V3[3])-V3[4])+P1[3]*(V3[2]-V3[5]))))+(F2[5]*(P1[0]*(+cI*(V3[4])-V3[3])+(P1[1]*(V3[2]+V3[5])+(P1[2]*-1.*(+cI*(V3[2]+V3[5]))+P1[3]*(+cI*(V3[4])-V3[3]))))+M1*(F2[2]*(V3[2]+V3[5])+F2[3]*(V3[3]-cI*(V3[4])))));
+    F1[5]= denom*-cI*(F2[4]*(P1[0]*-1.*(V3[3]+cI*(V3[4]))+(P1[1]*(V3[2]-V3[5])+(P1[2]*(-cI*(V3[5])+cI*(V3[2]))+P1[3]*(V3[3]+cI*(V3[4])))))+(F2[5]*(P1[0]*(V3[2]+V3[5])+(P1[1]*(+cI*(V3[4])-V3[3])+(P1[2]*-1.*(V3[4]+cI*(V3[3]))-P1[3]*(V3[2]+V3[5]))))+M1*(F2[2]*(V3[3]+cI*(V3[4]))+F2[3]*(V3[2]-V3[5]))));
 }
 
 """
         amp = builder.compute_routine(2)
         
-        routine = amp.write(output_dir=None, language='CPP') 
-
+        routine = amp.write(output_dir=None, language='CPP')
+        
         split_solution = solution_h.split('\n')
         split_routine = routine[0].split('\n')
         self.assertEqual(split_solution, split_routine)
@@ -4824,8 +4807,7 @@ P1[3] = -F1[0].imag();
     def test_pythonwriter_complex_mass_scheme(self):
         """ test that python writer works """
         
-        solution ="""import cmath
-import wavefunctions
+        solution ="""import wavefunctions
 def SSS1_1(S2,S3,COUP,M1):
     S1 = wavefunctions.WaveFunction(size=3)
     S1[0] = +S2[0]+S3[0]
@@ -4836,12 +4818,10 @@ def SSS1_1(S2,S3,COUP,M1):
     return S1
 
 
-import cmath
 import wavefunctions
 def SSS1_2(S2,S3,COUP,M1):
 
     return SSS1_1(S2,S3,COUP,M1)
-import cmath
 import wavefunctions
 def SSS1_3(S2,S3,COUP,M1):
 
@@ -5027,10 +5007,10 @@ P3(1) = -dble(V3(2))
 P3(2) = -dimag(V3(2))
 P3(3) = -dimag(V3(1))
     denom = COUP/(P3(0)**2-P3(1)**2-P3(2)**2-P3(3)**2 - M3 * (M3 -CI* W3))
-    V3(3)= denom*((-CI)*((F2(5))*(F1(3))+(F2(6))*(F1(4))+(F2(3))*(F1(5))+(F2(4))*(F1(6))))
-    V3(4)= denom*((-CI)*((F2(4))*(F1(5))+(F2(3))*(F1(6))-(F2(6))*(F1(3))-(F2(5))*(F1(4))))
-    V3(5)= denom*((-CI)*(+(-CI)*((F2(6))*(F1(3))+(F2(3))*(F1(6)))+CI*((F2(5))*(F1(4))+(F2(4))*(F1(5)))))
-    V3(6)= denom*((-CI)*((F2(6))*(F1(4))+(F2(3))*(F1(5))-(F2(5))*(F1(3))-(F2(4))*(F1(6))))
+    V3(3)= denom*-CI*(F1(3)*F2(5)+F1(4)*F2(6)+F1(5)*F2(3)+F1(6)*F2(4))
+    V3(4)= denom*-CI*(F1(5)*F2(4)+F1(6)*F2(3)-F1(3)*F2(6)-F1(4)*F2(5))
+    V3(5)= denom*-CI*(-CI*(F1(3)*F2(6)+F1(6)*F2(3))+CI*(F1(4)*F2(5)+F1(5)*F2(4)))
+    V3(6)= denom*-CI*(F1(4)*F2(6)+F1(5)*F2(3)-F1(3)*F2(5)-F1(6)*F2(4))
 end
 
 
@@ -5069,8 +5049,7 @@ end
         amp = builder.compute_routine(0)
         routine = amp.write(output_dir=None, language='Python')
         
-        solution = """import cmath
-import wavefunctions
+        solution = """import wavefunctions
 def FFV2C1_0(F2,F1,V3,COUP):
     TMP0 = -1*(F1[2]*(F2[4]*(V3[2]-V3[5])+F2[5]*(+1j*(V3[4])-V3[3]))+F1[3]*(F2[4]*-1*(V3[3]+1j*(V3[4]))+F2[5]*(V3[2]+V3[5])))
     vertex = COUP*-1j * TMP0

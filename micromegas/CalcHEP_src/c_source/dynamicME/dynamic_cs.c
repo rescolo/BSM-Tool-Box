@@ -303,7 +303,7 @@ numout*getMEcode(int twidth,int Gauge, char*Process, char*excludeVirtual,
       test->cc=cc;
    } else if(new) dClose(handle);  
     free(command); free(proclibf); free(lib_);
-    if(cc)(*cc->interface->BWrange)=BWrange;
+    (*cc->interface->BWrange)=BWrange;
     return cc; 
 }
 

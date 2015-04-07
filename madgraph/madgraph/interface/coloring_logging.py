@@ -42,8 +42,6 @@ class ColorFormatter(logging.Formatter):
                     if elems[1]=='color':
                         color_specified = True                            
                         color_choice = COLORS[elems[2]]
-                    if color_choice == 0:
-                        color_choice = 30
             else:
                 new_args.append(arg)
         record.args = tuple(new_args)
@@ -52,10 +50,10 @@ class ColorFormatter(logging.Formatter):
         if not message.endswith('$RESET'):
             message +=  '$RESET'
         for k,v in COLORS.items():
-            color_flag = COLOR_SEQ % (v+30)
-            message = message.replace("$" + k, color_flag)\
+            message = message.replace("$" + k,    COLOR_SEQ % (v+30))\
                          .replace("$BG" + k,  COLOR_SEQ % (v+40))\
                          .replace("$BG-" + k, COLOR_SEQ % (v+40))        
+        
         
         if levelname == 'INFO':
             message   = message.replace("$RESET", '' if not color_specified else RESET_SEQ)\

@@ -19,21 +19,16 @@
 
 
 
-Options[MakeWHIZARD]={WOGauge->WO`WOUnitarity,AutoGauge->True,Exclude->{SSSS},WriteOmega->True, WriteWHIZARD->True, ReadLists->False,Version->"2.2.0", WOModelName->Automatic, MaximalCouplingsPerFile->150};
+Options[MakeWHIZARD]={WOGauge->WO`WOUnitarity,AutoGauge->True,Exclude->{SSSS},WriteOmega->True, WriteWHIZARD->True, ReadLists->False,Version->"2.0.3", WOModelName->Automatic, MaximalCouplingsPerFile->500};
 
 MakeWHIZARD[opt___ ]:=MakeWHIZARDFunc[WOGauge/.{opt}/.Options[MakeWHIZARD],AutoGauge/.{opt}/.Options[MakeWHIZARD],Exclude/.{opt}/.Options[MakeWHIZARD],WriteOmega/.{opt}/.Options[MakeWHIZARD],WriteWHIZARD/.{opt}/.Options[MakeWHIZARD],ReadLists/.{opt}/.Options[MakeWHIZARD],Version/.{opt}/.Options[MakeWHIZARD],WOModelName/.{opt}/.Options[MakeWHIZARD],MaximalCouplingsPerFile/.{opt}/.Options[MakeWHIZARD]];
 
 
-MakeWHIZARDFunc[ChosenGauge_,AGauge_,Exclude_, WriteOmega_, WriteWHIZARD_,ReadLists_,WOVersion_,ModelNameInput_,maxNumber_]:=Block[{i,j,k,temp,res,pos,names,j1,j2,j3,j4,(* $Path={$sarahPackageDir}}, *) $Path={$sarahNonPublicDir},startedtime},
-(*
+MakeWHIZARDFunc[ChosenGauge_,AGauge_,Exclude_, WriteOmega_, WriteWHIZARD_,ReadLists_,WOVersion_,ModelNameInput_,maxNumber_]:=Block[{i,j,k,temp,res,pos,names,j1,j2,j3,j4,(* $Path={$sarahPackageDir}}, *) $Path={$sarahNonPublicDir}},
 Print["-------------------------------------"];
 Print[" Creating WHIZARD/Omega Model Files  "];
 Print["-------------------------------------"];
-*)
 
-Print[StyleForm["Generate WHIZARD/Omega model files","Section"]];
-
-startedtime=TimeUsed[];
 subGluonIndex={ct1->act1,ct2->act2,ct3->act3,ct4->act4};
 
 CurrentEigenstates=Last[NameOfStates];
@@ -137,17 +132,6 @@ ThetaStep[a__]->1,
 g[a__]->ME[a],
 gamma[a_]-> Ga[a,Index[Spin,Ext[1]],Index[Spin,Ext[2]]],
 Lam[a_,b_,c_]:>2 T[a/.subGluonIndex,b,c],
-
-CG[SU[3],{{1,0},{1,1},{0,1}}][a_,b_,c_]->2T[b/.subGluonIndex,c,a],
-CG[SU[3],{{0,1},{1,1},{1,0}}][a_,b_,c_]->2T[b/.subGluonIndex,a,c],
-CG[SU[3],{{1,1},{1,0},{0,1}}][a_,b_,c_]->2T[a/.subGluonIndex,c,b],
-CG[SU[3],{{1,1},{0,1},{1,0}}][a_,b_,c_]->2T[a/.subGluonIndex,b,c],
-CG[SU[3],{{1,0},{0,1},{1,1}}][a_,b_,c_]->2T[c/.subGluonIndex,b,a],
-CG[SU[3],{{0,1},{1,0},{1,1}}][a_,b_,c_]->2T[c/.subGluonIndex,a,b],
-
-conj[T[a_,b_,c_]]->T[a,c,b],
-
-
 T[a_,b_,c_]:> T[a/.subGluonIndex,b,c],
 LorentzProduct[a__]-> TensDot[Dot@@a],
 PR->ProjM[Index[Spin,Ext[1]],Index[Spin,Ext[2]]],
@@ -233,24 +217,18 @@ VertexListWHIZARD[CurrentEigenstates]=res ;
 
 tempVert= {};
 
+Print["Expanding Vertices (Number of Vertices: ",Length[res],")"];
 Print["The following generic classes have been excluded: ",Exclude];
 Print["The following generic classes are included: ",Complement[{SSSS,SSS,SSVV,SSV,SVV,VVV,VVVV,FFS,FFV,GGS,GGV},Exclude]];
-Print[""];
-timeexpansion=TimeUsed[];
-progressNrWO=0;
-(* Print["Expanding Vertices (Number of Vertices: ",Length[res],")"]; *)
-Print["Expanding Vertices : ",Dynamic[progressNrWO],"/",Length[res]," (",Dynamic[progressCoupWO],")"];
+
 For[i=1,i<=Length[res],
-progressNrWO=i;
-progressCoupWO=res[[i,1]] /. Index[a_,b_]->b;
-(* If[Mod[i,10]==0,Print["...",i," finished"];]; *)
+If[Mod[i,10]==0,Print["...",i," finished"];];
 If[Length[res[[i,1]]]==3,
 tempVert=Join[tempVert,ExpandWHIZARD3[res[[i]]]];,
 tempVert=Join[tempVert,ExpandWHIZARD4[res[[i]]]];
 ];
 i++;];
-progressCoupWO="All done in "<>ToString[TimeUsed[]-timeexpansion]<>"s";
-Print["  ... number of expanded vertices: ", Length[tempVert]];
+Print["finished... number of expanded vertices: ", Length[tempVert]];
 
 
 
@@ -262,12 +240,10 @@ VertexListWHIZARDexpanded=Get[ToFileName[$sarahCurrentWODir,"vlist.m"]];
 
 PartName=ToString;
 
-(*
 Print[""];
 Print[" - - - SARAH interface to WHIZARD/O'Mega - - -"];
 Print[" - - - Authors:  C. Speckner, F.Staub - - -"];
 Print[""];
-*)
 
 If[ModelNameInput===Automatic,
 woModelName = ModelName<>"_SARAH";,
@@ -283,10 +259,6 @@ WriteString[DirectoryNamesFile,"WHIZARDdir="<>ToString[$sarahCurrentWODir] <>"\n
 ];
 
 WriteWOexample[woModelName];
-
-Print[""];
-Print["All Done. WHIZARD/OMEGA files generated in ",TimeUsed[]-startedtime, "s"];
-Print["Output is saved in ",StyleForm[$sarahCurrentWODir,"Section",FontSize->10]];
 
 (* ]; *)
 ];
@@ -464,10 +436,8 @@ Return[temp/. {act1->Index[Generation8,Ext[1]],act2->Index[Generation8,Ext[2]],a
 
 
 
-CreateParamListWO:=Block[{i,temp,temp2, allDependences,j1,j2,j3,angles},
+CreateParamListWO:=Block[{i,temp,temp2, allDependences,j1,j2,j3},
 Print["Creating parameter List"];
-
-angles=Select[Intersection[DeleteCases[Flatten[{Cases[VertexListNonCC,x_Sin,99],Cases[VertexListNonCC,x_Cos,99],Cases[VertexListNonCC,x_Tan,99],Cases[VertexListNonCC,x_Sec,99],Cases[VertexListNonCC,x_Sec,99],Cases[VertexListNonCC,x_Cot,99],Cases[subNumDependences,x_Cot,99],Cases[subNumDependences,x_Cos,99],Cases[subNumDependences,x_Csc,99],Cases[subNumDependences,x_Sec,99],Cases[subNumDependences,x_Sin,99],Cases[subNumDependences,x_Tan,99],Cases[subAlways,x_Cot,99],Cases[subAlways,x_Cos,99],Cases[subAlways,x_Csc,99],Cases[subAlways,x_Sec,99],Cases[subAlways,x_Sin,99],Cases[subAlways,x_Tan,99]}] /. Sec[x_]->x /. Cos[x_]-> x /. Tan[x_]->x /. Cot[x_]->x /. Sin[x_]-> x /. Csc[x_]->x,_Integer,5]],(Head[#]==Symbol)&];
 
 IParamList={};
 EParamList={};
@@ -490,7 +460,7 @@ Switch[Length[parameters[[i,2]]],
 
 Switch[Length[parameters[[i,2]]],
 0,
-	EParamList=Join[EParamList,{{LHBlockName[parameters[[i,1]]],{{{LHPos[parameters[[i,1]]]},{parameters[[i,1]],parameters[[i,1]] /. subNum /. If[parameters[[i,1]]===VEVSM1 || parameters[[i,1]]===VEVSM2 || parameters[[i,1]]===VEVSM ||parameters[[i,1]]===PhaseGlu || MemberQ[angles,parameters[[i,1]]] || FreeQ[subNumDependences,parameters[[i,1]]]===False,parameters[[i,1]]->1.,parameters[[i,1]]->0.],If[Head[parameters[[i,1]]]===Mass,False,FreeQ[realVar,parameters[[i,1]]]],getDescriptionParameter[parameters[[i,1]]]}}}}}];,
+	EParamList=Join[EParamList,{{LHBlockName[parameters[[i,1]]],{{{LHPos[parameters[[i,1]]]},{parameters[[i,1]],parameters[[i,1]] /. subNum /. If[parameters[[i,1]]===VEVSM1 || parameters[[i,1]]===VEVSM2 || parameters[[i,1]]===VEVSM ||parameters[[i,1]]===PhaseGlu,parameters[[i,1]]->1.,parameters[[i,1]]->0.],If[Head[parameters[[i,1]]]===Mass,False,FreeQ[realVar,parameters[[i,1]]]],getDescriptionParameter[parameters[[i,1]]]}}}}}];,
 1,
 	EParamList = Join[EParamList,{{LHBlockName[parameters[[i,1]]],Table[{{j1},{parameters[[i,1]][j1],parameters[[i,1]][j1] /. subNum /. parameters[[i,1]][j1]->0.,FreeQ[realVar,parameters[[i,1]]],getDescriptionParameter[parameters[[i,1]]]<>" "<>ToString[j1]}},{j1,1,parameters[[i,3,1]]}]}}];,
 2,

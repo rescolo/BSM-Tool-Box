@@ -36,23 +36,43 @@ ParameterDefinitions = {
                DependenceNum -> Sqrt[4*Mass[VWp]^2/(g2^2)],
                DependenceSPheno -> None  }},
 
-{vT,  { LaTeX -> "v_T",
+{vS,  { LaTeX -> "v_S",
         Real -> True,
-        OutputName -> vT,
+        OutputName -> vS,
         LesHouches -> {HMIX,20} }},
 
-{MT,  { LaTeX -> "\\mu_T",
-        OutputName -> MT,
+{MS,  { LaTeX -> "\\mu_S",
+        OutputName -> MS,
         LesHouches -> {HMIX,15} }},
 
-{Kappa,  { LaTeX -> "\\kappa",
-        OutputName -> Kap,
+
+{LHc,  { LaTeX -> "\\lambda_{HC}",
+        OutputName -> LHC,
+        LesHouches -> {HMIX,10} }},
+
+{LHs,  { LaTeX -> "\\lambda_{HS}",
+        OutputName -> LHS,
+        LesHouches -> {HMIX,11} }},
+
+{LS,  { LaTeX -> "\\lambda_{S}",
+        OutputName -> LS,
+        LesHouches -> {HMIX,12} }},
+
+{LCs,  { LaTeX -> "\\lambda_{Cs}",
+        OutputName -> LCS,
+        LesHouches -> {HMIX,13} }},
+
+{eS,  { LaTeX -> "eS",
+        OutputName -> ES,
+        LesHouches -> {HMIX,14} }},
+
+{eC,  { LaTeX -> "eC",
+        OutputName -> EC,
+        LesHouches -> {HMIX,15} }},
+
+{eH,  { LaTeX -> "eH",
+        OutputName -> EH,
         LesHouches -> {HMIX,16} }},
-
-{LT,  { LaTeX -> "\\lambda_T",
-        OutputName -> LT,
-        LesHouches -> {HMIX,17} }},
-
 
 
 {ThetaW,    { Description -> "Weinberg-Angle",
@@ -67,15 +87,6 @@ ParameterDefinitions = {
       LesHouches -> ZH,
       OutputName -> ZH,
        LaTeX->"Z^H"}},
-
-{ZA,        { Description->"Pseudo-Scalar-Mixing-Matrix", 
-                Dependence -> None,
-               DependenceOptional -> None,
-               DependenceNum -> None    }},
-{ZP,        { Description->"Charged-Mixing-Matrix", 
-                Dependence -> None,
-               DependenceOptional -> None,
-               DependenceNum -> None}}, 
 
 
 {Vu,        {Description ->"Left-Up-Mixing-Matrix"}},

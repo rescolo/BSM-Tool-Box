@@ -1,4 +1,4 @@
-      SUBROUTINE ML5_0_IMPROVE_PS_POINT_PRECISION(P)
+      SUBROUTINE IMPROVE_PS_POINT_PRECISION(P)
       IMPLICIT NONE
 C     
 C     CONSTANTS
@@ -25,7 +25,7 @@ C     ----------
         ENDDO
       ENDDO
 
-      CALL ML5_0_MP_IMPROVE_PS_POINT_PRECISION(QP_P)
+      CALL MP_IMPROVE_PS_POINT_PRECISION(QP_P)
 
       DO I=1,NEXTERNAL
         DO J=0,3
@@ -36,7 +36,7 @@ C     ----------
       END
 
 
-      SUBROUTINE ML5_0_MP_IMPROVE_PS_POINT_PRECISION(P)
+      SUBROUTINE MP_IMPROVE_PS_POINT_PRECISION(P)
       IMPLICIT NONE
 C     
 C     CONSTANTS
@@ -56,7 +56,7 @@ C
 C     
 C     FUNCTIONS
 C     
-      LOGICAL ML5_0_MP_IS_PHYSICAL
+      LOGICAL MP_IS_PHYSICAL
 C     
 C     SAVED VARIABLES
 C     
@@ -90,7 +90,7 @@ C
       ENDDO
 
 C     Check the sanity of the original PS point
-      IF (.NOT.ML5_0_MP_IS_PHYSICAL(NEWP,WARNED)) THEN
+      IF (.NOT.MP_IS_PHYSICAL(NEWP,WARNED)) THEN
         ERRCODE = 1
         WRITE(*,*) 'ERROR:: The input PS point is not precise enough.'
         GOTO 100
@@ -98,23 +98,21 @@ C     Check the sanity of the original PS point
 
 C     Now restore the precision
       IF (IMPROVEPSPOINT.EQ.1) THEN
-        CALL ML5_0_MP_PSMC_IMPROVE_PS_POINT_PRECISION(NEWP,ERRCODE
-     $   ,WARNED)
+        CALL MP_PSMC_IMPROVE_PS_POINT_PRECISION(NEWP,ERRCODE,WARNED)
       ELSEIF((IMPROVEPSPOINT.EQ.2).OR.(IMPROVEPSPOINT.LE.0)) THEN
-        CALL ML5_0_MP_ORIG_IMPROVE_PS_POINT_PRECISION(NEWP,ERRCODE
-     $   ,WARNED)
+        CALL MP_ORIG_IMPROVE_PS_POINT_PRECISION(NEWP,ERRCODE,WARNED)
       ENDIF
       IF (ERRCODE.NE.0) THEN
         IF (WARNED.LT.20) THEN
-          WRITE(*,*) 'INFO:: Attempting to rescue the precisio'
-     $     //'n improvement with an alternative method.'
+          WRITE(*,*) 'INFO:: Attempting to rescue the precision
+     $      improvement with an alternative method.'
           WARNED=WARNED+1
         ENDIF
         IF (IMPROVEPSPOINT.EQ.1) THEN
-          CALL ML5_0_MP_ORIG_IMPROVE_PS_POINT_PRECISION(NEWP,ERRCODETMP
+          CALL MP_ORIG_IMPROVE_PS_POINT_PRECISION(NEWP,ERRCODETMP
      $     ,WARNED)
         ELSEIF((IMPROVEPSPOINT.EQ.2).OR.(IMPROVEPSPOINT.LE.0)) THEN
-          CALL ML5_0_MP_PSMC_IMPROVE_PS_POINT_PRECISION(NEWP,ERRCODETMP
+          CALL MP_PSMC_IMPROVE_PS_POINT_PRECISION(NEWP,ERRCODETMP
      $     ,WARNED)
         ENDIF
         IF (ERRCODETMP.NE.0) GOTO 100
@@ -125,9 +123,9 @@ C     Report to the user or update the PS point.
       GOTO 101
  100  CONTINUE
       IF (WARNED.LT.20) THEN
-        WRITE(*,*) 'WARNING:: This PS point could not be improved'
-     $   //'. Error code = ',ERRCODE,ERRCODETMP
-        CALL ML5_0_MP_WRITE_MOM(P)
+        WRITE(*,*) 'WARNING:: This PS point could not be improved.
+     $    Error code = ',ERRCODE,ERRCODETMP
+        CALL MP_WRITE_MOM(P)
         WARNED = WARNED +1
       ENDIF
       GOTO 102
@@ -140,15 +138,15 @@ C     Report to the user or update the PS point.
  102  CONTINUE
 
       IF (WARNED.GE.20.AND..NOT.TOLD_SUPPRESS) THEN
-        WRITE(*,*) 'INFO:: Further warnings from the improve_p'
-     $   //'s routine will now be supressed.'
+        WRITE(*,*) 'INFO:: Further warnings from the improve_ps
+     $    routine will now be supressed.'
         TOLD_SUPPRESS=.TRUE.
       ENDIF
 
       END
 
 
-      FUNCTION ML5_0_MP_IS_CLOSE(P,NEWP,WARNED)
+      FUNCTION MP_IS_CLOSE(P,NEWP,WARNED)
       IMPLICIT NONE
 C     
 C     CONSTANTS
@@ -163,18 +161,17 @@ C
 C     ARGUMENTS 
 C     
       REAL*16 P(0:3,NEXTERNAL), NEWP(0:3,NEXTERNAL)
-      LOGICAL ML5_0_MP_IS_CLOSE
+      LOGICAL MP_IS_CLOSE
       INTEGER WARNED
 C     
 C     LOCAL VARIABLES 
 C     
       INTEGER I,J
       REAL*16 REF,REF2
-      DOUBLE PRECISION BUFFDP
 
 C     NOW MAKE SURE THE SHIFTED POINT IS NOT TOO FAR FROM THE ORIGINAL
 C      ONE
-      ML5_0_MP_IS_CLOSE = .TRUE.
+      MP_IS_CLOSE = .TRUE.
       REF  = ZERO
       REF2 = ZERO
       DO J=1,NEXTERNAL
@@ -185,18 +182,17 @@ C      ONE
       ENDDO
 
       IF ((REF/REF2).GT.THRS_CLOSE) THEN
-        ML5_0_MP_IS_CLOSE = .FALSE.
+        MP_IS_CLOSE = .FALSE.
         IF (WARNED.LT.20) THEN
-          BUFFDP = (REF/REF2)
-          WRITE(*,*) 'WARNING:: The improved PS point is too far fro'
-     $     //'m the original one',BUFFDP
+          WRITE(*,*) 'WARNING:: The improved PS point is too far from
+     $      the original one',DBLE(REF/REF2)
           WARNED=WARNED+1
         ENDIF
       ENDIF
 
       END
 
-      FUNCTION ML5_0_MP_IS_PHYSICAL(P,WARNED)
+      FUNCTION MP_IS_PHYSICAL(P,WARNED)
       IMPLICIT NONE
 C     
 C     CONSTANTS
@@ -221,7 +217,7 @@ C
 C     ARGUMENTS 
 C     
       REAL*16 P(0:3,NEXTERNAL)
-      LOGICAL ML5_0_MP_IS_PHYSICAL
+      LOGICAL MP_IS_PHYSICAL
       INTEGER WARNED
 C     
 C     LOCAL VARIABLES 
@@ -229,7 +225,6 @@ C
       INTEGER I,J
       REAL*16 BUFF,REF
       REAL*16 MASSES(NEXTERNAL)
-      DOUBLE PRECISION BUFFDPA,BUFFDPB
 C     
 C     GLOBAL VARIABLES
 C     
@@ -244,7 +239,7 @@ C     ----------
 C     BEGIN CODE
 C     ----------
 
-      ML5_0_MP_IS_PHYSICAL = .TRUE.
+      MP_IS_PHYSICAL = .TRUE.
 
 C     WE FIRST CHECK THAT THE INPUT PS POINT IS REASONABLY PHYSICAL
 C     FOR THAT WE NEED A REFERENCE SCALE
@@ -262,13 +257,12 @@ C     FOR THAT WE NEED A REFERENCE SCALE
         ENDDO
         IF ((BUFF/REF).GT.THRES_FOURMOM) THEN
           IF (WARNED.LT.20) THEN
-            BUFFDPA = (BUFF/REF)
-            WRITE(*,*) 'ERROR:: Four-momentum conservation is no'
-     $       //'t accurate enough, ',BUFFDPA
-            CALL ML5_0_MP_WRITE_MOM(P)
+            WRITE(*,*) 'ERROR:: Four-momentum conservation is not
+     $        accurate enough, ',DBLE(BUFF/REF)
+            CALL MP_WRITE_MOM(P)
             WARNED=WARNED+1
           ENDIF
-          ML5_0_MP_IS_PHYSICAL = .FALSE.
+          MP_IS_PHYSICAL = .FALSE.
         ENDIF
       ENDDO
       REF = REF / (ONE*NEXTERNAL)
@@ -277,22 +271,20 @@ C     FOR THAT WE NEED A REFERENCE SCALE
         IF ((SQRT(ABS(P(0,I)**2-P(1,I)**2-P(2,I)**2-P(3,I)**2
      $   -MASSES(I)**2))/REF).GT.THRES_ONSHELL) THEN
           IF (WARNED.LT.20) THEN
-            BUFFDPA=MASSES(I)
-            BUFFDPB=(SQRT(ABS(P(0,I)**2-P(1,I)**2-P(2,I)**2-P(3,I)**2
-     $       -MASSES(I)**2))/REF)
-            WRITE(*,*) 'ERROR:: Onshellness of the momentum o'
-     $       //'f particle ',I,' of mass ',BUFFDPA,' is not accurat'
-     $       //'e enough, ',BUFFDPB
-            CALL ML5_0_MP_WRITE_MOM(P)
+            WRITE(*,*) 'ERROR:: Onshellness of the momentum of
+     $        particle ',I,' of mass ',DBLE(MASSES(I)),' is not
+     $        accurate enough, ', DBLE(SQRT(ABS(P(0,I)**2-P(1,I)**2
+     $       -P(2,I)**2-P(3,I)**2-MASSES(I)**2))/REF)
+            CALL MP_WRITE_MOM(P)
             WARNED=WARNED+1
           ENDIF
-          ML5_0_MP_IS_PHYSICAL = .FALSE.
+          MP_IS_PHYSICAL = .FALSE.
         ENDIF
       ENDDO
 
       END
 
-      SUBROUTINE ML5_0_WRITE_MOM(P)
+      SUBROUTINE WRITE_MOM(P)
       IMPLICIT NONE
       INTEGER    NEXTERNAL
       PARAMETER (NEXTERNAL=4)
@@ -300,7 +292,7 @@ C     FOR THAT WE NEED A REFERENCE SCALE
       PARAMETER (NINITIAL=2)
       DOUBLE PRECISION ZERO
       PARAMETER (ZERO=0.0D0)
-      DOUBLE PRECISION ML5_0_MDOT
+      DOUBLE PRECISION MDOT
 
       INTEGER I,J
 
@@ -322,21 +314,21 @@ C
       WRITE (*,*) '    E | px | py | pz | m '
       DO I=1,NEXTERNAL
         WRITE (*,'(1x,5e27.17)') P(0,I),P(1,I),P(2,I),P(3,I),SQRT(ABS(M
-     $   L5_0_MDOT(P(0,I),P(0,I))))
+     $   DOT(P(0,I),P(0,I))))
       ENDDO
       WRITE (*,*) '    Four-momentum conservation sum:'
       WRITE (*,'(1x,4e27.17)') PSUM(0),PSUM(1),PSUM(2),PSUM(3)
       WRITE (*,*) '   ---------------------'
       END
 
-      DOUBLE PRECISION FUNCTION ML5_0_MDOT(P1,P2)
+      DOUBLE PRECISION FUNCTION MDOT(P1,P2)
       IMPLICIT NONE
       DOUBLE PRECISION P1(0:3),P2(0:3)
-      ML5_0_MDOT=P1(0)*P2(0)-P1(1)*P2(1)-P1(2)*P2(2)-P1(3)*P2(3)
+      MDOT=P1(0)*P2(0)-P1(1)*P2(1)-P1(2)*P2(2)-P1(3)*P2(3)
       RETURN
       END
 
-      SUBROUTINE ML5_0_MP_WRITE_MOM(P)
+      SUBROUTINE MP_WRITE_MOM(P)
       IMPLICIT NONE
       INTEGER    NEXTERNAL
       PARAMETER (NEXTERNAL=4)
@@ -344,7 +336,7 @@ C
       PARAMETER (NINITIAL=2)
       REAL*16 ZERO
       PARAMETER (ZERO=0.0E+00_16)
-      REAL*16 ML5_0_MP_MDOT
+      REAL*16 MP_MDOT
 
       INTEGER I,J
 
@@ -378,7 +370,7 @@ C      therefore perform the cast by hand
       WRITE (*,*) '    ---------------------'
       WRITE (*,*) '    E | px | py | pz | m '
       DO I=1,NEXTERNAL
-        DOT=SQRT(ABS(ML5_0_MP_MDOT(P(0,I),P(0,I))))
+        DOT=SQRT(ABS(MP_MDOT(P(0,I),P(0,I))))
         DP_DOT=DOT
         WRITE (*,'(1x,5e27.17)') DP_P(0,I),DP_P(1,I),DP_P(2,I),DP_P(3
      $   ,I),DP_DOT
@@ -389,10 +381,10 @@ C      therefore perform the cast by hand
       WRITE (*,*) '   ---------------------'
       END
 
-      REAL*16 FUNCTION ML5_0_MP_MDOT(P1,P2)
+      REAL*16 FUNCTION MP_MDOT(P1,P2)
       IMPLICIT NONE
       REAL*16 P1(0:3),P2(0:3)
-      ML5_0_MP_MDOT=P1(0)*P2(0)-P1(1)*P2(1)-P1(2)*P2(2)-P1(3)*P2(3)
+      MP_MDOT=P1(0)*P2(0)-P1(1)*P2(1)-P1(2)*P2(2)-P1(3)*P2(3)
       RETURN
       END
 
@@ -401,7 +393,7 @@ C     stores the result in P and for the quadruple precision
 C     version , it also modifies the global variables
 C     PS and MP_DONE accordingly.
 
-      SUBROUTINE ML5_0_ROTATE_PS(P_IN,P,ROTATION)
+      SUBROUTINE ROTATE_PS(P_IN,P,ROTATION)
       IMPLICIT NONE
 C     
 C     CONSTANTS 
@@ -446,7 +438,7 @@ C         rotation=2 => (xp=-z,yp=y,zp=x)
       END
 
 
-      SUBROUTINE ML5_0_MP_ROTATE_PS(P_IN,P,ROTATION)
+      SUBROUTINE MP_ROTATE_PS(P_IN,P,ROTATION)
       IMPLICIT NONE
 C     
 C     CONSTANTS 
@@ -466,7 +458,7 @@ C
 C     GLOBAL VARIABLES
 C     
       LOGICAL MP_DONE
-      COMMON/ML5_0_MP_DONE/MP_DONE
+      COMMON/MP_DONE/MP_DONE
 
 C     ----------
 C     BEGIN CODE
@@ -501,8 +493,7 @@ C     *****************************************************************
 C     Beginning of the routine for restoring precision with V.H. method
 C     *****************************************************************
 
-      SUBROUTINE ML5_0_MP_ORIG_IMPROVE_PS_POINT_PRECISION(P,ERRCODE
-     $ ,WARNED)
+      SUBROUTINE MP_ORIG_IMPROVE_PS_POINT_PRECISION(P,ERRCODE,WARNED)
       IMPLICIT NONE
 C     
 C     CONSTANTS 
@@ -529,7 +520,7 @@ C
 C     
 C     FUNCTIONS
 C     
-      LOGICAL ML5_0_MP_IS_CLOSE
+      LOGICAL MP_IS_CLOSE
 C     
 C     LOCAL VARIABLES 
 C     
@@ -649,7 +640,7 @@ C
         NEWP(J,P1) = REF
       ENDDO
 
-      IF (.NOT.ML5_0_MP_IS_CLOSE(P,NEWP,WARNED)) THEN
+      IF (.NOT.MP_IS_CLOSE(P,NEWP,WARNED)) THEN
         ERRCODE=999
         GOTO 100
       ENDIF
@@ -668,8 +659,7 @@ C     *****************************************************************
 C     Beginning of the routine for restoring precision a la PSMC
 C     *****************************************************************
 
-      SUBROUTINE ML5_0_MP_PSMC_IMPROVE_PS_POINT_PRECISION(P,ERRCODE
-     $ ,WARNED)
+      SUBROUTINE MP_PSMC_IMPROVE_PS_POINT_PRECISION(P,ERRCODE,WARNED)
       IMPLICIT NONE
 C     
 C     CONSTANTS 
@@ -700,7 +690,7 @@ C
 C     
 C     FUNCTIONS
 C     
-      LOGICAL ML5_0_MP_IS_CLOSE
+      LOGICAL MP_IS_CLOSE
 C     
 C     LOCAL VARIABLES 
 C     
@@ -757,7 +747,7 @@ C     First make sur that the space like momentum is exactly conserved
 
 C     Now find the 'x' rescaling factor
       DO I=1,NAPPROXZEROS
-        CALL ML5_0_FINDX(NEWP,APPROX_ZEROS(I),XSCALE,ERROR)
+        CALL FINDX(NEWP,APPROX_ZEROS(I),XSCALE,ERROR)
         IF(ERROR.EQ.0) THEN
           GOTO 1001
         ELSE
@@ -765,9 +755,9 @@ C     Now find the 'x' rescaling factor
         ENDIF
       ENDDO
       IF (WARNED.LT.20) THEN
-        WRITE(*,*) 'WARNING:: Could not find the proper rescalin'
-     $   //'g factor x. Restoring precision ala PSMC will therefor'
-     $   //'e not be used.'
+        WRITE(*,*) 'WARNING:: Could not find the proper rescaling
+     $    factor x. Restoring precision ala PSMC will therefore not be
+     $    used.'
         WARNED=WARNED+1
       ENDIF
       IF (ERRCODE.LT.1000) THEN
@@ -806,16 +796,16 @@ C     Consistency check
       ENDDO
       IF ((ABS(BUFF)/BUFF2).GT.CONSISTENCY_THRES) THEN
         IF (WARNED.LT.20) THEN
-          WRITE(*,*) 'WARNING:: The consistency check in the a la PSM'
-     $     //'C precision restoring algorithm failed. The result wil'
-     $     //'l therefore not be used.'
+          WRITE(*,*) 'WARNING:: The consistency check in the a la PSMC
+     $      precision restoring algorithm failed. The result will
+     $      therefore not be used.'
           WARNED=WARNED+1
         ENDIF
         ERRCODE = 1000
         GOTO 1000
       ENDIF
 
-      IF (.NOT.ML5_0_MP_IS_CLOSE(P,NEWP,WARNED)) THEN
+      IF (.NOT.MP_IS_CLOSE(P,NEWP,WARNED)) THEN
         ERRCODE=999
         GOTO 1000
       ENDIF
@@ -831,7 +821,7 @@ C     Consistency check
       END
 
 
-      SUBROUTINE ML5_0_FINDX(P,SEED,XSCALE,ERROR)
+      SUBROUTINE FINDX(P,SEED,XSCALE,ERROR)
       IMPLICIT NONE
 C     
 C     CONSTANTS 
@@ -878,12 +868,12 @@ C     ----------
       ENDDO
 
       DO I=1,MAXITERATIONS
-        CALL ML5_0_FUNCT(PVECSQ(1),XN,.FALSE.,ERR, FVAL)
+        CALL FUNCT(PVECSQ(1),XN,.FALSE.,ERR, FVAL)
         IF (ERR.NE.0) THEN
           ERROR=ERR
           GOTO 710
         ENDIF
-        CALL ML5_0_FUNCT(PVECSQ(1),XN,.TRUE.,ERR, DVAL)
+        CALL FUNCT(PVECSQ(1),XN,.TRUE.,ERR, DVAL)
         IF (ERR.NE.0) THEN
           ERROR=ERR
           GOTO 710
@@ -900,12 +890,12 @@ C     ----------
 
  700  CONTINUE
 C     For good measure, we iterate one last time
-      CALL ML5_0_FUNCT(PVECSQ(1),XN,.FALSE.,ERR, FVAL)
+      CALL FUNCT(PVECSQ(1),XN,.FALSE.,ERR, FVAL)
       IF (ERR.NE.0) THEN
         ERROR=ERR
         GOTO 710
       ENDIF
-      CALL ML5_0_FUNCT(PVECSQ(1),XN,.TRUE.,ERR, DVAL)
+      CALL FUNCT(PVECSQ(1),XN,.TRUE.,ERR, DVAL)
       IF (ERR.NE.0) THEN
         ERROR=ERR
         GOTO 710
@@ -917,7 +907,7 @@ C     For good measure, we iterate one last time
 
       END
 
-      SUBROUTINE ML5_0_FUNCT(PVECSQ,X,DERIVATIVE,ERROR,RES)
+      SUBROUTINE FUNCT(PVECSQ,X,DERIVATIVE,ERROR,RES)
       IMPLICIT NONE
 C     
 C     CONSTANTS 

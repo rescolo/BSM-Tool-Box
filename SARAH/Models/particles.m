@@ -1031,49 +1031,6 @@ ParticleDefinitionsMain = {
 
 (* ///////////////////////////////////////*)
 (* ///////////////////////////////////////*)
-(*       Gravitino/Goldstino             *)
-(* ///////////////////////////////////////*)
-(* ///////////////////////////////////////*)
-
-{{ Description -> "Gravitino",
-   PDG -> {7777777},
-   Width -> Automatic, 
-   Mass -> m32,
-   FeynArtsNr -> 77,
-   LaTeX -> "{\\tilde{G}_{\\mu}}}",
-   ElectricCharge -> 0,
-   OutputName -> "GMU"}}, 
-
-{{ Description -> "Goldstino",
-   PDG -> {88888888},
-   Width -> Automatic, 
-   Mass -> m32,
-   FeynArtsNr -> 88,
-   LaTeX -> "{\\tilde{G}}}",
-   ElectricCharge -> 0,
-   OutputName -> "GOL"}}, 
-
-{{ Description -> "Weyl Gravitino",
-   PDG -> 0,
-   Width -> Automatic, 
-   Mass -> m32,
-   FeynArtsNr -> 77,
-   LaTeX -> "{\\Psi_{3/2}}}",
-   ElectricCharge -> 0,
-   OutputName -> "WGMU"}}, 
-
-{{ Description -> "Weyl Goldstino",
-   PDG -> 0,
-   Width -> Automatic, 
-   Mass -> m32,
-   FeynArtsNr -> 88,
-   LaTeX -> "{\\Psi}}",
-   ElectricCharge -> 0,
-   OutputName -> "WGOL"}},
-
-
-(* ///////////////////////////////////////*)
-(* ///////////////////////////////////////*)
 (*       SU(2)_R                          *)
 (* ///////////////////////////////////////*)
 (* ///////////////////////////////////////*)

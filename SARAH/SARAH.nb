@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       145,          7]
-NotebookDataLength[     42287,        909]
-NotebookOptionsPosition[     41892,        892]
-NotebookOutlinePosition[     42346,        910]
-CellTagsIndexPosition[     42303,        907]
+NotebookDataLength[     37885,        816]
+NotebookOptionsPosition[     37490,        799]
+NotebookOutlinePosition[     37944,        817]
+CellTagsIndexPosition[     37901,        814]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -31,19 +31,19 @@ Cell[BoxData[
       "x", ",", "Adjoint", ",", "input", ",", "w", ",", "x", ",", "x$", ",", 
       "ex", ",", "el", ",", "DimR", ",", "delta", ",", "dim", ",", "m", ",", 
       "matrix", ",", "up", ",", "down", ",", "dim1", ",", "dim2", ",", "col", 
-      ",", "begin", ",", "b1", ",", "b2", ",", "b3", ",", "Casimir", ",", "b",
-       ",", "e", ",", "b$", ",", "res", ",", "n2", ",", "v", ",", 
-      "RepMatrices", ",", "rep", ",", "Invariants", ",", "a", ",", "x1", ",", 
-      "x2", ",", "c", ",", "x3", ",", "y1", ",", "x1$", ",", "x2$", ",", 
-      "y1$", ",", "conj", ",", "expr", ",", "j1", ",", "j2", ",", "j3", ",", 
-      "res1", ",", "res2", ",", "var1", ",", "var2", ",", "var3", ",", 
-      "weights", ",", "\[NoBreak]", "l1", ",", "end", ",", "groups", ",", 
-      "group", ",", "max", ",", "adjoint", ",", "cas", ",", "ConjugateIrrep", 
-      ",", "DynkinIndex", ",", "repsWithSizeN", ",", "CongruencyClass", ",", 
-      " ", "sR", ",", "TriangularAnomalyValue", ",", "InvariantsBaseMethod", 
-      ",", "reps", ",", "vector", ",", "i1", ",", "pos", ",", "dims", ",", 
-      "r", ",", " ", "v1", ",", " ", "v2", ",", "Conjugations", ",", "r1", 
-      ",", "r2", ",", "SU3"}], "}"}], ";"}], "\[IndentingNewLine]", 
+      ",", "begin", ",", "b1", ",", "b2", ",", "Casimir", ",", "b", ",", "e", 
+      ",", "b$", ",", "res", ",", "n2", ",", "v", ",", "RepMatrices", ",", 
+      "rep", ",", "Invariants", ",", "a", ",", "x1", ",", "x2", ",", "c", ",",
+       "x3", ",", "y1", ",", "x1$", ",", "x2$", ",", "y1$", ",", "conj", ",", 
+      "expr", ",", "j1", ",", "j2", ",", "j3", ",", "res1", ",", "res2", ",", 
+      "var1", ",", "var2", ",", "var3", ",", "weights", ",", "\[NoBreak]", 
+      "l1", ",", "end", ",", "groups", ",", "group", ",", "max", ",", 
+      "adjoint", ",", "cas", ",", "ConjugateIrrep", ",", "DynkinIndex", ",", 
+      "repsWithSizeN", ",", "CongruencyClass", ",", " ", "sR", ",", 
+      "TriangularAnomalyValue", ",", "InvariantsBaseMethod", ",", "reps", ",",
+       "vector", ",", "i1", ",", "pos", ",", "dims", ",", "r", ",", " ", "v1",
+       ",", " ", "v2", ",", "Conjugations"}], "}"}], ";"}], 
+   "\[IndentingNewLine]", 
    RowBox[{"EndPackage", "[", "]"}], "\[IndentingNewLine]", 
    RowBox[{"BeginPackage", "[", "\"\<Susyno`SusyRGEs`\>\"", "]"}], "\n", 
    RowBox[{"EndPackage", "[", "]"}], "\[IndentingNewLine]", 
@@ -123,45 +123,14 @@ Cell[BoxData[
    RowBox[{
     RowBox[{"Off", "[", 
      RowBox[{"CreateDirectory", "::", "ioerr"}], "]"}], ";"}], 
-   "\[IndentingNewLine]", 
-   RowBox[{"If", "[", 
-    RowBox[{
-     RowBox[{"NumericQ", "[", 
-      RowBox[{"ToExpression", "[", "SA`Version", "]"}], "]"}], ",", 
-     "\[IndentingNewLine]", 
-     RowBox[{"Print", "[", 
-      RowBox[{
-       RowBox[{"StyleForm", "[", 
-        RowBox[{"\"\<SARAH \>\"", ",", "\"\<Section\>\"", ",", 
-         RowBox[{"FontSize", "\[Rule]", "14"}]}], "]"}], ",", 
-       RowBox[{"StyleForm", "[", 
-        RowBox[{"SA`Version", " ", ",", "\"\<Section\>\"", ",", 
-         RowBox[{"FontSize", "\[Rule]", "14"}]}], "]"}]}], " ", "]"}], ",", 
-     "\[IndentingNewLine]", 
-     RowBox[{"Print", "[", 
-      RowBox[{
-       RowBox[{"StyleForm", "[", 
-        RowBox[{"\"\<SARAH \>\"", ",", "\"\<Section\>\"", ",", 
-         RowBox[{"FontSize", "\[Rule]", "14"}]}], "]"}], ",", 
-       RowBox[{"StyleForm", "[", 
-        RowBox[{"\"\<(Private Version)\>\"", ",", "\"\<Section\>\"", ",", 
-         RowBox[{"FontSize", "\[Rule]", "14"}]}], "]"}]}], " ", "]"}]}], 
-    "\[IndentingNewLine]", "]"}], "\n", 
-   RowBox[{"Print", "[", "\"\<by Florian Staub, 2015\>\"", "]"}], 
-   "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"Print", "[", 
-     RowBox[{"StyleForm", "[", 
-      RowBox[{"\"\<contributions by M. D. Goodsell, K. Nickel\>\"", ",", 
-       RowBox[{"FontSize", "\[Rule]", "10"}]}], "]"}], " ", "]"}], ";"}], 
-   "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"Print", "[", 
+    RowBox[{"\"\<SARAH \>\"", ",", "SA`Version"}], " ", "]"}], "\n", 
+   RowBox[{"Print", "[", "\"\<by Florian Staub, 2014\>\"", "]"}], "\n", 
    RowBox[{
     RowBox[{"Print", "[", "\"\<\>\"", "]"}], ";"}], "\[IndentingNewLine]", 
-   RowBox[{"Print", "[", 
-    RowBox[{"StyleForm", "[", 
-     RowBox[{"\"\<References:\>\"", ",", "\"\<Section\>\"", ",", 
-      RowBox[{"FontSize", "\[Rule]", "10"}]}], "]"}], "]"}], 
-   "\[IndentingNewLine]", 
+   RowBox[{"Print", "[", "\"\<References:\>\"", "]"}], "\[IndentingNewLine]", 
+   
    RowBox[{
    "Print", "[", 
     "\"\<  Comput.Phys.Commun.181 (2010) 1077-1086. (arXiv:0909.2863[hep-ph])\
@@ -178,31 +147,24 @@ Cell[BoxData[
    "Print", "[", 
     "\"\<  Comput.Phys.Commun.185 (2014) 1773-1790. (arXiv:1309.7223[hep-ph])\
 \>\"", "]"}], "\[IndentingNewLine]", 
-   RowBox[{"Print", "[", 
-    RowBox[{"StyleForm", "[", 
-     RowBox[{
-     "\"\<Download and Documentation:\>\"", ",", "\"\<Section\>\"", ",", 
-      RowBox[{"FontSize", "\[Rule]", "10"}]}], "]"}], "]"}], 
+   RowBox[{"Print", "[", "\"\<Download and Documentation:\>\"", "]"}], 
    "\[IndentingNewLine]", 
    RowBox[{"Print", "[", "\"\<  http://sarah.hepforge.org\>\"", "]"}], 
    "\[IndentingNewLine]", 
    RowBox[{"Print", "[", "\"\<\>\"", "]"}], "\n", 
    RowBox[{
-    RowBox[{"Print", "[", "\"\<Start evaluation of a model with:\>\"", "]"}], 
-    ";"}], "\[IndentingNewLine]", 
-   RowBox[{
     RowBox[{"Print", "[", 
-     RowBox[{"StyleForm", "[", 
-      RowBox[{
-      "\"\<   Start[\\\"Name of Model\\\"]\>\"", ",", "\"\<Section\>\"", ",", 
-       
-       RowBox[{"FontSize", "\[Rule]", "12"}]}], "]"}], "]"}], ";"}], 
+     RowBox[{"\"\<Begin evaluation of Model with:       \>\"", ",", 
+      RowBox[{"StyleForm", "[", 
+       RowBox[{
+       "\"\<Start[\\\"Name of Model\\\"]\>\"", ",", "\"\<Section\>\"", ",", 
+        RowBox[{"FontSize", "\[Rule]", "12"}]}], "]"}]}], "]"}], ";"}], 
    "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{
     "Print", "[", 
-     "\"\<e.g. Start[\\\"MSSM\\\"] or Start[\\\"NMSSM\\\",\\\"CKM\\\"]\>\"", 
-     "]"}], ";"}], "\[IndentingNewLine]", 
+     "\"\<  e.g. Start[\\\"MSSM\\\"] or Start[\\\"NMSSM\\\",\\\"CKM\\\"]\>\"",
+      "]"}], ";"}], "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{"Print", "[", 
      RowBox[{"\"\<To get a list with all installed models, use \>\"", ",", 
@@ -233,17 +195,13 @@ Cell[BoxData[
        "\[IndentingNewLine]", 
        RowBox[{"<<", "loopCorrections`"}], ";", " ", "\[IndentingNewLine]", 
        "\[IndentingNewLine]", 
-       RowBox[{"<<", "TwoLoopEffPot`"}], ";", "\[IndentingNewLine]", 
-       "\[IndentingNewLine]", 
        RowBox[{"<<", "wilson`"}], ";", "\[IndentingNewLine]", 
        RowBox[{"Get", "[", 
         RowBox[{"ToFileName", "[", 
          RowBox[{"$sarahSPhenoPackageDir", ",", "\"\<SPheno.m\>\""}], "]"}], 
         "]"}], ";", "\[IndentingNewLine]", 
        RowBox[{"<<", "processes`"}], ";", "\[IndentingNewLine]", 
-       RowBox[{"<<", "checkModel`"}], ";", " ", "\[IndentingNewLine]", 
-       "\[IndentingNewLine]", 
-       RowBox[{"<<", " ", "TwoLoopPole`"}], ";"}]}], "\[IndentingNewLine]", 
+       RowBox[{"<<", "checkModel`"}], ";"}]}], " ", "\[IndentingNewLine]", 
      "\[IndentingNewLine]", "]"}], ";"}], "\[IndentingNewLine]", 
    "\[IndentingNewLine]", 
    RowBox[{
@@ -327,13 +285,8 @@ Cell[BoxData[
       RowBox[{"model_", ",", "sub___"}], "]"}], ":=", 
      RowBox[{"Block", "[", 
       RowBox[{
-       RowBox[{"{", 
-        RowBox[{"i", ",", "startedtime"}], "}"}], ",", "\[IndentingNewLine]", 
-       
-       RowBox[{
-        RowBox[{"startedtime", "=", 
-         RowBox[{"TimeUsed", "[", "]"}]}], ";", "\[IndentingNewLine]", 
-        "InitArrays", ";", "\[IndentingNewLine]", 
+       RowBox[{"{", "i", "}"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"InitArrays", ";", "\[IndentingNewLine]", 
         RowBox[{"ModelLoaded", "=", "False"}], ";", "\[IndentingNewLine]", 
         RowBox[{"i", "=", "1"}], ";", "\[IndentingNewLine]", 
         "\[IndentingNewLine]", 
@@ -652,40 +605,23 @@ Cell[BoxData[
              RowBox[{"OutputFile", "\[Rule]", 
               RowBox[{"ModelName", "<>", "\"\<.vin\>\""}]}]}], "]"}], ";", 
            "\[IndentingNewLine]", "\[IndentingNewLine]", 
-           RowBox[{"(*", 
-            RowBox[{
-             RowBox[{
-             "Print", "[", "\"\<*****************************\>\"", "]"}], 
-             ";"}], "*)"}], "\[IndentingNewLine]", 
-           RowBox[{"Print", "[", 
-            RowBox[{"StyleForm", "[", 
-             RowBox[{
-             "\"\<Model files loaded   \>\"", ",", "\"\<Section\>\"", ",", 
-              RowBox[{"FontSize", "\[Rule]", "12"}]}], "]"}], "]"}], ";", 
+           RowBox[{
+           "Print", "[", "\"\<*****************************\>\"", "]"}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Print", "[", "\"\<Model files loaded   \>\"", "]"}], ";", 
            "\[IndentingNewLine]", 
            RowBox[{"Print", "[", 
-            RowBox[{"\"\<  Model    : \>\"", ",", 
-             RowBox[{"StyleForm", "[", 
-              RowBox[{"Model`Name", ",", "\"\<Section\>\"", ",", 
-               RowBox[{"FontSize", "\[Rule]", "10"}]}], "]"}]}], " ", "]"}], 
+            RowBox[{"\"\<  Model    : \>\"", ",", "Model`Name"}], " ", "]"}], 
            ";", "\[IndentingNewLine]", 
            RowBox[{"Print", "[", 
-            RowBox[{"\"\<  Author(s): \>\"", ",", 
-             RowBox[{"StyleForm", "[", 
-              RowBox[{"Model`Authors", ",", "\"\<Section\>\"", ",", 
-               RowBox[{"FontSize", "\[Rule]", "10"}]}], "]"}]}], "]"}], ";", 
-           "\[IndentingNewLine]", 
+            RowBox[{"\"\<  Author(s): \>\"", ",", "Model`Authors"}], "]"}], 
+           ";", "\[IndentingNewLine]", 
            RowBox[{"Print", "[", 
-            RowBox[{"\"\<  Date     : \>\"", ",", 
-             RowBox[{"StyleForm", "[", 
-              RowBox[{"Model`Date", ",", "\"\<Section\>\"", ",", 
-               RowBox[{"FontSize", "\[Rule]", "10"}]}], "]"}]}], "]"}], ";", 
+            RowBox[{"\"\<  Date     : \>\"", ",", "Model`Date"}], "]"}], ";", 
            "\[IndentingNewLine]", 
-           RowBox[{"(*", 
-            RowBox[{
-             RowBox[{
-             "Print", "[", "\"\<*****************************\>\"", "]"}], 
-             ";"}], "*)"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{
+           "Print", "[", "\"\<*****************************\>\"", "]"}], ";", 
+           "\[IndentingNewLine]", "\[IndentingNewLine]", 
            "\[IndentingNewLine]", 
            RowBox[{"If", "[", 
             RowBox[{
@@ -721,11 +657,6 @@ Cell[BoxData[
              RowBox[{"CheckAnomalies", ";"}]}], "\[IndentingNewLine]", "]"}], 
            ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
            "\[IndentingNewLine]", 
-           RowBox[{"PrintAll", "[", 
-            RowBox[{"StyleForm", "[", 
-             RowBox[{"\"\<Derive Lagrangian\>\"", ",", "\"\<Section\>\"", ",", 
-              RowBox[{"FontSize", "\[Rule]", "12"}]}], "]"}], "]"}], ";", 
-           "\[IndentingNewLine]", 
            RowBox[{"If", "[", 
             RowBox[{
              RowBox[{"SupersymmetricModel", "=!=", "False"}], ",", 
@@ -744,14 +675,7 @@ Cell[BoxData[
              RowBox[{
              "CalcDTerms", ";", "\[IndentingNewLine]", "CalcGaugino", ";"}]}],
              "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
-           RowBox[{"If", "[", 
-            RowBox[{
-             RowBox[{
-              RowBox[{"AddGravitino", "===", "True"}], " ", "&&", " ", 
-              RowBox[{"SupersymmetricModel", "=!=", "False"}]}], ",", 
-             RowBox[{"CalcGravitino", ";"}]}], "]"}], ";", 
-           "\[IndentingNewLine]", "\[IndentingNewLine]", "CalcVectorBoson", 
-           ";", "\[IndentingNewLine]", 
+           "CalcVectorBoson", ";", "\[IndentingNewLine]", 
            RowBox[{"(*", " ", 
             RowBox[{"GenerateSusyNoInvariants", ";"}], " ", "*)"}], 
            "\[IndentingNewLine]", "CalcGaugeTransformations", ";", 
@@ -788,14 +712,8 @@ Cell[BoxData[
            "\[IndentingNewLine]", 
            RowBox[{"Print", "[", 
             RowBox[{
-            "\"\<All Done. \>\"", ",", "model", ",", "\"\< is ready!\>\""}], 
-            "]"}], ";", "\[IndentingNewLine]", 
-           RowBox[{"Print", "[", 
-            RowBox[{"\"\<(Model initialized in \>\"", ",", 
-             RowBox[{
-              RowBox[{"TimeUsed", "[", "]"}], "-", "startedtime"}], ",", 
-             "\"\<s)\>\""}], "]"}], ";", "\[IndentingNewLine]", 
-           "\[IndentingNewLine]", 
+            "\"\<All Done... \>\"", ",", "model", ",", "\"\< is ready!\>\""}],
+             "]"}], ";", "\[IndentingNewLine]", 
            RowBox[{"Print", "[", "\"\<\>\"", "]"}], ";", 
            "\[IndentingNewLine]", 
            RowBox[{"Print", "[", "\"\<\>\"", "]"}], ";", 
@@ -877,18 +795,7 @@ Cell[BoxData[
    3.5948050540943117`*^9, 3.594805060552188*^9}, {3.601551851587603*^9, 
    3.601551873258519*^9}, {3.601551909516756*^9, 3.601551912796619*^9}, {
    3.607238525088863*^9, 3.607238554313607*^9}, {3.608352847659767*^9, 
-   3.608352855196548*^9}, {3.610774675720595*^9, 3.61077468268685*^9}, {
-   3.610775400023481*^9, 3.6107754103937683`*^9}, {3.612860204502775*^9, 
-   3.612860204725696*^9}, {3.613098341576069*^9, 3.613098357203137*^9}, 
-   3.613098441731694*^9, {3.613099762515997*^9, 3.613099773675712*^9}, {
-   3.6131444624194727`*^9, 3.613144560719492*^9}, {3.61388111195157*^9, 
-   3.613881187503767*^9}, {3.6138812441433496`*^9, 3.613881367492812*^9}, {
-   3.613882394633972*^9, 3.6138824277198668`*^9}, {3.613882466268421*^9, 
-   3.613882498747143*^9}, {3.614999155687886*^9, 3.614999156470152*^9}, {
-   3.616480495881998*^9, 3.616480499224128*^9}, {3.6172569651384563`*^9, 
-   3.617257029418943*^9}, {3.629787232321973*^9, 3.629787336532693*^9}, {
-   3.63082342402868*^9, 3.630823425202339*^9}, {3.630826431367914*^9, 
-   3.630826431491475*^9}, {3.6308277416411753`*^9, 3.6308277421548433`*^9}}]
+   3.608352855196548*^9}}]
 },
 AutoGeneratedPackage->Automatic,
 WindowSize->{1364, 688},
@@ -909,7 +816,7 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[545, 20, 41343, 870, 6743, "Input",
+Cell[545, 20, 36941, 777, 6435, "Input",
  InitializationCell->True]
 }
 ]

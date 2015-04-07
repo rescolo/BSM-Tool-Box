@@ -187,7 +187,6 @@ Return[Der[x,l]];
 ];
 
 
-
 Der[x_,lor_]:=Block[{erg,erg2},
 If[Head[x]== List,erg = List@@x;erg2= Table[Der[erg[[i]],lor],{i,1,Length[erg]}];Return[List@@erg2];];
 If[Head[x]==Plus,erg=List@@x;erg2=Table[Der[erg[[i]],lor],{i,1,Length[erg]}];Return[Plus@@erg2];]; 
@@ -203,18 +202,18 @@ If[Head[x]==Rational,Return[x];];
 If[Head[x]==Complex,Return[x];];
 
 If[Head[x] == conj,
-If[FreeQ[Particles[Current],Head[x[[1]]]]==False || (FreeQ[Particles[Current],Head[Head[x[[1]]]]]==False && Head[x[[1]][[-1]]]===Integer),
+If[FreeQ[Particles[Current],Head[x[[1]]]]==False,
 If[getType[x[[1]]]=!=G,
-Return[x Mom[x /. A__[b_Integer]->A,lor]];,
+Return[x Mom[x,lor]];,
 Return[x];
 ];,
 Return[x];
 ];
 ];
 
-If[FreeQ[Particles[Current],Head[x]]==False|| (FreeQ[Particles[Current],Head[Head[x]]]==False && Head[x[[-1]]]===Integer),
+If[FreeQ[Particles[Current],Head[x]]==False,
 If[getType[x]=!=G,
-Return[x Mom[x/. A__[b_Integer]->A,lor]];,
+Return[x Mom[x,lor]];,
 Return[x];
 ];,
 Return[x];
@@ -500,7 +499,7 @@ For[i=1,i<=Length[IndexTypes],
 pos=Position[Gauge,IndexTypes[[i]]][[1,1]];
 CGc=GenerateInvariantsTensor[Gauge[[pos,2]],Gauge[[pos,3]],Table[sign[[j]]*Fields[[Position[ListFields,RE[partList[[j]]]][[1,1]],3+pos]],{j,1,Length[partList]}]];
 structure=structure*CGc;
-If[FreeQ[SA`KnonwCG,Head[CGc]] && Length[partList]<5 && FreeQ[CGc,CG]==False &&Head[CGc]=!=Times,
+If[FreeQ[SA`KnonwCG,Head[CGc]] && Length[partList]<5 && FreeQ[CGc,CG]==False,
 If[Length[Head[CGc][[2]]]===4,
 If[(FreeQ[SA`KnonwCG,Head[CGc]/. CG[a_,{i1_List,i2_List,i3_List,i4_List}]->CG[a,{i1,i2}]]==False ) &&(FreeQ[SA`KnonwCG,Head[CGc]/. CG[a_,{i1_List,i2_List,i3_List,i4_List}]->CG[a,{i3,i4}]]==False ) ,
 structure=structure /.  CG[a_,{i1_List,i2_List,i3_List,i4_List}][j1_,j2_,j3_,j4_]:>CG[a,{i1,i2}][j1,j2]CG[a,{i3,i4}][j3,j4],
@@ -558,10 +557,9 @@ NeededStructures = Join[NeededStructures,{Join[Table[Cov[IndexName[name,j1]/.sub
 ];
 i++;];
 
-
 structure=1;
 NeededStructures={NeededStructures};
-(*
+
 For[i=1,i<=Length[NeededStructures],
 If[Length[NeededStructures[[i]]]>1,
 If[Length[NeededStructures[[i]]]==2,
@@ -607,242 +605,6 @@ j++;];
 If[Mod[Length[ind],CurrentNumberStates[[i,1]]]=!=0,Print["Problem in contracting ",partList];];
 (*structure=structure*term;*)];];
 i++;];
-*)
-
-For[i=1,i<=Length[NeededStructures],
-If[Length[NeededStructures[[i]]]>1,
-Switch[Length[NeededStructures[[i]]],
-2,
-(*
-res=ContractIndizes[NeededStructures[[i,1]],NeededStructures[[i,2]]];
-NeededStructures[[i,1]]=res[[1]];
-NeededStructures[[i,2]]=res[[2]];
-structure=structure*res[[3]];*)
-list1a=Cases[Flatten[NeededStructures[[i,1]]],x_Cov];
-list1b=Cases[Flatten[NeededStructures[[i,1]]],x_Con];
-list2a=Cases[Flatten[NeededStructures[[i,2]]],x_Cov];
-list2b=Cases[Flatten[NeededStructures[[i,2]]],x_Con];
-res12=ContractIndizes[list1b,list2a];
-structure=structure*res12[[3]];
-list1b=res12[[1]];
-list2a=res12[[2]];
-res12=ContractIndizes[list1a,list2b];
-list1a=res12[[1]];
-list2b=res12[[2]];
-structure=structure*res12[[3]];
-
-If[group===SU[2],
-res12=ContractIndizesEps2[list1a,list2a];
-list1a=res12[[1]];
-list2a=res12[[2]];
-structure=structure*res12[[3]];
-res12=ContractIndizesEps2[list1b,list2b];
-list1b=res12[[1]];
-list2b=res12[[2]];
-structure=structure*res12[[3]];
-];
-NeededStructures[[i,1]]=Join[{list1a,list1b}];
-NeededStructures[[i,2]]=Join[{list2a,list2b}];,
-3,
-list1a=Cases[Flatten[NeededStructures[[i,1]]],x_Cov];
-list1b=Cases[Flatten[NeededStructures[[i,1]]],x_Con];
-list2a=Cases[Flatten[NeededStructures[[i,2]]],x_Cov];
-list2b=Cases[Flatten[NeededStructures[[i,2]]],x_Con];
-list3a=Cases[Flatten[NeededStructures[[i,3]]],x_Cov];
-list3b=Cases[Flatten[NeededStructures[[i,3]]],x_Con];
-res13=ContractIndizes[list1a,list3b];
-res12=ContractIndizes[list1b,list2a];
-res23=ContractIndizes[list2b,list3a];
-NeededStructures[[i,1]]=Join[res13[[1]],res12[[1]]];
-NeededStructures[[i,2]]=Join[res23[[1]],res12[[2]]];
-NeededStructures[[i,3]]=Join[res23[[2]],res13[[2]]];
-structure=structure*res12[[3]] res13[[3]] res23[[3]];
-res=ContractIndizes[NeededStructures[[i,1]],NeededStructures[[i,2]]];
-NeededStructures[[i,1]]=res[[1]];
-NeededStructures[[i,2]]=res[[2]];
-structure=structure*res[[3]];
-res=ContractIndizes[NeededStructures[[i,1]],NeededStructures[[i,3]]];
-NeededStructures[[i,1]]=res[[1]];
-NeededStructures[[i,3]]=res[[2]];
-structure=structure*res[[3]];
-res=ContractIndizes[NeededStructures[[i,2]],NeededStructures[[i,3]]];
-NeededStructures[[i,2]]=res[[1]];
-NeededStructures[[i,3]]=res[[2]];
-structure=structure*res[[3]];,
-4,
-list1a=Cases[Flatten[NeededStructures[[i,1]]],x_Cov];
-list1b=Cases[Flatten[NeededStructures[[i,1]]],x_Con];
-list2a=Cases[Flatten[NeededStructures[[i,2]]],x_Cov];
-list2b=Cases[Flatten[NeededStructures[[i,2]]],x_Con];
-list3a=Cases[Flatten[NeededStructures[[i,3]]],x_Cov];
-list3b=Cases[Flatten[NeededStructures[[i,3]]],x_Con];
-list4a=Cases[Flatten[NeededStructures[[i,4]]],x_Cov];
-list4b=Cases[Flatten[NeededStructures[[i,4]]],x_Con];
-
-(* contract 1-2 & 3-4 *)
-
-res12=ContractIndizes[list1b,list2a];
-res34=ContractIndizes[list3b,list4a];
-list1b=res12[[1]];
-list2a=res12[[2]];
-list3b=res34[[1]];
-list4a=res34[[2]];
-structure=structure res12[[3]]  res34[[3]];
-
-res12=ContractIndizes[list1a,list2b];
-res34=ContractIndizes[list3a,list4b];
-list1a=res12[[1]];
-list2b=res12[[2]];
-list3a=res34[[1]];
-list4b=res34[[2]];
-structure=structure res12[[3]]  res34[[3]];
-
-If[group===SU[2],
-res12=ContractIndizesEps2[list1b,list2b];
-res34=ContractIndizesEps2[list3b,list4b];
-list1b=res12[[1]];
-list2b=res12[[2]];
-list3b=res34[[1]];
-list4b=res34[[2]];
-structure=structure res12[[3]]  res34[[3]];
-
-res12=ContractIndizesEps2[list1a,list2a];
-res34=ContractIndizesEps2[list3a,list4a];
-list1a=res12[[1]];
-list2a=res12[[2]];
-list3a=res34[[1]];
-list4a=res34[[2]];
-structure=structure res12[[3]]  res34[[3]];
-
-];
-
-(* contract 2-3 & 4-1 *)
-
- res23=ContractIndizes[list2b,list3a]; 
- res41=ContractIndizes[list4b,list1a]; 
- list2b=res23[[1]];
-list3a=res23[[2]]; 
- list4b=res41[[1]];
-list1a=res41[[2]]; 
-structure=structure res23[[3]]  res41[[3]];
-
- res23=ContractIndizes[list2a,list3b]; 
- res41=ContractIndizes[list4a,list1b]; 
- list2a=res23[[1]];
-list3b=res23[[2]]; 
- list4a=res41[[1]];
-list1b=res41[[2]]; 
-structure=structure res23[[3]]  res41[[3]];
-
-If[group===SU[2],
- res23=ContractIndizesEps2[list2b,list3b]; 
- res41=ContractIndizesEps2[list4b,list1b]; 
- list2b=res23[[1]];
-list3b=res23[[2]]; 
- list4b=res41[[1]];
-list1b=res41[[2]]; 
-structure=structure res23[[3]]  res41[[3]];
-
- res23=ContractIndizesEps2[list2a,list3a]; 
- res41=ContractIndizesEps2[list4a,list1a]; 
- list2a=res23[[1]];
-list3a=res23[[2]]; 
- list4a=res41[[1]];
-list1a=res41[[2]]; 
-structure=structure res23[[3]]  res41[[3]];
-];
-
-
-
-(* contract 1-3 & 2-4 *)
-
-res13=ContractIndizes[list1b,list3a];
-res24=ContractIndizes[list2b,list4a];
-list1b=res13[[1]];
-list3a=res13[[2]];
-list2b=res24[[1]];
-list4a=res24[[2]];
-structure=structure res13[[3]]  res24[[3]];
-
-res13=ContractIndizes[list1a,list3b];
-res24=ContractIndizes[list2a,list4b];
-list1a=res13[[1]];
-list3b=res13[[2]];
-list2a=res24[[1]];
-list4b=res24[[2]];
-structure=structure res13[[3]]  res24[[3]];
-
-If[group===SU[2],
-res13=ContractIndizesEps2[list1b,list3b];
-res24=ContractIndizesEps2[list2b,list4b];
-list1b=res13[[1]];
-list3b=res13[[2]];
-list2b=res24[[1]];
-list4b=res24[[2]];
-structure=structure res13[[3]]  res24[[3]];
-
-res13=ContractIndizesEps2[list1a,list3a];
-res24=ContractIndizesEps2[list2a,list4a];
-list1a=res13[[1]];
-list3a=res13[[2]];
-list2a=res24[[1]];
-list4a=res24[[2]];
-structure=structure res13[[3]]  res24[[3]];
-
-];
-
-
-NeededStructures[[i,1]]=Join[list1a,list1b];
-NeededStructures[[i,2]]=Join[list2a,list2b];
-NeededStructures[[i,3]]=Join[list3a,list3b];
-NeededStructures[[i,4]]=Join[list4a,list4b];
-
-res=ContractIndizes[NeededStructures[[i,1]],NeededStructures[[i,2]]];
-NeededStructures[[i,1]]=res[[1]];
-NeededStructures[[i,2]]=res[[2]];
-structure=structure*res[[3]];
-res=ContractIndizes[NeededStructures[[i,1]],NeededStructures[[i,3]]];
-NeededStructures[[i,1]]=res[[1]];
-NeededStructures[[i,3]]=res[[2]];
-structure=structure*res[[3]];
-
-res=ContractIndizes[NeededStructures[[i,1]],NeededStructures[[i,4]]];
-NeededStructures[[i,1]]=res[[1]];
-NeededStructures[[i,4]]=res[[2]];
-structure=structure*res[[3]];
-
-res=ContractIndizes[NeededStructures[[i,2]],NeededStructures[[i,3]]];
-NeededStructures[[i,2]]=res[[1]];
-NeededStructures[[i,3]]=res[[2]];
-structure=structure*res[[3]];
-
-res=ContractIndizes[NeededStructures[[i,2]],NeededStructures[[i,4]]];
-NeededStructures[[i,2]]=res[[1]];
-NeededStructures[[i,4]]=res[[2]];
-structure=structure*res[[3]];
-
-res=ContractIndizes[NeededStructures[[i,3]],NeededStructures[[i,4]]];
-NeededStructures[[i,3]]=res[[1]];
-NeededStructures[[i,4]]=res[[2]];
-structure=structure*res[[3]];
-
-
-];
-];
-list1=Cases[Flatten[NeededStructures[[i]]],x_Cov];
-list2=Cases[Flatten[NeededStructures[[i]]],x_Con];
-res=ContractIndizes[list1,list2];
-NeededStructures[[i]]=Join[res[[1]],res[[2]]];
-structure=structure*res[[3]];
-If[Length[NeededStructures[[i]]]>0,If[FreeQ[NeededStructures[[i]],Cov,3]||FreeQ[NeededStructures[[i]],Con,3],ind=Flatten[NeededStructures[[i]]/.{Cov[x_]->x,Con[x_]->x}];
-term=epsTensor[];
-For[j=1,j<=Length[ind],term=Append[term,ind[[j]]];
-If[Mod[j,CurrentNumberStates[[i,1]]]==0,structure=structure*term;
-term=epsTensor[];];
-j++;];
-If[Mod[Length[ind],CurrentNumberStates[[i,1]]]=!=0,Print["Problem in contracting ",partList];];
-(*structure=structure*term;*)];];
-i++;];
 
 Return[structure];
 
@@ -854,16 +616,6 @@ j=1;
 While[j<=Length[tempB]&&contracted==False,If[Head[a[[Length[a]-i]]]=!=Head[tempB[[j]]],contracted=True;,j++;];];
 If[contracted==True,term=term*(Delta[a[[Length[a]-i]],tempB[[j]]]/.{Cov[x_]->x,Con[x_]->x});
 tempA=DeleteCases[tempA,a[[Length[a]-i]]];
-tempB=Delete[tempB,j];];
-i++;];
-Return[{tempA,tempB,term}];];
-ContractIndizesEps2[a_,b_]:=Block[{i,j},
-tempA=a;tempB=b;term=1;
-For[i=1,i<=Length[a],contracted=False;
-j=1;
-While[j<=Length[tempB]&&contracted==False,If[Head[a[[i]]]===Head[tempB[[j]]],contracted=True;,j++;];];
-If[contracted==True,term=term*(epsTensor[a[[i]],tempB[[j]]]/.{Cov[x_]->x,Con[x_]->x});
-tempA=DeleteCases[tempA,a[[i]]];
 tempB=Delete[tempB,j];];
 i++;];
 Return[{tempA,tempB,term}];];
@@ -888,7 +640,8 @@ Return[CG[group,dyn]@@inds];
 
 SumOverExpandedIndizes[term_,partList_]:=SumOverExpandedIndizes[term,partList,False];
 
-SumOverExpandedIndizes[term_,partList_,Matrix_]:=Block[{j,i,temp, temp1,pos,IndexNames={},iter,fin},
+SumOverExpandedIndizes[term_,partList_,Matrix_]:=Block[{j,i,temp, temp1,pos},
+IndexNames={};
 For[i=1,i<=Length[partList],
 If[partList[[i]]=!=None,
 pos=Position[ListFields,partList[[i]]][[1,1]];
@@ -1029,7 +782,6 @@ If[same==={}||FreeQ[FGauge,listP[[1]]]==False,Return[];];
 (* If[AtomQ[Op]&&FreeQ[Superpotential,Op],Return[];]; *)
 sameDis=Intersection[same];
 (* ind=MakeIndexStructure[listP]; *)
-If[Times@@getGen/@sameDis===1,Return[];];
 ind=MakeIndexStructureRGE[listP];
 For[i=1,i<=Length[sameDis],
 If[getGen[sameDis[[i]]]===99,
@@ -1043,7 +795,7 @@ rep=ind /.Join[subGCRE[pos[[1,1]],pos[[2,1]]], subGCRE[pos[[2,1]],pos[[1,1]]]];
 posDef=Position[ParameterDefinitions,Op];
 If[rep===ind,
 If[MemberQ[listP,conj[sameDis[[i]]]] && MemberQ[listP,sameDis[[i]]],symmetry=Hermitian;,symmetry=Symmetric;];
-PrintDebug["   Defined ",Op," as ",symmetry];
+Print["   Defined ",Op," as ",symmetry];
 DefineSymmetryOp[Op,symmetry,pos, listP];
 If[posDef=!={},
 ParameterDefinitions[[posDef[[1,1]],2]]=Join[ParameterDefinitions[[posDef[[1,1]],2]],{Symmetry->symmetry}];,
@@ -1051,7 +803,7 @@ ParameterDefinitions=Join[ParameterDefinitions,{{Op,{Symmetry->symmetry}}}];
 ];,
 If[rep===-ind,
 If[MemberQ[listP,conj[sameDis[[i]]]] && MemberQ[listP,sameDis[[i]]],symmetry=AnitHermitian;,symmetry=AntiSymmetric;];
-PrintDebug["   Defined ",Op," as ",symmetry];
+Print["   Defined ",Op," as ",symmetry];
 DefineSymmetryOp[Op,symmetry,pos,listP];
 If[posDef=!={},
 ParameterDefinitions[[posDef[[1,1]],2]]=Join[ParameterDefinitions[[posDef[[1,1]],2]],{Symmetry->symmetry}];,
@@ -1173,7 +925,6 @@ Hermitian,
 
 CheckSymmetry[Op_,part_,sameInd_]:=Block[{pos},
  ExtractSymmetryOfParameters[Op,part]; 
-
 If[FreeQ[Transpose[ParameterDefinitions][[1]],Op]==False,
 pos=Position[Transpose[ParameterDefinitions][[1]],Op][[1,1]];
 If[(Real/.Extract[ParameterDefinitions,pos][[2]])===True && FreeQ[realVar,Op],realVar=Join[realVar,{Op}]];
@@ -1255,7 +1006,6 @@ Switch[Length[listPGen],
 ];
 
 ];
-
 Switch[Length[listPGen],
 4, CheckSymmetryLarger[Opc,listP,sameIndices,4];,
 3, CheckSymmetryLarger[Opc,listP,sameIndices,3];,
@@ -1270,7 +1020,6 @@ gens = Table[getGen[listP[[i]]],{i,1,Length[listP]}];
 ];
 pT = Table[If[gens[[i]]>1,genf[i],0],{i,1,Length[listP]}];
 gens = DeleteCases[gens,1];
-
 
 If[FreeQ[Transpose[ParameterDefinitions][[1]],Opc]==False,
 Switch[(Form/.Extract[ParameterDefinitions,Position[ParameterDefinitions,Opc][[1,1]]][[2]]),
@@ -1869,12 +1618,6 @@ Return[SA`ChargeGlobal[name,Global[[pos,2]]]];
 ];
 ];
 
-If[Length[Global]>0 && FreeQ[Global,RSymmetry]==False,
-If[EvenQ[SA`ChargeGlobal[name,RSymmetry]]===True,
-Return[1];,
-Return[-1];
-];
-];
 (*
 part = getBlank[getBlankSF[name]];
 If[FreeQ[WeylFermionAndIndermediate,part],
@@ -1889,14 +1632,6 @@ Return[None];
 ];
 *)
 Return[None];
-];
-
-getSecondParity[name_,Eigenstates_,sym_]:=Block[{temp,pos, part,sign},
-(* If[FreeQ[name,conj] && FreeQ[name,bar],sign=1;,sign=-1;]; *)
-
-
-pos=Position[Global,sym][[1,1]];
-Return[SA`ChargeGlobal[name,Global[[pos,2]]]];
 ];
 
 getDimParameter[x_]:=Extract[parameters,Position[parameters,x][[1,1]]][[3]];

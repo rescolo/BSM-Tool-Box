@@ -38,6 +38,4 @@ char* pinf_ext(int nsub,int num , REAL * mass,int * N)
   return  p_names_[num-1];
 }
 
-int VWdecay=0,VZdecay=0;
-
-REAL * varAddress(char *name) { return 0;}
+int VVdecay;

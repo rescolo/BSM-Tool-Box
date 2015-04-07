@@ -34,12 +34,7 @@ Y2Sfunc[a_,b_]:=1/2(Conj[Yijk[pA,pB,a]] Yijk[pB,pA,b]+Conj[Yijk[pA,pB,b]] Yijk[p
 
 (* for 2-loop gauge couplings, eq. (31) *)
 Y4F[g_]:=gc[g] Yijk[pL,pM,pN] Conj[Yijk[pM,pL,pN]] SA`CasimirRGE[pL,g]/(dimAdj[g]);
-
-(*
-Y4F[g_,h_]:=Sum[If[Gauge[[gSUM,2]]===U[1],(SA`gCoup[gSUM,g]SA`DynL[getBlankSF[pL],gSUM]*GUTren[gSUM]),0],{gSUM,1,AnzahlGauge}] Sum[If[Gauge[[gSUM,2]]===U[1],(SA`gCoup[gSUM,h]SA`DynL[getBlankSF[pL],gSUM]*GUTren[gSUM]),0],{gSUM,1,AnzahlGauge}] Yijk[pL,pM,pN] Conj[Yijk[pM,pL,pN]];
-*)
-Y4F[g_,h_]:=Sum[If[Gauge[[gSUM,2]]===U[1],(SA`gCoup[gSUM,g]SA`DynL[getBlankSF[pL],gSUM]*GUTren[gSUM]),0],{gSUM,1,AnzahlGauge}] Sum[If[Gauge[[gSUM,2]]===U[1],(SA`gCoup[gSUM,h]SA`DynL[getBlankSF[pL],gSUM]*GUTren[gSUM]),0],{gSUM,1,AnzahlGauge}] Yijk[pL,pM,pN] Conj[Yijk[pM,pL,pN]];
-
+Y4F[g_,h_]:=Sum[If[Gauge[[gSUM,2]]===U[1],(SA`gCoup[g,gSUM]SA`DynL[getBlankSF[pL],gSUM]*GUTren[g]),0],{gSUM,1,AnzahlGauge}] Sum[If[Gauge[[gSUM,2]]===U[1],(SA`gCoup[h,gSUM]SA`DynL[getBlankSF[pL],gSUM]*GUTren[h]),0],{gSUM,1,AnzahlGauge}] Yijk[pL,pM,pN] Conj[Yijk[pM,pL,pN]];
 
 (* for 2-loop Yukawas, eq. (24)-(27), eq. (36) *)
 Lam2Sfunc[a_,b_]:=1/6 Lijkl[a,pA,pB,pC] Lijkl[b,pA,pB,pC]; 
@@ -653,32 +648,32 @@ cMY[getFullNS[PART[S][[i]]]/. subGCRule[1],d___]=0;
 cMY[a_,getFullNS[PART[S][[i]]]/. subGCRule[1],d___]=0;
 i++;];
 
-PrintAll["  fermion bilinears"];
+Print["  fermion bilinears"];
 listInit={Y2F,Y2FC,McM,cMM};
 listInitGauge={}; listInitGaugeAux={};
 Init2FermionFunctions[listInit,listInitGauge,listInitGaugeAux];
 
 (* fermion chains *)
-PrintAll["  fermion chains"];
-PrintAll["     ... 1-loop"];
+ Print["  fermion chains"];
+Print["     ... 1-loop"];
 Init2Fermion1ScalarFunctions[{YcM,cYM,McY,cMY}];
 Init2Fermion2ScalarFunctions[{YcY,cYY}];
 If[TwoLoop==True,
-PrintAll["     ... 2-loop"];
+Print["     ... 2-loop"];
 Init2Fermion3ScalarFunctions[{YcYY,cYYcY}];
 Init2Fermion4ScalarFunctions[{YcYYY,cYYcYY}];
 ];
 
 (* scalar bilinears *)
-PrintAll["  scalar bilinears"];
-PrintAll["     ... 1-loop"];
+Print["  scalar bilinears"];
+Print["     ... 1-loop"];
 listInit={Y2S,Lam2S,H2ab,Hbar2,Hab,LamY};
 listInitGauge={Y2FS};listInitGauge2={}; listInitGaugeAux={};
 listInitNotExpaned={LamS};
 Init2ScalarFunctions[listInit,listInitNotExpaned,listInitGauge,listInitGauge2,listInitGaugeAux];
 
 If[TwoLoop==True,
-PrintAll["     ... 2-loop"];
+Print["     ... 2-loop"];
 listInit={LamBar3,LamBar2Y,HbarLam,HYab,HY, HYbar,H3ab,Alam,AlamBar};
 listInitNotExpaned={LamSC2G,LamSS};
 listInitGauge={}; listInitGaugeAux={}; listInitGauge2={};  listInitGauge2={ThTh,TaTaYY1,TaTaYY2,TaTaYY3}; 

@@ -12,11 +12,12 @@
 #include <math.h>
 #include <float.h>
 
+
+/* to compile with a non-gnu cc, set the following to fixed values */
+
 #define NDIM  100
 #define NCOMP 100
 
-
-/* to compile with a non-gnu cc, set the following to fixed values */
 #ifndef NDIM
 #define NDIM ndim_
 #endif

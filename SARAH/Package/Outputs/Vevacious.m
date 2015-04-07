@@ -23,28 +23,22 @@ overwritten.
       OutputFile->"Vevacious.in", GenerateSPhenoCode->False}; *)
 
 Options[MakeVevacious]={ComplexParameters->{},
-    IgnoreParameters->{}, OutputFile->"Vevacious.in", Scheme->"DR",Version->"1"};
+    IgnoreParameters->{}, OutputFile->"Vevacious.in", Scheme->"DR"};
 
 
 MakeVevacious[opt___]:=
     FunctionVevacious[ComplexParameters /. {opt} /. Options[MakeVevacious],
       IgnoreParameters/. {opt} /. Options[MakeVevacious],
-      OutputFile /. {opt} /. Options[MakeVevacious],Scheme /. {opt} /. Options[MakeVevacious],Version /. {opt} /. Options[MakeVevacious]];
+      OutputFile /. {opt} /. Options[MakeVevacious],Scheme /. {opt} /. Options[MakeVevacious]];
 
-FunctionVevacious[a_,b_,c_,d_,"1"]:=FunctionVevacious1[a,b,c,d];
-FunctionVevacious[a_,b_,c_,d_,"++"]:=FunctionVevacious2[a,b,c,d];
-
-FunctionVevacious1[complexPar_,zerop_,outputfile_,renscheme_]:=Block[{i,j,ES,temp,res,potv},
-      (* Print["Generating input files for Vevacious"]; *)
-
-      Print[StyleForm["Generate model files for Vevacious","Section"]];
+FunctionVevacious[complexPar_,zerop_,outputfile_,renscheme_]:=Block[{i,j,ES,temp,res,potv},
+      Print["Generating input files for Vevacious"];
       
       SA`RealSubHOM={};
       subVEVnames = {};
-      subVEVtoScalar = {};
       SA`VEVs=Transpose[Select[Particles[ALL],(#[[4]]===VEV)&]][[1]];
       
-      ES=Last[NameOfStates];
+    	  ES=Last[NameOfStates];
 
 	    
 	 subout=GenerateParameterOutputNameALL["SLHA::",complexPar,ES];		      
@@ -124,130 +118,45 @@ WriteString[homout,"<Vevacious_stuff> \n"];
       
       Print["Finished! Output was written to file ",$sarahCurrentVevaciousDir];
       
+(*
+      If[Head[GenerateSPhenoCodeForModel]===String && makespheno==True,
+      Print["------------------------------------------------"];
+      Print["Creating SPheno code for model ",GenerateSPhenoCodeForModel];
+      Print["------------------------------------------------"];      
+      Print["Note, this will open another Mathematica Kernel and might take some time"];
+      
+      inputfile=OpenWrite["SARAH-Input.m"];
+      $sarahMetaDir= $sarahCurrentVevaciousDir;
+      screenout = ToFileName[$sarahMetaDir,"ScreenOutput_secondKernel.m"];
+      
+     Print["The screen output of the second Kernel can be supervised in ",screenout];
+      
+      WriteString[inputfile,"<<"<>$sarahDir<>"/SARAH.m \n"];
+	  WriteString[inputfile,"Start[\""<>GenerateSPhenoCodeForModel<>"\" ] \n"];
+	  WriteString[inputfile,"MakeSPheno[] \n"];
+	  WriteString[inputfile,"Exit \n"];
+	  Close[inputfile];
+
+Switch[$OperatingSystem,
+  "Unix",
+  	Run["math < SARAH-Input.m > "<> screenout];,
+  "MacOSX",
+  	Run["alias math '/Applications/Mathematica.app/Contents/MacOS/MathKernel' "];
+  	Run["/Applications/Mathematica.app/Contents/MacOS/MathKernel < SARAH-Input.m > "<>screenout];,
+  _,
+  	If[Run["math"]=!=0,
+      	unknown::system="Not possible to start second Kernel. Please write a mail to fnstaub@th.physik.uni-bonn.de.";
+      	Message[unknown::system];
+      ]; 
+  ];
+
+Run["rm SARAH-Input.m"];
+      
+      Print["Done! SPheno code located in output directory of ",GenerateSPhenoCodeForModel];      
+      Print["------------------------------------------------"];      
       ];
-
-
-FunctionVevacious2[complexPar_,zerop_,outputfile_,renscheme_]:=Block[{i,j,ES,temp,res,potv},
-      Print[StyleForm["Generate model files for Vevacious","Section"]];
-      
-      SA`RealSubHOM={};
-      subVEVnames = {};
-      SA`VEVs=Transpose[Select[Particles[ALL],(#[[4]]===VEV)&]][[1]];
-      ES=Last[NameOfStates];
-
-
-      subExtraTermsTree={};
-      subExtraTermsLoop={};
-      Get[ToFileName[{$sarahCurrentModelDir},"SPheno.m"]];
-
-      For[i=1,i<=Length[ParametersToSolveTadpolesLowScaleInput],
-        subExtraTermsTree = Join[subExtraTermsTree, {ParametersToSolveTadpolesLowScaleInput[[i]]->ToExpression[ToString[getOutputNameParameter[ParametersToSolveTadpolesLowScaleInput[[i]]]]<>"tree"]}];
-        subExtraTermsLoop = Join[subExtraTermsLoop, {ParametersToSolveTadpolesLowScaleInput[[i]]->ToExpression[ToString[getOutputNameParameter[ParametersToSolveTadpolesLowScaleInput[[i]]]]<>"loop"]}];
-      i++;];
-
-      For[i=1,i<=Length[ParametersToSolveTadpoles],
-        subExtraTermsTree = Join[subExtraTermsTree, {ParametersToSolveTadpoles[[i]]->ToExpression[ToString[getOutputNameParameter[ParametersToSolveTadpoles[[i]]]]<>"tree"]}];
-        subExtraTermsLoop = Join[subExtraTermsLoop, {ParametersToSolveTadpoles[[i]]->ToExpression[ToString[getOutputNameParameter[ParametersToSolveTadpoles[[i]]]]<>"loop"]}];
-      i++;];
-
-
-
-subVEVtoScalar={};
-For[i=1,i<=Length[SA`ScalarHF[EWSB]],
-pos=Position[DEFINITION[EWSB][VEVs],SA`ScalarHF[EWSB][[i]]][[1,1]];
-If[DEFINITION[EWSB][VEVs][[pos]][[2,1]]=!=0,
-subVEVtoScalar=Join[subVEVtoScalar,{DEFINITION[EWSB][VEVs][[pos]][[2,1]]->SA`ScalarHF[EWSB][[i]]}];
-];
-i++;];
-For[i=1,i<=Length[SA`PseudoScalarHF[EWSB]],
-pos=Position[DEFINITION[EWSB][VEVs],SA`PseudoScalarHF[EWSB][[i]]][[1,1]];
-If[Length[DEFINITION[EWSB][VEVs][[pos]]]===5,
-If[DEFINITION[EWSB][VEVs][[pos]][[3,1]]=!=0,
-subVEVtoScalar=Join[subVEVtoScalar,{DEFINITION[EWSB][VEVs][[pos]][[2,1]]->SA`PseudoScalarHF[EWSB][[i]]}];
-];
-];
-i++;];
-	    
-	 subout=GenerateParameterOutputNameALL["",complexPar,ES];		      
-       
-      (* Put parameters to zero *)
-      subzerop={};
-      For[i=1,i<=Length[zerop],
-        If[
-          getDimParameters[zerop[[i]]]==={} || 
-            getDimParameters[zerop[[i]]]==={0}, 
-          subzerop = Join[subzerop,{zerop[[i]]->0}];,
-          subzerop = Join[subzerop,{zerop[[i]][a___]->0}];
-          ];
-        i++;];
-      
-
-       subout=Join[subzerop,subout];
-	   (* Preparing the scalar potential *)
-       res = potSaveTadpoleEquations /. vacuumS /. vacuumF /. zero[_] -> 0 /. RXi[_] -> 0;
-	   res = makeSumAll[CalcDelta[res]] //. sum[a_, b_, c_, d_] :> Sum[d, {a, b, c}] /. subVEVtoScalar;
-
-	   (* Expand things like Sqrt[2] to floating-point numbers *)
-	   SA`PotentialVevaciousNN = res //.subExtraTermsTree  //. subzerop //. conj[x_]->x;
-	   SA`PotentialVevacious = N[res  //.subExtraTermsTree  //. subzerop//. subout //. conj[x_]->x];
-
-       SA`PotentialVevaciousExtraNN = (res //.subExtraTermsTree)-(res //.subExtraTermsLoop)  //. subzerop //. conj[x_]->x;
-	   SA`PotentialVevaciousExtra = N[(res //.subExtraTermsTree)-(res //.subExtraTermsLoop)  //. subzerop//. subout //. conj[x_]->x];
-
-      
-      SA`TadpoleEquationsHOM={};
-
-
-      For[i=1,i<=Length[SA`ScalarHF[ES]],
-		For[j=1,j<=getGenALL[SA`ScalarHF[ES][[i]]],
-			If[j>=SA`VEVsGenScalar[ES][[i,1]] && j<=SA`VEVsGenScalar[ES][[i,2]],	  
-			 SA`TadpoleEquationsHOM = Join[SA`TadpoleEquationsHOM, {Expand[N[Expand[TadpoleEquations[ES][[i]] /.I->IMAG //. sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}]/.gt1->j  //. subzerop//. subout //. conj[x_]->x]]//. Complex[0.`,a_]->IMAG*a]}];
-			];
-		j++;];
-	  i++;];
-	
-	If[SA`CPViolationHiggsSector === True,
-	For[i=1,i<=Length[SA`PseudoScalarHF[ES]],
-		For[j=1,j<=getGenALL[SA`PseudoScalarHF[ES][[i]]],	  
-			If[j>=SA`VEVsGenPseudoScalar[ES][[i,1]] && j<=SA`VEVsGenPseudoScalar[ES][[i,2]],	  
-			 SA`TadpoleEquationsHOM = Join[SA`TadpoleEquationsHOM, {Expand[N[Expand[TadpoleEquations[ES][[i+Length[SA`ScalarHF[ES]]]]/.I->IMAG//. sum[a_,b_,c_,d_]:>Sum[d,{a,b,c}]/.gt1->j  //. subzerop//. subout //. conj[x_]->x]]//. Complex[0.`,a_]->IMAG*a]}];
-			];
-		j++;];
-	  i++;];
-	];
-      
-  
-      
-   
-      If[FileExistsQ[$sarahOutputDir]=!=True,
-        CreateDirectory[$sarahOutputDir];];
-      If[FileExistsQ[$sarahCurrentOutputMainDir]=!=True,
-        CreateDirectory[$sarahCurrentOutputMainDir];];
-      $sarahCurrentVevaciousDir=
-        ToFileName[{$sarahCurrentOutputMainDir,"Vevacious"}];
-      If[FileExistsQ[$sarahCurrentVevaciousDir]=!=True,
-        CreateDirectory[$sarahCurrentVevaciousDir];];
-      
-homout=OpenWrite[ToFileName[$sarahCurrentVevaciousDir,outputfile]];
-
-WriteString[homout, "<!--  \n"];
-WriteString[homout, " This model file was automatically created by SARAH version"<>SA`Version<>"  \n"];
-WriteString[homout, " SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223 \n"];
-WriteString[homout, " (c) Florian Staub, 2013   \n \n"];
-Minutes=If[Date[][[5]]<10,"0"<>ToString[Date[][[5]]],ToString[Date[][[5]]]];
-WriteString[homout, " File created at "<>ToString[Date[][[4]]]<>":"<>Minutes<>" on "<>ToString[Date[][[3]]]<>"."<>ToString[Date[][[2]]]<>"."<>ToString[Date[][[1]]]<>"  \n \n"];
-WriteString[homout, "                                      -->\n \n \n"];
-
-
-
-WriteString[homout,"<VevaciousModelFile> \n"];
-GenerateVpp[renscheme];
-WriteString[homout,"</VevaciousModelFile> \n"];
-Close[homout];
-
-Print["Finished! Output was written to file ",$sarahCurrentVevaciousDir];
-      
-];
+      *)
+      ];
 
 
 
@@ -257,7 +166,7 @@ GenerateParameterOutputNameALL[prefix_,complexPar_,ES_]:=Block[{i},
       subparameters={};
       For[i=1,i<=Length[parameters],
 	  If[FreeQ[Particles[ES],parameters[[i,1]]]==False,SkipLHMessage=True;,SkipLHMessage=False;];
-      If[FreeQ[TadpoleEquations[ES],parameters[[i,1]]]==False || FreeQ[MassMatrices[ES]/. RXi[_]->0,parameters[[i,1]]]==False || FreeQ[MassMatricesGauge[ES]/. RXi[_]->0,parameters[[i,1]]]==False,
+      If[FreeQ[TadpoleEquations[ES],parameters[[i,1]]]==False || FreeQ[MassMatrices[ES]/. RXi[_]->0,parameters[[i,1]]]==False,
 		If[FreeQ[SA`VEVs,parameters[[i,1]]]==True,
          If[conj[parameters[[i,1]]]===parameters[[i,1]] || MemberQ[complexPar,parameters[[i,1]]]==False,
               Switch[Length[parameters[[i,2]]],
@@ -378,102 +287,6 @@ GenerateXLM[renscheme_]:=Block[{i,j,k},
       
       ];
 
-GenerateVpp[renscheme_]:=Block[{i,j,k},
-      WriteDetailsVpp;
-      WriteBlocksVpp;
-
-WriteString[homout,"<AllowedNonZeroVariables>\n"];      
-      WriteFieldVariablesVpp;
-      WriteDerivedParametersVpp;
-WriteString[homout,"</AllowedNonZeroVariables>\n\n"];
-
-      WritePotVpp;
-      
-WriteString[homout,"<LoopCorrections RenormalizationScheme=\""<>If[renscheme==="DR","DRBAR","MSBAR"]<>"\" GaugeFixing=\"LANDAU\">\n"];  
-      WriteExtraPolynomialVpp;
-      WriteMassMatricesVpp[renscheme];
-WriteString[homout,"<LoopCorrections>\n\n\n"];  
-      
-
-      ];
-
-
-WriteExtraPolynomialVpp:=Block[{term},
-WriteString[homout,"<ExtraPolynomialPart> \n"];
-  term=Expand[SA`PotentialVevaciousExtra];
-      For[i=1,i<=Length[term],
-        WriteString[homout,"("<>ToString[InputForm[term[[i]]]]<>") \n "];
-        If[i<Length[term],WriteString[homout," + "];];
-        i++;];
-WriteString[homout,"</ExtraPolynomialPart> \n\n"];
-];
-
-WriteFieldVariablesVpp:=Block[{i,j},
-SkipLHMessage=True;
-WriteString[homout,"<FieldVariables> \n"];
-  For[i=1,i<=Length[subVEVtoScalar],
-   WriteString[homout,ToString[subVEVtoScalar[[i,2]]]<>"\n"];
-  i++;];
-WriteString[homout,"</FieldVariables> \n\n"];
-
- WriteString[homout,"<DsbMinimum> \n"];
-  For[i=1,i<=Length[subVEVtoScalar],
-   If[LHBlockName[subVEVtoScalar[[i,1]] /. A_[b_]->A]=!="None",
-    WriteString[homout,ToString[subVEVtoScalar[[i,2]]]<>"="<>ToString[subVEVtoScalar[[i,1]]]<>"\n"];
-    ];
- i++;];
-WriteString[homout,"</DsbMinimum> \n\n"];
-SkipLHMessage=False;
-];
-
-WriteDerivedParametersVpp:=Block[{temp},
-  temp=ParametersToSolveTadpoles;
-  If[Head[ParametersToSolveTadpolesLowScaleInput]=!=List,
-    temp=Join[temp,ParametersToSolveTadpolesLowScaleInput];
-   ];
-  temp=Intersection[temp];
-  WriteString[homout,"<DerivedParameters> \n"];
-  
-  For[i=1,i<=Length[temp],
-   WriteString[homout, ToString[getOutputNameParameter[temp[[i]]]]<>"=SLHAELEMENT["<>LHBlockName[temp[[i]]]<>","<>ToString[LHPos[temp[[i]]]]<>"] \n"];
-   WriteString[homout, ToString[getOutputNameParameter[temp[[i]]]]<>"SarahTree=SLHAELEMENT[TREE"<>LHBlockName[temp[[i]]]<>","<>ToString[LHPos[temp[[i]]]]<>"] \n"];
-   WriteString[homout, ToString[getOutputNameParameter[temp[[i]]]]<>"Tree=IFNONZERO["<>ToString[getOutputNameParameter[temp[[i]]]]<>"SarahTree,"<>ToString[getOutputNameParameter[temp[[i]]]]<>"] \n"];
-   WriteString[homout, ToString[getOutputNameParameter[temp[[i]]]]<>"SarahLoop=SLHAELEMENT[LOOP"<>LHBlockName[temp[[i]]]<>","<>ToString[LHPos[temp[[i]]]]<>"] \n"];
-   WriteString[homout, ToString[getOutputNameParameter[temp[[i]]]]<>"Loop=IFNONZERO["<>ToString[getOutputNameParameter[temp[[i]]]]<>"SarahLoop,"<>ToString[getOutputNameParameter[temp[[i]]]]<>"] \n"];
-   i++;];
-
-SkipLHMessage=True;
-  For[i=1,i<=Length[subVEVtoScalar],
-   If[LHBlockName[subVEVtoScalar[[i,1]] /. A_[b_]->A]=!="None",
-    WriteString[homout,ToString[subVEVtoScalar[[i,1]]]<>"=SLHAELEMENT["<>LHBlockName[subVEVtoScalar[[i,1]]]<>","<>ToString[LHPos[subVEVtoScalar[[i,1]]]]<>"]\n"];
-    ];
- i++;];
-SkipLHMessage=False;
-
-  WriteString[homout,"</DerivedParameters> \n\n"];
-];
-
-WriteDetailsVpp:=Block[{},
-  WriteString[homout,"<ModelFileDetails \n"];
-  WriteString[homout,"ModelName=\""<>ToString[ModelName]<>"\" \n"];
-  WriteString[homout,"VevaciousMajorVersion=\"2\" VevaciousMinorVersion=\"0\" /> \n\n"];
-];
-
-WriteBlocksVpp:=Block[{i,j,temp,extra},
- extra=Intersection[LHBlockName/@Join[ParametersToSolveTadpoles,ParametersToSolveTadpolesLowScaleInput]];
- temp=Select[subout,Head[#]=!=RuleDelayed&];
- temp=Intersection[Table[temp[[i,2]],{i,1,Length[temp]}]  /. A_[b_Integer]->A /. A_[b_]->A];
- WriteString[homout,"<SlhaBlocks>\n"];
-  For[i=1,i<=Length[temp],
-     WriteString[homout,ToString[temp[[i]]]<>"\n"];
-   If[FreeQ[extra,temp[[i]]]==False,
-     WriteString[homout,"TREE"<>ToString[temp[[i]]]<>"\n"];
-     WriteString[homout,"LOOP"<>ToString[temp[[i]]]<>"\n"];
-    ];
-  i++;];
-  WriteString[homout,"</SlhaBlocks>\n\n"];
-];
-
 
 
 WriteTadpolesVevacious:=Block[{i,j},
@@ -493,17 +306,6 @@ For[i=1,i<=Length[SA`TadpoleEquationsHOM],
     i++;];
 WriteString[homout,"} \n"];
 WriteString[homout,"</tadpoles> \n \n \n"];
-];
-
-WritePotVpp:=Block[{i,j},
-      Print["    Writing tree level potential"];
-      WriteString[homout,"<TreeLevelPotential> \n"];
-      term=Expand[SA`PotentialVevacious];
-      For[i=1,i<=Length[term],
-        WriteString[homout,"("<>ToString[InputForm[term[[i]]]]<>") \n "];
-        If[i<Length[term],WriteString[homout," + "];];
-        i++;];
-      WriteString[homout,"\n</TreeLevelPotential>\n\n"];
 ];
 
 WritePotHM:=Block[{i,j,k,term,dim,knownvev},
@@ -550,72 +352,6 @@ SA`CurrentStates=ALL;
       WriteString[outHMpot,"\n</polynomial_part>\n\n"];
 
       ];
-
-WriteMassMatricesVpp[renscheme_]:= Block[{i,j,k,states=Last[NameOfStates],particlename,matrixname1,matrixname2,diracf,kind,type,extrafactor},      
-      Print["    Writing mass matrices for 1-loop eff. potential"];
-      For[i=1,i<=Length[MassMatrices[states]],
-        If[Length[DEFINITION[states][MatterSector][[i]][[2,1]]]==2,
-          kind="ComplexWeylFermionMassSquaredMatrix";
-          type="WeylFermion";
-          extrafactor=2;
-          particlename = 
-            DEFINITION[states][MatterSector][[i]][[2,1,1]]/.diracSubBack[
-                ALL];,
-          extrafactor=1;
-          particlename=
-            DEFINITION[states][MatterSector][[i]][[2,1]]/.diracSubBack[ALL];
-	    Switch[getTypeOld[particlename],
-			F, kind="ComplexWeylFermionMassSquaredMatrix";
-               type="WeylFermion";,
-			S, kind="RealBosonMassSquaredMatrix";
-               type="ScalarBoson";,
-			V, type="VectorBoson";
-		];
-        ];
-        WriteString[homout,"<"<>kind<>" "];
-        WriteString[homout,"SpinType=\""<>type<>"\"  "];
-        WriteString[homout, "ParticleName=\""<>StringReplace[ToString[particlename/.conj[x_]->x],{"{"->"","}"->""}]<>"\"  "];
-        WriteString[homout,"MultiplicityFactor=\""<>ToString[InputForm[extrafactor*getFactorVpp[DEFINITION[states][MatterSector][[i]]]]]<>"\" >     \n"];
-        If[getTypeOld[particlename]===F,
-		WriteMassMatrixVpp[MassMatricesFull[states][[i]].Transpose[conj[MassMatricesFull[states][[i]]]]];,
-        If[conj[particlename]===particlename,
-		  WriteMassMatrixVpp[MassMatricesFull[states][[i]]];,
-          WriteMassMatrixVpp[MakeMatrixReal[MassMatricesFull[states][[i]]]];
-        ];
-		];
-	    WriteString[homout,"</"<>kind<>"> \n \n"];
-        i++;];
-      
-      For[i=1,i<=Length[MassMatricesGauge[states]],
-        kind="RealBosonMassSquaredMatrix";
-        If[getType[DEFINITION[states][GaugeSector][[i,1,1]]]===V,
-          particlename=DEFINITION[states][GaugeSector][[i,2]];
-          WriteString[homout,"<"<>kind<>" "];
-          
-          WriteString[homout, "ParticleName=\""<>StringReplace[ToString[Intersection[particlename/.conj[x_]->x]],{"{"->"","}"->""}]<>"\"  "];
-          
-          WriteString[homout,"SpinType=\"GaugeBoson\" MultiplicityFactor=\"1\"> \n "];
-          WriteMassMatrixVpp[MassMatricesGauge[states][[i]]];,
-          WriteString[homout,"</"<>kind<>"> \n \n"];
-          ];
-        i++;];
-
-      ];
-
-MakeMatrixReal[matrix_]:=Block[{i,j,temp,res,a,subr,r1,r2},
-  res=0;
-  For[i=1,i<=Length[matrix],
-  res = res + matrix[[i,i]] a[i] conj[a[i]];
-  For[j=i+1,j<=Length[matrix],
-    res = res+matrix[[i,j]] a[i] conj[a[j]] + matrix[[j,i]] a[j] conj[a[i]];
-   j++;];
-  i++;];
-  
-  res = res //. a[x_]:>1/Sqrt[2](r1[x]+I*r1[x+Length[matrix]]) //. conj[r1[x_]]->r1[x];
-
-  Return[Table[D[D[res,r1[i]],r1[j]],{i,1,Length[matrix]*2},{j,1,Length[matrix]*2}]];
-
-];
 
 WriteMassMatricesHM[renscheme_]:=
     Block[{i,j,k,states=Last[NameOfStates],particlename,matrixname1,
@@ -730,29 +466,6 @@ WriteMassMatrixHM[matrix_]:=Block[{i,j,res,temp},
       
       ];
 
-WriteMassMatrixVpp[matrix_]:=Block[{i,j,res,temp},
-      temp=
-        N[Expand[
-            matrix /.RXi[a_]->0 //. sum[a_,b_,c_,d_]:>
-                          Sum[d,{a,b,c}] //.subVEVnames //. subVEVtoScalar //. subExtraTermsTree //.subout//. 
-                  Delta[__]->1 //. subout /. conj[x_]->x]];
-      
-      For[i=1,i<=Length[temp[[1]]],
-        For[j=1,j<=Length[temp[[1]]],
-          If[i=!=j || j<Length[temp[[1]]],
-            
-            WriteString[homout,
-               StringReplace[
-                    ToString[InputForm[temp[[i,j]]]],{" "->""}]<>"\n"];,
-            WriteString[homout,
-               StringReplace[
-                    ToString[InputForm[temp[[i,j]]]],{" "->""}]<>"\n"];
-            ];
-          j++;];
-        i++;];
-      
-      ];
-
 getFactorHM[def_]:=Block[{temp,res,particle,i,j},
       If[Length[def[[2,1]]]==2,
         particle=def[[2,1,1]]/.diracSubBack[ALL];,
@@ -777,28 +490,6 @@ getFactorHM[def_]:=Block[{temp,res,particle,i,j},
         V,res= 3/4*res*4;
         ];
       
-      Return[res];
-      
-      ];
-
-
-getFactorVpp[def_]:=Block[{temp,res,particle,i,j},
-      If[Length[def[[2,1]]]==2,
-        particle=def[[2,1,1]]/.diracSubBack[ALL];,
-        particle=def[[2,1]]/.diracSubBack[ALL];
-        ];
-      res=1;
-      For[i=1,i<=Length[Gauge],
-        If[FreeQ[BrokenSymmetries,i] && getType[particle]=!=V,
-          res=SA`DimensionGG[particle,i]*res ;
-          ];
-        i++;];
-      
-      res = res //. SA`DimensionGG->ONE /. ONE[a_,b_]->1;
-      
-      (* If[conj[particle]=!=particle && bar[particle]=!=particle,res=2*res;]; *)
-      
-           
       Return[res];
       
       ];

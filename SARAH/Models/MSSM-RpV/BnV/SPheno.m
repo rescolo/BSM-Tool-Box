@@ -39,37 +39,13 @@ InitializationValues = {
  {B[\[Mu]],0}
 };
 
-(*----------------------------------*)
-(* Information for SUSY scale input *)
-(*----------------------------------*)
-
-
-EXTPAR={{1,M1input},
-        {2,M2input},
-        {3,M3input},
-        {23,Muinput},
-        {25,TanBeta},
-        {26,MAinput}};
-
-
-ParametersToSolveTadpolesLowScaleInput = {mHd2,mHu2};
-
 BoundaryLowScaleInput={
- {MassB, M1input},
- {MassWB, M2input},
- {MassG, M3input},
- {\[Mu], Muinput},
- {B[\[Mu]], MAinput^2/(TanBeta + 1/TanBeta)},
  {vd,Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]},
  {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
 };
 
 
+
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
-
-IncludeFineTuning=True;
-FineTuningParameters={
-{m0,1/2},{m12,1/2},{Azero,1/2},{\[Mu],1/2},{B[\[Mu]],1/2},{Yu,1/2},{L3,1/2}
-};
 

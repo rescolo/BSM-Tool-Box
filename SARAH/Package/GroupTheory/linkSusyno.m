@@ -25,9 +25,9 @@
 
 InitSusyno:=Block[{},
 Print["******************************************************* "];
-Print["Loading ",StyleForm["Susyno","Section",FontSize->10]," functions for the handling of Lie Groups "];
+Print["Loading Susyno functions for the handling of Lie Groups "];
 Print["Based on Susyno v.2.0 by Renato Fonseca (1106.5016)"];
-Print["webpage: ",StyleForm["web.ist.utl.pt/renato.fonseca/susyno.html","Section",FontSize->10]];
+Print["webpage: web.ist.utl.pt/renato.fonseca/susyno.html"];
 Print["******************************************************* "];
 
 Get[ToFileName[$sarahSusynoDir,"LieGroups_SARAH.m"]];
@@ -48,7 +48,7 @@ Return[True];
 ];
 ];
 
-InvariantMatrixSusyno[group_,dim_]:=Block[{i,j,dimTemp={},subName={},dims,reps,result,factored,repsNC, temp, list, prefactor, subSU2={},conjugations={},sign},
+InvariantMatrixSusyno[group_,dim_]:=Block[{i,j,dimTemp={},subName={},dims,reps,result,factored,repsNC, temp, list, prefactor, subSU2={},conjugations={}},
 reps=DeleteCases[dim,{0},3];
 If[reps==={},
 Return[1];,
@@ -82,7 +82,6 @@ If[FreeQ[temp,CG]==False || FreeQ[temp,Delta]==False,
 SA`RnR++;
 Off[Part::"pspec"];
 ReleaseHold[Hold[Set[CG[group,repsNC][i1_,i2_,i3_,i4_],RHS]]/. RHS -> temp[[1]] ];
-ReleaseHold[Hold[Set[CG[group,Reverse/@repsNC][i1_,i2_,i3_,i4_],RHS]]/. RHS -> temp[[1]] ];
 ReleaseHold[Hold[Set[InvMat[SA`RnR-1][i1_,i2_,i3_,i4_],RHS]]/. RHS -> temp[[2]] ];
 On[Part::"pspec"];
 Return[InvMat[SA`RnR-1]];
@@ -108,14 +107,12 @@ result=Table[Coefficient[temp,a[i]b[j]c[k]],{i,1,dims[[1]]},{j,1,dims[[2]]},{k,1
 temp =2*temp;
 result=Table[Coefficient[temp,a[i]b[j]c[k] d[l]],{i,1,dims[[1]]},{j,1,dims[[2]]},{k,1,dims[[3]]},{l,1,dims[[4]]}];
 ];
-sign=Sign[DeleteCases[Flatten[result],0][[1]]];
-result=sign*result;
- SA`NonZeroEntries = Join[SA`NonZeroEntries,{{InvMat[SA`RnR], Take[Position[result,x_?((Abs[#]=!=0 && NumberQ[#])&)][[1]],{1,Length[reps]}]}}];
+(* Print[result,Position[result,x_?((Abs[#]=!=0 && NumberQ[#])&)][[1]]]; *)
+SA`NonZeroEntries = Join[SA`NonZeroEntries,{{InvMat[SA`RnR], Take[Position[result,x_?((Abs[#]=!=0 && NumberQ[#])&)][[1]],{1,Length[reps]}]}}];
 
 Off[Part::"pspec"];
 ReleaseHold[Hold[Set[LHS[a__Integer],RHS[[a]]]]/. LHS -> InvMat[SA`RnR] /. RHS -> result ];
 ReleaseHold[Hold[Set[LHS[a__Integer],RHS[a]]]/. RHS -> InvMat[SA`RnR] /. LHS -> CG[group,repsNC] ];
-ReleaseHold[Hold[Set[LHS[a__Integer],RHS[a]]]/. RHS -> InvMat[SA`RnR] /. LHS -> CG[group,Reverse/@repsNC] ];
 On[Part::"pspec"];
 SA`RnR++;
 SA`ClebschGordon=Join[SA`ClebschGordon,{{CG[group,repsNC],result}}];
@@ -293,8 +290,7 @@ NumberStates[x_,y_]:=NumberStates[x,y//. (a_[{b__}]->a)]/;FreeQ[y,List]==False;
 
 GenerateSusyNoInvariants:=Block[{i,j,temp,pos},
 If[SusynoLoaded==True,
-PrintDebug["Get information from Susyno"];
-DynamicInitGaugeG="Get information from Susyno";
+Print["Get information from Susyno"];
 SA`NeededInvariantsSusyno = Intersection[SA`NeededInvariantsSusyno];
 SA`NeededGeneratorsSusyno = Intersection[SA`NeededGeneratorsSusyno];
 SA`NonZeroEntries={};

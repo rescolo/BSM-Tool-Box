@@ -20,9 +20,7 @@
 
 
 CreateLagrangian[terms_,HC_,Overwrite_]:=Block[{i,j,pos,temp,fields,list={},coup,numerical,res,lVVV,lVVVV,rVVV,rVVVV,rPot,rKin},
-DynamicStatusAddTerms[terms]="initializing";
 If[SupersymmetricModel===False,InitChargeFactors;];
-DynamicStatusAddTerms[terms]="expand terms";
 If[Head[Expand[terms]]===Plus,
 TermList=(CreateTermList/@(List@@Expand[terms]));,
 TermList={CreateTermList[Expand[terms]]};
@@ -35,12 +33,12 @@ pCodeKin={20,2010,210,220,120};
 pCodePot={2000,200,300,400,2100};
 lKin = Select[TermList,(FreeQ[pCodeKin,getPartCode[#[[3]]]]==False)&];
 lPot = Select[TermList,(FreeQ[pCodePot,getPartCode[#[[3]]]]==False)&];
-DynamicStatusAddTerms[terms]="checking charge conservation";
+
 rVVV=Plus@@( MakeTerms/@lVVV);
 rVVVV=Plus@@(MakeTerms/@lVVVV);
 rPot=Plus@@(MakeTerms/@lPot);
 rKin=Plus@@(MakeTerms/@lKin);
-DynamicStatusAddTerms[terms]="All Done";
+
 If[Overwrite===True, 
 Return[{rVVV+rVVVV+rPot+rKin,rVVV,rVVVV,rPot,rKin}];,
 Return[{0,rVVV,rVVVV,rPot,rKin}];
@@ -100,6 +98,8 @@ Return[list];
 MakeTerms[entry_]:=Block[{i,i1,j,temp,part,particles,particleNr=1,fermNr=1,head,newParticle,pos,invFields={},coup,fields,withHead={},head2, headDer,lorIndex,Fincluded=False,IndStructure},
 fields=entry[[3]];
 (* coup = genTest[entry[[2]],fields,False]^entry[[4]]; *)
+
+
 AdditionalParametersLagrange = Join[AdditionalParametersLagrange,{entry[[2]]}];
 
 particles=1;
@@ -122,7 +122,6 @@ head2=getHead[SFields[[pos]]];
 invFields = Join[invFields,{Fields[[pos,3]]}];
 withHead = Join[withHead,{head2[head[Fields[[pos,3]]]]}];
 ];
-
 If[FreeQ[FFields,newParticle]==False,
 pos = Position[FFields,newParticle][[1,1]];
 head2=getHead[FFields[[pos]]];
@@ -140,11 +139,12 @@ particleNr++;
 ];
 i++;];
 
-PrintDebug["Checking charge Conservation of ", Dot@@entry[[3]]];
+Print["Checking charge Conservation of ", Dot@@entry[[3]]];
 
 SA`LagTermsNonSUSY=Join[SA`LagTermsNonSUSY,{withHead}];
 
 CheckLagTermChargeConservation[withHead];
+
 
 For[i1=1,i1<=Length[Global],
 SA`CheckGlobalLagLevel=True;
@@ -155,21 +155,19 @@ SA`CheckGlobalLagLevel=False;
 i1++;];
 
 IndStructure=MakeIndexStructureRGE[withHead];
-
 coup = genTest[entry[[2]],fields,False]^entry[[4]];
 
-(* adapted sign *)
 Switch[Plus@@(getPartCode[getBlank[#]&/@fields]),
 2100,
-SA`FFSlist=Join[SA`FFSlist,{{List@@(particles /. sum[a__]->1 /.A_[b_Integer]->A),-coup  IndStructure entry[[1]]}}];,
+SA`FFSlist=Join[SA`FFSlist,{{List@@(particles /. sum[a__]->1 /.A_[b_Integer]->A),coup  IndStructure entry[[1]]}}];,
 2000,
-SA`FFlist=Join[SA`FFlist,{{List@@(particles /. sum[a__]->1/.A_[b_Integer]->A),-coup  IndStructure entry[[1]]}}];,
+SA`FFlist=Join[SA`FFlist,{{List@@(particles /. sum[a__]->1/.A_[b_Integer]->A),coup  IndStructure entry[[1]]}}];,
 200,
-SA`SSlist=Join[SA`SSlist,{{List@@(particles /. sum[a__]->1),-coup  IndStructure entry[[1]]}}];,
+SA`SSlist=Join[SA`SSlist,{{List@@(particles /. sum[a__]->1),coup  IndStructure entry[[1]]}}];,
 300,
-SA`SSSlist=Join[SA`SSSlist,{{List@@(particles /. sum[a__]->1),-coup  IndStructure entry[[1]]}}];,
+SA`SSSlist=Join[SA`SSSlist,{{List@@(particles /. sum[a__]->1),coup  IndStructure entry[[1]]}}];,
 400,
-SA`SSSSlist=Join[SA`SSSSlist,{{List@@(particles /. sum[a__]->1),-coup  IndStructure entry[[1]]}}];
+SA`SSSSlist=Join[SA`SSSSlist,{{List@@(particles /. sum[a__]->1),coup  IndStructure entry[[1]]}}];
 ];
 
 If[FreeQ[entry[[1]],Delta] && FreeQ[entry[[1]],epsTensor] && FreeQ[entry[[1]],CG],
@@ -178,10 +176,10 @@ temp=entry[[1]]*coup*particles /. subFieldsOne;
 ];
 
 SA`LagrangianContractions=Join[SA`LagrangianContractions,{{Dot@@withHead,temp /. sum[a__]->1}}];
+
 If[invFields=!={},
 temp = SumOverExpandedIndizes[temp,invFields];
 ];
-
 
 If[Fincluded==True,
 temp = temp + (temp /. { A_?(#=!=SU&)[1]->A[2],A_?(#=!=SU&)[2]->A[1]});
@@ -189,10 +187,8 @@ temp = temp + (temp /. { A_?(#=!=SU&)[1]->A[2],A_?(#=!=SU&)[2]->A[1]});
 
 
 If[LagInputIncludeHC,
-temp = temp + (conj[temp]  /. {A_?(#=!=SU&)[1]->A[2],A_?(#=!=SU&)[2]->A[1],A_?(#=!=SU&)[3]->A[4],A_?(#=!=SU&)[4]->A[3]}  /. CG[a_,b_]:>CG[a,Reverse/@b])
+temp = temp + (conj[temp] /. {A_?(#=!=SU&)[1]->A[2],A_?(#=!=SU&)[2]->A[1],A_?(#=!=SU&)[3]->A[4],A_?(#=!=SU&)[4]->A[3]})
 ];
-
-
 
 Return[temp /. conj[gamma[a_]]->gamma[a]];
 
@@ -201,33 +197,3 @@ Return[temp /. conj[gamma[a_]]->gamma[a]];
 ];
 
 getHead[x_]:=If[Head[x]===conj, Return[conj];,Return[Evaluate];];
-
-DC[fieldIN_,ind1_,ind2_,lor_]:=Block[{},
-If[Head[fieldIN]===conj,
-head=conj;field=RE[fieldIN];,
-head=Evaluate; field=fieldIN;
-];
-pos=Position[SFields,field];
-If[pos==={},
-pos=Position[FFields,field];
-];
-pos=pos[[1,1]];
-Return[(Deri[head[part[getFull2[field],2]],lorentz/.subGC[lor]]+ head[part[getFull2[field],2]]KovariantDerivative[pos,ind1,ind2,lor])];
-];
-
-FS[i_Integer,i1_,i2_]:= (Deri[part[SGauge[[i]],i1],lorentz /. subGC[i2]] -Deri[part[SGauge[[i]],i2],lorentz /.subGC[i1]]);
-FS[i_Symbol,i1_,i2_]:= (Deri[part[SGauge[[Position[SGauge,i][[1,1]]]],i1],lorentz /. subGC[i2]] -Deri[part[SGauge[[Position[SGauge,i][[1,1]]]],i2],lorentz /.subGC[i1]]);
-
-del[x_Times,y_]:=del[x[[1]],y] Times@@ Take[List@@x,{2,-1}]+x[[1]] del[ Times@@ Take[List@@x,{2,-1}],y];
-del[x_Dot,y_]:=del[x[[1]],y].Dot@@ Take[List@@x,{2,-1}]+x[[1]].del[Dot@@ Take[List@@x,{2,-1}],y];
-del[x_sum,y_]:=0;
-del[x_Rational,y_]:=0;
-del[x_Integer,y_]:=0;
-del[x_Complex,y_]:=0;
-del[x_Sin,y_]:=0;
-del[x_Cos,y_]:=0;
-del[x_Tan,y_]:=0;
-del[x_ArcTan,y_]:=0;
-del[x_ArcSin,y_]:=0;
-del[x_ArcCos,y_]:=0;
-del[x_,y_]:=Deri[x,y] /; (FreeQ[SFields,RE[x]]===False || FreeQ[FFields,RE[y]]===False);

@@ -3,10 +3,10 @@ Off[General::spell]
 Model`Name = "SeesawII";
 Model`NameLaTeX ="MSSM with Seesaw II";
 Model`Authors = "F.Staub";
-Model`Date = "2014-09-05";
+Model`Date = "2012-09-01";
 
 (* 2013-09-01: changing to new conventions for Superfields, Superpotential and global symmetries *)
-(* 2014-09-05: changed parameter names in superpotential to prevent naming conflicts *)
+
 
 (*-------------------------------------------*)
 (*   Particle Content*)
@@ -54,7 +54,7 @@ SuperPotential = Yu u.q.Hu - Yd d.q.Hd -Ye e.l.Hd + \[Mu] Hu.Hd \
                    + Yt/Sqrt[2] epsTensor[lef1,lef2] epsTensor[lef2b,lef3] l.t.l \
                    + Ys/Sqrt[2] d.s.d + Yz d.z.l + L1/Sqrt[2] epsTensor[lef1,lef2] epsTensor[lef2b,lef3] Hd.t.Hd \
                    + L2/Sqrt[2] epsTensor[lef1,lef2] epsTensor[lef2b,lef3] Hu.tb.Hu \
-                   + MTT epsTensor[lef1,lef2b] epsTensor[lef1b,lef2] t.tb + MZZ z.zb+ MSS s.sb +WOp/2 l.Hu.l.Hu;
+                   + MT epsTensor[lef1,lef2b] epsTensor[lef1b,lef2] t.tb + MZ z.zb+ MS s.sb +WOp/2 l.Hu.l.Hu;
 
 (*-------------------------------------------*)
 (* Integrate Out or Delete Particles         *)
@@ -108,9 +108,7 @@ DEFINITION[EWSB][GaugeSector] =
 
 DEFINITION[EWSB][VEVs]= 
   {{SHd0, {vd, 1/Sqrt[2]}, {sigmad, \[ImaginaryI]/Sqrt[2]},{phid, 1/Sqrt[2]}},
-   {SHu0, {vu, 1/Sqrt[2]}, {sigmau, \[ImaginaryI]/Sqrt[2]},{phiu, 1/Sqrt[2]}},
-   {SvL,  {0,0}, {sigmaL, \[ImaginaryI]/Sqrt[2]},{phiL,1/Sqrt[2]}}
-};
+   {SHu0, {vu, 1/Sqrt[2]}, {sigmau, \[ImaginaryI]/Sqrt[2]},{phiu, 1/Sqrt[2]}}};
 
 
  
@@ -120,8 +118,7 @@ DEFINITION[EWSB][MatterSector]=
 {    {{SdL, SdR}, {Sd, ZD}},
      {{SuL, SuR}, {Su, ZU}},
      {{SeL, SeR}, {Se, ZE}},
-     {{sigmaL}, {SvIm, ZVI}},
-     {{phiL},   {SvRe, ZVR}},
+     {{SvL}, {Sv, ZV}},
      {{phid, phiu}, {hh, ZH}},
      {{sigmad, sigmau}, {Ah, ZA}},
      {{SHdm,conj[SHup]},{Hpm,ZP}},

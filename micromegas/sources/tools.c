@@ -1,6 +1,5 @@
 #include"micromegas.h"
 #include"micromegas_aux.h"
-#include"../CalcHEP_src/c_source/ntools/include/vegas.h"
 
 /* Numerical recipes codes */
 
@@ -54,11 +53,11 @@ static int rkqc(double * y, double * dydx, int n, double * x, double htry,
       for (i=0;i<n;i++) 
       {  double temp;
          ytemp[i]=y[i]-ytemp[i];
-         if(!finite( ytemp[i])) { errmax=ytemp[i]; break;} 
+         if(!isfinite( ytemp[i])) { errmax=ytemp[i]; break;} 
          temp= fabs(ytemp[i]/yscal[i]);
 	 if (errmax < temp) errmax=temp;
       }
-      if(!finite(errmax)){ h=h/10; continue;}
+      if(!isfinite(errmax)){ h=h/10; continue;}
       errmax /= eps;
 
       if (errmax <= 1.0) 
@@ -77,7 +76,7 @@ static int rkqc(double * y, double * dydx, int n, double * x, double htry,
    return 0;
 }
 
-#define MAXSTP 10000000
+#define MAXSTP 100000
 #define TINY 1.0e-30
 
 
@@ -284,26 +283,13 @@ double polint2(double x, int n,  double *xa, double *ya)
    return polintN(x,2,xa+shift, ya+shift);
 }
 
-double polint2Exp(double x, int n,  double *xa, double *ya)
-{ int shift=leftXN(2,n, xa, x);
-  double  x1=xa[shift], x2=xa[shift+1],y1=ya[shift],y2=ya[shift+1];
-  double alpha= (x-x1)/(x2-x1);
-  
-  if(y1>0 && y2>0) return  pow(y1,1-alpha)*pow(y2,alpha);
-  return  y1*(1-alpha)+y2*alpha;  
-//   return polintN(x,2,xa+shift, ya+shift);
-
-}
-
-
-
 
 double polint3(double x, int n,  double *xa, double *ya)
-{ int shift=leftXN(3,n, xa, x);
+{ int shift=leftX(n, xa, x);
   double ar;
-  ar=polintN(x,3,xa+shift, ya+shift);
-return ar;  
+  ar=polintN(x,3,xa+shift, ya+shift); 
   if(shift==0) return ar;
+  if(shift==n-3 &&(  (x> xa[n-2] && xa[0]<xa[n-1])|| (x<xa[n-2] && xa[0]>xa[n-1]) )) return ar;
   shift--;
   return 0.5*( ar+ polintN(x,3,xa+shift, ya+shift));
 }
@@ -328,10 +314,16 @@ static void ins(int k,  double x, double y, int*N,double *xa,double *ya)
    xa[k]=x;ya[k]=y; (*N)++;        
 }
 
-int buildInterpolation(double (*Fun)(double), double x1,double x2, double eps,double delt, int*N_, double**xa_, double**ya_)
-{  int i,cnt,N,k;
-   double *xa,*ya,dx0;
-   dx0=fabs(x2-x1)*delt;   
+void printInterpolation(int N,double *xa, double * ya)
+{ int i; for(i=0;i<N;i++) printf("{ %E %E}\n",xa[i],ya[i]);
+  printf("\n");
+}
+
+int buildInterpolation( double (*Fun)(double), double x1,double x2, double eps,
+int * N_, double ** xa_, double **ya_)
+{  int i,cnt,N,k,dx0;
+   double *xa,*ya;
+   dx0=fabs(x2-x1)*0.01;      
    N=5;
    xa=malloc(N*sizeof(double));
    ya=malloc(N*sizeof(double));
@@ -341,10 +333,10 @@ int buildInterpolation(double (*Fun)(double), double x1,double x2, double eps,do
    for(cnt=1;cnt;)
    { cnt=0; 
      for(i=0; i<N; i++)
-     {  double x=xa[i], y=ya[i], yy;  
+     {  double x=xa[i], y=ya[i], yy;
         if(i<N-1 && fabs(xa[i+1]-xa[i]) < dx0) continue; else
         if(i>0   && fabs(xa[i]-xa[i-1]) < dx0) continue;
-         
+                           
         del(i,&N,xa,ya);
         yy=polint4(x, N, xa, ya);
         ins(i, x, y, &N,xa, ya);
@@ -353,16 +345,18 @@ int buildInterpolation(double (*Fun)(double), double x1,double x2, double eps,do
            cnt=1;
            xa=realloc(xa,sizeof(double)*(N+1));
            ya=realloc(ya,sizeof(double)*(N+1));
-                if(i==0)   k=1;  
-           else if(i==N-1) k=N-1;  
+           
+           if(i==0)   k=1;  
+           else if(i==N-1) k=N-1;
            else if(fabs(xa[i-1]-xa[i])< fabs(xa[i]-xa[i+1])) k=i+1;
            else  k=i;
-           
-           x=(xa[k-1]+xa[k])/2;
+                                                            
+           x=(xa[k-1]+xa[k])/2;                                                                        
            y=Fun(x); 
            ins(k,x,y,&N,xa,ya);
            i++;     
-        }  
+        }
+         
      }
    }   
    *N_=N;
@@ -433,6 +427,14 @@ double MaxGapLim(double x, double mu)
   return C0;   
 }
 
+/*
+int main(void)
+{ double x;
+  for(x=0.00001; x<1; x*=1.5)
+  printf("x=%e bessk2=%e\n",x,  bessk2(x)*x*x); 
+
+}
+*/
 
 #define BUFFSIZE 500
 
@@ -535,39 +537,3 @@ double amoeba(double *p, double * y, int ndim, double (*f)(double *),
    return y[ihi];
 }
 /*========================== end of amoeba ================*/
-
-#define MAXSTEP 15
-double vegas_chain(int ndim, double (*Integrand)(double*, double),
-int N0, double Nfact, double eps,double * dI)   
-{ vegasGrid *vegPtr=NULL;
-  int k,l;
-  double ti[MAXSTEP],dti[MAXSTEP];
-  vegPtr=vegas_init(ndim,50);
-  double ii,dii,chi2;
-  
-  for(k=0;k<MAXSTEP;k++)
-  { double s0=0,s1=0,s2=0; 
-    vegas_int(vegPtr, N0 , 1.5, Integrand, ti+k, dti+k);
-    printf("ti=%E dti=%E\n",ti[k], dti[k]);
-    if(dti[k]==0) break;
-    for(l=k;l>=k/2;l--)
-    { s0+=1/(dti[l]*dti[l]);
-      s1+=ti[l]/(dti[l]*dti[l]);
-      s2+=ti[l]*ti[l]/(dti[l]*dti[l]);
-      if(l!=k)
-      { 
-        ii=s1/s0;
-        dii=1/sqrt(s0);
-        chi2=(s2-s1*s1/s0)/(k-l+1);
-        if(chi2> 1 )dii*=sqrt(chi2);
-//printf("ii=%e dii=%e chi2/N=%E\n", ii,dii,chi2);         
-        if(dii<eps*fabs(ii)) break;
-      }  
-    }
-    if(k && dii<eps*fabs(ii)) break;
-    N0*=Nfact;    
-  }  
-  vegas_finish(vegPtr);
-  if(dI) *dI=dii;
-  return ii;
-}  

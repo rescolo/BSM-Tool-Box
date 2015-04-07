@@ -46,9 +46,7 @@
     do k= 1,maxden
      nbn1(k)= comb(k,n1)
     enddo
-    ierr= -1
     allocate  (bn1(1:maxden,maxden,nbn1(maxden)), stat=ierr)
-    if (ierr.ne.0) STOP "Not enough memory to allocate bn1"
     bn1= -1
     do kden= 1,maxden
      kcount= 0
@@ -70,9 +68,7 @@
     do k= 2,maxden
      nbn2(k)= comb(k,n2)
     enddo
-    ierr= -1
     allocate  (bn2(2:maxden,maxden,nbn2(maxden)), stat=ierr)
-    if (ierr.ne.0) STOP "Not enough memory to allocate bn2"
     bn2= -1
     do kden= 2,maxden
      kcount= 0
@@ -95,9 +91,7 @@
     do k= 3,maxden
      nbn3(k)= comb(k,n3)
     enddo
-    ierr= -1
     allocate  (bn3(3:maxden,maxden,nbn3(maxden)), stat=ierr)
-    if (ierr.ne.0) STOP "Not enough memory to allocate bn3"
     bn3= -1
     do kden= 3,maxden
      kcount= 0
@@ -121,9 +115,7 @@
     do k= 4,maxden
      nbn4(k)= comb(k,n4)
     enddo
-    ierr= -1
     allocate  (bn4(4:maxden,maxden,nbn4(maxden)), stat=ierr)
-    if (ierr.ne.0) STOP "Not enough memory to allocate bn4"
     bn4= -1
     do kden= 4,maxden
      kcount= 0

@@ -21,7 +21,7 @@
 
 GenerateRunRGE:=Block[{i,j,k,l,j2,temp},
 
-Print["  Write 'RunRGE'"];
+Print["Write RunRGE"];
 
 WriteString[sphenoSugra,"Subroutine RunRGE(kont, delta0, g1A, g1C, mGUT)\n"];
 

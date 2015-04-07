@@ -44,12 +44,7 @@ ParameterDefinitions = {
 {ZD,        { Description -> "Down-Squark-Mixing-Matrix" }},             
 {ZU,        { Description -> "Up-Squark-Mixing-Matrix"}},             
 {ZE,        { Description -> "Slepton-Mixing-Matrix"}}, 
-{ZVR,        { LaTeX -> "Z^R",
-              OutputName -> ZVR,
-              LesHouches -> SNUMIXR }},
-{ZVI,        { LaTeX -> "Z^I",
-              OutputName -> ZVI,
-              LesHouches -> SNUMIXI }},
+{ZV,        { Description->"Sneutrino Mixing-Matrix"}},   
 {ZH,        { Description->"Scalar-Mixing-Matrix"}},
 {ZA,        { Description->"Pseudo-Scalar-Mixing-Matrix"}},
 {ZP,        { Description->"Charged-Mixing-Matrix"}},                      
@@ -76,32 +71,32 @@ ParameterDefinitions = {
    
 
 
-{MTT,       { LaTeX -> "M_T",
+{MT,       { LaTeX -> "M_T",
              OutputName ->  MTII,
              LesHouches ->{MSEESAW, 1}
              }},  
              
-{B[MTT],       { LaTeX -> "B_T",
+{B[MT],       { LaTeX -> "B_T",
              OutputName ->  BMTII,
 	     LesHouches ->{BSEESAW, 1}
              }},  
              
-{MZZ,       { LaTeX -> "M_Z",
+{MZ,       { LaTeX -> "M_Z",
              OutputName ->  MZII,
              LesHouches ->{MSEESAW, 2}
              }},  
              
-{B[MZZ],       { LaTeX -> "B_Z",
+{B[MZ],       { LaTeX -> "B_Z",
              OutputName ->  BMZII,
 	     LesHouches ->{BSEESAW, 2}
              }},   
              
-{MSS,       { LaTeX -> "M_S",
+{MS,       { LaTeX -> "M_S",
              OutputName ->  MSII,
 	     LesHouches ->{MSEESAW, 3}
              }},  
              
-{B[MSS],       { LaTeX -> "B_S",
+{B[MS],       { LaTeX -> "B_S",
              OutputName ->  BMSII,
 	     LesHouches ->{BSEESAW, 3}
              }},

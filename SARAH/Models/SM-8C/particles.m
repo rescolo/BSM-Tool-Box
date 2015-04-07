@@ -56,8 +56,7 @@ ParticleDefinitions[GaugeES] = {
      {Oc,     { Description -> "Color Octet", 
                  PDG -> {95},
                  LaTeX -> {"O","O^*"},
-                 OutputName -> {"O","Oc"},
-                 FeynArtsNr -> 10
+                 OutputName -> {"O","Oc"}
                  }},                                                  
 
 

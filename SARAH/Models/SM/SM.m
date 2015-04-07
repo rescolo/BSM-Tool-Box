@@ -3,12 +3,11 @@ Off[General::spell]
 Model`Name = "SM";
 Model`NameLaTeX ="Standard Model";
 Model`Authors = "F.Staub";
-Model`Date = "2014-11-06";
+Model`Date = "2013-09-01";
 
 (* 2013-01-24: changed normalization of lambda term to convention of hep-ph/0207271 *)
 (* 2013-06-24: using new name conventions (without inital "S" and "F" for scalar and matter fields) *)
 (* 2013-09-01: changing to new conventions for FermionFields/MatterFields *)
-(* 2014-11-06: Changed sign in Lagrangian to fit standard conventions *)
 
 
 
@@ -49,8 +48,8 @@ DEFINITION[GaugeES][LagrangianInput]= {
 };
 
 
-LagNoHC = mu2 conj[H].H - 1/2 \[Lambda] conj[H].H.conj[H].H;
-LagHC =  -(Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q);
+LagNoHC = -mu2 conj[H].H + 1/2 \[Lambda] conj[H].H.conj[H].H;
+LagHC =  Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q;
 
 
 

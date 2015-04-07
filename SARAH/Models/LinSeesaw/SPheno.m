@@ -8,8 +8,6 @@ MINPAR={{1,m0},
 
 RealParameters = {TanBeta,m0};
 
-ConditionGUTscale = g1 == g2;
-
 ParametersToSolveTadpoles = {\[Mu],B[\[Mu]]};
 
 RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;

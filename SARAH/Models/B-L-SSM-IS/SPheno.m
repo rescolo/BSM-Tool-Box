@@ -13,7 +13,7 @@ ParametersToSolveTadpoles = {B[\[Mu]],B[MuP],\[Mu],MuP};
 RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
 RenormalizationScale = MSu[1]*MSu[6];
 
-UseHiggs2LoopMSSM = True;
+UseHiggs2LoopMSSM = False;
 
 ConditionGUTscale = (g1*gBL-g1BL*gBL1)/Sqrt[gBL^2-gBL1^2] == g2;
 
@@ -94,12 +94,23 @@ InitializationValues = {
  }
 
 
+ConditionForMassOrdering={
+{Ah,
+"If ((Abs(ZA(1,1)**2)+Abs(ZA(1,2)**2)).le.(Abs(ZA(1,3)**2)+Abs(ZA(1,4)**2))) Then \n
+ MAh2temp = MAh2 \n
+ ZAtemp = ZA \n
+ ZA(1,:) = ZAtemp(2,:) \n
+ ZA(2,:) = ZAtemp(1,:) \n
+ MAh2(2) = MAh2temp(1) \n
+ MAh2(1) = MAh2temp(2) \n
+End If \n" }
+};
 
 
 
 ListDecayParticles = Automatic;
 ListDecayParticles3B =Automatic;
 
-UseBoundarySUSYatEWSB = True;
+
 
 

@@ -7,8 +7,8 @@
 #include "nType.h"
 
 extern double alpha_2(double);
-typedef REAL (DNN)(double, REAL *,REAL*,int *);
-typedef REAL (FNN)(double,REAL*,REAL*,COMPLEX*,REAL*,REAL*);
+typedef REAL (DNN)(double, REAL *,int *);
+typedef REAL (FNN)(double,REAL*,REAL*,COMPLEX*,REAL*);
 
 extern  double Fmax;
 extern  REAL Helicity[2];

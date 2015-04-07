@@ -61,7 +61,7 @@ CheckYukawaScheme;
 NewMasses=DeleteCases[DeleteCases[NewMasses,_?(MemberQ[{SPhenoMass[Electron],SPhenoMass[TopQuark],SPhenoMass[BottomQuark],SPhenoMass[VectorW],SPhenoMass[VectorZ],SPhenoMass[Neutrino]},#]&),3],x:{a_}];
 
 
-Print["  Write 'BoundaryEW'"];
+Print["Write BoundaryEW"];
 
 MakeSubroutineTitle["BoundaryEW",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{"i_run"},{"delta0","gMZ","kont"},sphenoSugra];
 
@@ -107,10 +107,8 @@ WriteString[sphenoSugra,"Iname=Iname+1\n"];
 WriteString[sphenoSugra,"NameOfUnit(Iname)='BoundaryEW'\n"];
 
 WriteString[sphenoSugra,"tanb = tanbetaMZ \n"];
-If[(ThetaW /.subNumDependences)===ThetaW,
-WriteString[sphenoSugra,"sinW2 = 1._dp - mW2/mZ2 \n"]; ,
+(* WriteString[sphenoSugra,"sinW2 = 1._dp - mW2/mZ2 \n"]; *)
 WriteString[sphenoSugra,"sinW2 = "<>SPhenoForm[Sin[ThetaW /.subNumDependences/.Mass[VWm]->mW/.Mass[VZ]->mZ]^2]<>" \n"];
-];
 WriteString[sphenoSugra,"test = SetRenormalizationScale(mZ2) \n"];
 
 
@@ -763,7 +761,7 @@ gSSd=ToString[2 getGen[BottomQuark]];
 gSSu=ToString[2 getGen[TopQuark]];
 gSSe=ToString[2 getGen[Electron]];
 
-Print["  Write 'BoundaryEW'"];
+Print["Write BoundaryEW"];
 
 MakeSubroutineTitle["BoundaryEW",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{"i_run"},{"delta0","gMZ","kont"},sphenoSugra];
 
@@ -850,10 +848,8 @@ WriteString[sphenoSugra,"Iname=Iname+1\n"];
 WriteString[sphenoSugra,"NameOfUnit(Iname)='BoundaryEW'\n"];
 
 WriteString[sphenoSugra,"tanb = tanbetaMZ \n"];
-If[(ThetaW /.subNumDependences)===ThetaW,
- WriteString[sphenoSugra,"sinW2 = 1._dp - mW2/mZ2 \n"];,
+(* WriteString[sphenoSugra,"sinW2 = 1._dp - mW2/mZ2 \n"]; *)
 WriteString[sphenoSugra,"sinW2 = "<>SPhenoForm[Sin[ThetaW /.subNumDependences/.Mass[VWm]->mW/.Mass[VZ]->mZ]^2]<>" \n"];
-];
 WriteString[sphenoSugra,"test = SetRenormalizationScale(mZ2) \n"];
 
 
@@ -1552,7 +1548,7 @@ TransposedYukawaScheme=False;
 
 
 GenerateBoundaryEWnonSUSY:=Block[{i,j, posZ, posW, massW, massZ, couplingsW, couplingsZ},
-Print["  Write 'BoundaryEW'"];
+Print["Write BoundaryEW"];
 
 MakeSubroutineTitle["BoundaryEW",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{"i_run"},{"delta0","gMZ","kont"},sphenoSugra];
 

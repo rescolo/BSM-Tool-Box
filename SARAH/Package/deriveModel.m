@@ -33,16 +33,6 @@ Options[MakeAll]={ReadLists->False,IncludeSPheno->True, IncludeFeynArts->True, I
 MakeAll[opt___]:=MakeAllOutput[ReadLists /. {opt} /. Options[MakeAll],IncludeSPheno /. {opt} /. Options[MakeAll],IncludeFeynArts /. {opt} /. Options[MakeAll],IncludeCalcHep /. {opt} /. Options[MakeAll],IncludeTeX /. {opt} /. Options[MakeAll],IncludeWHIZARD /. {opt} /. Options[MakeAll],IncludeUFO /. {opt} /. Options[MakeAll],
 Eigenstates /. {opt} /. Options[MakeAll]];
 MakeAllOutput[ReadL_,IncSPheno_,IncFA_, IncCH_, IncTeX_,IncWO_,IncUFO_,ESin_]:=Block[{ES},
-
-Print[StyleForm["Create output for: ","Section",FontSize->14]];
-Print[StyleForm[" \[Bullet] SPheno ","Section",FontSize->10]];
-Print[StyleForm[" \[Bullet] CalcHep (including MicrOmegas) ","Section",FontSize->10]];
-Print[StyleForm[" \[Bullet] WHIZARD/Omega ","Section",FontSize->10]];
-Print[StyleForm[" \[Bullet] FeynArts ","Section",FontSize->10]];
-Print[StyleForm[" \[Bullet] MadGraph 5 (UFO format) ","Section",FontSize->10]];
-Print[StyleForm[" \[Bullet] LaTeX ","Section",FontSize->10]];
-
-(*
 Print["************************************************************"];
 Print["Starting the output for "];
 Print["  - SPheno "];
@@ -51,7 +41,7 @@ Print["  - WHIZARD/Omega "];
 Print["  - FeynArts"];
 Print["  - MadGraph 5 (UFO format)"];
 Print["************************************************************"];
-*)
+
 If[ESin===Automatic, ES=Last[NameOfStates];,ES=ESin;];
 
 SA`CurrentStates=ES;
@@ -251,9 +241,7 @@ i++;];
 
 MakeVertexList[ES_,opt___]:=MakeVertexListFun[ES, effectiveOperators/.{opt}/.Options[MakeVertexList],SixParticleInteractions/.{opt}/.Options[MakeVertexList], VerticesForLoops /.{opt}/.Options[MakeVertexList],SimplifySums /.{opt}/.Options[MakeVertexList],GenericClasses /.{opt}/.Options[MakeVertexList]];
 
-MakeVertexListFun[ES_,effectiveOperators_,SixParticleInteractions_, VerticesForLoops_,SimplifySums_,classes_]:=Block[{s1,s2,s3,s4,s5,s6,fin,iteration,starttime},
-
-starttime=TimeUsed[];
+MakeVertexListFun[ES_,effectiveOperators_,SixParticleInteractions_, VerticesForLoops_,SimplifySums_,classes_]:=Block[{s1,s2,s3,s4,s5,s6,fin,iteration},
 
 If[InitalizedVertexCalculaton=!=ES, 
 massless=Massless[ES];
@@ -267,12 +255,9 @@ EigenstateName=ES;
 
 SA`CurrentStates=ES;
 
-(*
 Print["-----------------------"];
 Print["Calculate All Vertices"];
 Print["-----------------------"];
-*)
-Print[StyleForm["Calculate all vertices","Section",FontSize->12]];
 
 InitAutomaticCalc[ES];
 
@@ -402,15 +387,14 @@ Put[SA`VertexList[sum][ITypes[[i,1]]],ToFileName[$sarahCurrentVerticesDir,"Verte
 i++;];
 ];
 
-Print["All vertices calculated. (Time needed: ",TimeUsed[]-starttime,"s)"];
-Print["The vertices are saved in ",StyleForm[ToString[$sarahCurrentVerticesDir ],"Section",FontSize->10]];
+Print["Done... all vertices are saved in ",$sarahCurrentVerticesDir ];
 ];
 
 
 InitAutomaticCalc[ES_]:=Block[{},
 
 (* subNonFields = {sum[a_,b_,c_]->1,  Delta[a_,b_]->1,epsTensor[a__]->1, g[a__]->1, Sig[a__]->1,Lam[a__]->1, Mom[a_,b_]->1, T[a_]-> 1, B[a_]->1, L[a_]->1,gamma[a_]->1 ,fSU2[a__]->1, fSU3[a__]->1, pmue[a__]->a,RXi[a__]->1, Mass[x_]->1,Inv[a__][b__]->1};  *)
-subNonFields = {sum[a_,b_,c_]->1,  Delta[a_,b_]:>Random[],epsTensor[a__]:>Random[], g[a__]->1, Sig[a__]:>Random[],Lam[a__]:>Random[], Mom[a_,b_]:>Random[], T[a_]-> 1, B[a_]->1, L[a_]->1,gamma[a_]:>Random[] ,fSU2[a__]->1, fSU3[a__]->1, pmue[a__]->a,RXi[a__]->1, Mass[x_]->1,Inv[a__][b__]->1,Generator[a__][b__]:>Random[], CG[a__][b__]:>Random[], FST[a__][b__]:>Random[], TA[a__]:>Random[], LorentzProduct[a___]:>Random[]}; 
+subNonFields = {sum[a_,b_,c_]->1,  Delta[a_,b_]:>Random[],epsTensor[a__]:>Random[], g[a__]->1, Sig[a__]:>Random[],Lam[a__]:>Random[], Mom[a_,b_]->1, T[a_]-> 1, B[a_]->1, L[a_]->1,gamma[a_]->1 ,fSU2[a__]->1, fSU3[a__]->1, pmue[a__]->a,RXi[a__]->1, Mass[x_]->1,Inv[a__][b__]->1,Generator[a__][b__]:>Random[], CG[a__][b__]:>Random[], FST[a__][b__]:>Random[], TA[a__]:>Random[]}; 
 subPar=Flatten[{T[a___]->1, B[a__]->1,L[a___]->1,Table[parameters[[i,1]][b__][a__]->1,{i,1,Length[parameters]}],Table[parameters[[i,1]][a__]->1,{i,1,Length[parameters]}],Table[parameters[[i,1]]->1,{i,1,Length[parameters]}]}] /. conj[x_]->x;
 
 
@@ -480,43 +464,38 @@ A,
 	If[Head[x]===conj, Return[Ab];,Return[An]];
 ];
 
-GenericVertices[Type_,Eigenstates_]:=Block[{i,list,nonCC={},res,all={},startedtime},
+GenericVertices[Type_,Eigenstates_]:=Block[{i,list,nonCC={},res,all={}},
 Switch[Type,
 SSS,
-      Print[StyleForm["      Three Scalar - Interactions","Section",FontSize->12]];,
+      Print["      Three Scalar - Interaction"];,
 SSV,
-      Print[StyleForm["      Two Scalar - One Vector Boson - Interactions","Section",FontSize->12]];,
-SVV,
-      Print[StyleForm["      One Scalar - Two Vector Boson - Interactions","Section",FontSize->12]];,
+      Print["      Two Scalar - One Vector Boson - Interaction"];,
 SSSS,
-      Print[StyleForm["      Four Scalar - Interactions","Section",FontSize->12]];,
+      Print["      Four Scalar - Interaction"];,
 SSVV,
-      Print[StyleForm["      Two Scalar - Two Vector Boson - Interactions","Section",FontSize->12]];,
+      Print["      Two Scalar - Two Vector Boson - Interaction"];,
 FFS,
-      Print[StyleForm["      Two Fermion - One Scalar - Interactions","Section",FontSize->12]];,
+      Print["      Two Fermion - One Scalar - Interaction"];,
 FFV,
-      Print[StyleForm["      Two Fermion - One Vector Boson - Interactions","Section",FontSize->12]];,
+      Print["      Two Fermion - One Vector Boson - Interaction"];,
 VVV,
-      Print[StyleForm["      Three Vector Boson - Interactions","Section",FontSize->12]];,
+      Print["      Three Vector Boson - Interaction"];,
 VVVV,
-      Print[StyleForm["      Four Vector Boson - Interactions","Section",FontSize->12]];,
+      Print["      Four Vector Boson - Interaction"];,
 GGS,
-      Print[StyleForm["      Two Ghost - One Scalar - Interactions","Section",FontSize->12]];,
+      Print["      Two Ghost - One Scalar - Interaction"];,
 GGV,
-      Print[StyleForm["      Two Ghost - One Vector Boson - Interactions","Section",FontSize->12]];,
+      Print["      Two Ghost - One Vector Boson - Interaction"];,
 ASS,
-      Print[StyleForm["      Two Scalar - One Auxiliary - Interactions","Section",FontSize->12]];,
+      Print["      Two Scalar - One Auxiliary - Interaction"];,
 FFSS,
-      Print[StyleForm["      Two Femrion - Two Scalar - Interactions","Section",FontSize->12]];,
+      Print["      Two Femrion - Two Scalar - Interaction"];,
 FFFF,
-      Print[StyleForm["      Four Fermion - Interactions","Section",FontSize->12]];,
+      Print["      Four Fermion - Interaction"];,
 FFVV,
-      Print[StyleForm["      Two Fermion - Two Vector Boson - Interactions","Section",FontSize->12]];
+      Print["      Two Fermion - Two Vector Boson - Interaction"];
 
 ];
-
-startedtime=TimeUsed[];
-
 If[Head[VertexListNonCC]=!=List,VertexListNonCC={};];
 If[AtomQ[LAG[Type][Eigenstates] ]=!=True,
 If[((List@@Expand[LAG[Type][Eigenstates] /.subNonFields  /. subGeneric[Type]]  )/.subPar /.A_[{x__}]->A )===0,
@@ -531,16 +510,7 @@ list = SortCoup/@list;
 
 SA`listSave=list;
 
-timestamp=StringJoin[ToString/@Date[]];
-progressNrGV[Type]=0;
-progressCurrentGV[Type]={A,B,C};
-Print["     Found ",Length[list]," potential vertices. Calculating ",Dynamic[progressNrGV[Type]] ,"/",Length[list]". (",Dynamic[progressCurrentGV[Type]],")"];
-If[PrintDebugInformation,Print[Length[list],"  ",list]];
-
 For[i=1,i<=Length[list],
-progressNrGV[Type]=i;
-progressCurrentGV[Type]=list[[i]];
-If[PrintDebugInformation,Print[i,"  ",list[[i]]]];
 res=Vertex[list[[i]]];
 If[Type===FFV || Type ===SSV || Type ===SVV  || Type ===SSVV,
 If[Select[Simplify/@(Table[res[[j,1]],{j,2,Length[res]}] /. subDependences),(#1=!=0)&]=!={},
@@ -573,7 +543,6 @@ VertexListNonCC = Join[VertexListNonCC,{{res,Type}}];
 ];
 ];
 i++;];
-progressCurrentGV[Type]="All done in "<>ToString[TimeUsed[]-startedtime]<>"s";
 ];,
 SA`VertexList[temp][Type]={};
 ];

@@ -24,7 +24,7 @@ betaFuncGauge1Lns[nr1_,nr2_]:=If[Gauge[[nr1,2]]===U[1],betaFuncGauge1LnsU1[nr1,n
 betaFuncGauge2Lns[nr1_,nr2_]:=If[Gauge[[nr1,2]]===U[1],betaFuncGauge2LnsU1[nr1,nr2],betaFuncGauge2LnsNonU1[nr1]];
 
 betaFuncGauge1LnsU1[nr1_,nr2_]:=Sum[-SA`gCoup[nr1,gSUM]*(  -4/3 kF SA`DynkinF[rep,gSUM,nr2] - 1/6 SA`DynkinS[rep,gSUM,nr2]),{gSUM,1,AnzahlGauge}];
-betaFuncGauge2LnsU1[nr1_,nr2_]:=-Sum[SA`gCoup[nr1,gSUM]*(-Sum[(kF*4*SA`CasimirDynkinF[rep,gSUM,gSUM2,nr2]+2*SA`CasimirDynkinS[rep,gSUM,gSUM2,nr2]),{gSUM2,1,Length[Gauge]}] ),{gSUM,1,AnzahlGauge}] -Sum[2  kF*SA`gCoup[nr1,gSUM]*ExpandTermNS[Y4F[gSUM,nr2]],{gSUM,1,AnzahlGauge}] /.SA`DynL-> DYNL /. DYNL[a_,b_]:>SA`DynL[getBlank[a],b]; 
+betaFuncGauge2LnsU1[nr1_,nr2_]:=-Sum[SA`gCoup[nr1,gSUM]*(-Sum[(kF*4*SA`CasimirDynkinF[rep,nr1,gSUM2,nr2]+2*SA`CasimirDynkinS[rep,nr1,gSUM2,nr2]),{gSUM2,1,Length[Gauge]}] ),{gSUM,1,AnzahlGauge}] -Sum[2  kF*SA`gCoup[nr1,gSUM]*ExpandTermNS[Y4F[gSUM,nr2]],{gSUM,1,AnzahlGauge}] /.SA`DynL-> DYNL /. DYNL[a_,b_]:>SA`DynL[getBlank[a],b]; 
 
 
 betaFuncGauge1LnsNonU1[nr_]:=-gc[nr]*(11/3SA`Casimir[nr]  -4/3 kF SA`DynkinF[rep,nr] - 1/6 SA`DynkinS[rep,nr]);
@@ -37,8 +37,8 @@ GammaSij1L[p1_,p2_]:=2 kF Y2S[p1,p2]-Sum[(3-Xi)SA`CasimirRGE[p1,nr],{nr,1,Length
 GammaSij2L[p1_,p2_]:=1/2 Lam2S[p1,p2]+3/2 Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}] Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}]Delta2[p1,p2]-3 kF H2ab[p1,p2]-2 kF Hbar2[p1,p2]+10 kF Sum[ Y2FS[p1,p2,nr],{nr,1,Length[Gauge]}]-Delta2[p1,p2] Sum[((35/3-2Xi-1/4Xi^2)SA`Casimir[nr] - 10/3 kF SA`DynkinF[rep,nr] -11/12 SA`DynkinS[rep,nr])(SA`CasimirRGE[p1,nr]),{nr,1,Length[Gauge]}];
 GammaSijHat1L[p1_,p2_]:=Delta2[p1,p2]  Sum[ 2 Xi SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}];
 GammaSijHat2L[p1_,p2_]:= 
--(1+Xi)Xi  Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}] Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}]Delta2[p1,p2]-
-Delta2[p1,p2] Xi Sum[(7-Xi)/2 SA`Casimir[nr](SA`CasimirRGE[p1,nr]),{nr,1,Length[Gauge]}]+Delta2[p1,p2]  ExpandTermNS[Xi Sum[ ThS[nr,p1,pQ,vecB] Y2S[pQ,pR] ThS[nr,pR,p2,vecB]  sum[vecB,1,If[Gauge[[nr,2]]===U[1],1,Gauge[[nr,2,1]]^2-1]],{nr,1,Length[Gauge]}]];
+-(1+Xi) Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}] Sum[ SA`CasimirRGE[p1,nr],{nr,1,Length[Gauge]}]Delta2[p1,p2]-
+Delta2[p1,p2] Sum[(7-Xi)/2 SA`Casimir[nr](SA`CasimirRGE[p1,nr]),{nr,1,Length[Gauge]}]+Delta2[p1,p2]  ExpandTermNS[Xi Sum[ ThS[nr,p1,pQ,vecB] Y2S[pQ,pR] ThS[nr,pR,p2,vecB]  sum[vecB,1,If[Gauge[[nr,2]]===U[1],1,Gauge[[nr,2,1]]^2-1]],{nr,1,Length[Gauge]}]];
 
 betaFuncVEV1Lns[p1_]:=ExpandTermNS[VEVi[pS] GammaSij1L[pS,p1]+VEVi[pS] GammaSijHat1L[pS,p1]];
 betaFuncVEV2Lns[p1_]:=ExpandTermNS[VEVi[pS] GammaSij2L[pS,p1]+VEVi[pS] GammaSijHat2L[pS,p1]];
@@ -60,14 +60,8 @@ line[[10]]=+  Sum[(6 Ha2t[p3,p1,p2,nr] +10 kF  Yijk[p1,p2,pQ] Y2FS[p3,pQ,nr]),{n
 line[[11]]=6 Sum[ (SA`CasimirRGE[pB,nr] Yijk[p1,pO,pB] Conj[Yijk[pO,pP,p3]] Yijk[pP,p2,pB] - 2  SA`CasimirRGE[p3,nr] Yijk[p1,pO,pB] Conj[Yijk[pO,pP,p3]] Yijk[pP,p2,pB]),{nr,1,Length[Gauge]}] ;
 line[[12]]=+ 9/2 Sum[ SA`CasimirRGE[pB,nr](Yijk[p1,pO,pB] Conj[Yijk[pO,pP,pB]] Yijk[pP,p2,p3] + Yijk[p1,pO,p3] Conj[Yijk[pO,pP,pB]] Yijk[pP,p2,pB]),{nr,1,Length[Gauge]}] ;
 line[[13]]=  Sum[Sum[(-3/2  (SA`CasimirRGE[p1,nr] SA`CasimirRGE[p1,nr2]+SA`CasimirRGE[p2,nr] SA`CasimirRGE[p2,nr2]) Yijk[p1,p2,p3]+ 6 SA`CasimirRGE[p3,nr](SA`CasimirRGE[p1,nr2]+SA`CasimirRGE[p2,nr2]) Yijk[p1,p2,p3]),{nr,1,Length[Gauge]}],{nr2,1,Length[Gauge]}];
-(*
-line[[14]]= Sum[(-97/6 SA`Casimir[nr] + 10/3 kF SA`DynkinF[rep,nr] +11/12 SA`DynkinS[rep,nr])(SA`CasimirRGE[p1,nr]+SA`CasimirRGE[p2,nr])Yijk[p1,p2,p3],{nr,1,Length[Gauge]}]-21/2 Sum[Sum[ SA`CasimirRGE[p3,nr] SA`CasimirRGE[p3,nr2] Yijk[p1,p2,p3],{nr,1,Length[Gauge]}],{nr2,1,Length[Gauge]}]+
-Sum[Sum[If[nr=!=nr2 && Gauge[[nr,2]]===U[1] && Gauge[[nr2,2]]===U[1],(10/3 kF SA`DynkinF[rep,nr,nr2] +11/12 SA`DynkinS[rep,nr,nr2])(SA`CasimirRGE[p1,nr]+SA`CasimirRGE[p2,nr])Yijk[p1,p2,p3],0],{nr,1,Length[Gauge]}],{nr2,1,Length[Gauge]}];
-*)
-line[[14]]= Sum[If[Gauge[[nr,2]]===U[1],0,(-97/6 SA`Casimir[nr] + 10/3 kF SA`DynkinF[rep,nr] +11/12 SA`DynkinS[rep,nr])(SA`CasimirRGE[p1,nr]+SA`CasimirRGE[p2,nr])Yijk[p1,p2,p3]],{nr,1,Length[Gauge]}]-21/2 Sum[Sum[ SA`CasimirRGE[p3,nr] SA`CasimirRGE[p3,nr2] Yijk[p1,p2,p3],{nr,1,Length[Gauge]}],{nr2,1,Length[Gauge]}]+Sum[Sum[ 10/3 kF (SA`CasimirFDynkinF[rep,getBlank[p1],nr,nr2]+SA`CasimirFDynkinF[rep,getBlank[p2],nr,nr2])Yijk[p1,p2,p3]+11/12(SA`CasimirFDynkinS[rep,getBlank[p1],nr,nr2]+SA`CasimirFDynkinS[rep,getBlank[p2],nr,nr2])Yijk[p1,p2,p3],{nr,1,Length[Gauge]}],{nr2,1,Length[Gauge]}];
-
-(* line[[16]]=Yijk[p1,p2,p3] Sum[ SA`CasimirRGE[p3,nr] (49/4 SA`Casimir[nr] - 2kF SA`DynkinF[rep,nr] - 1/4 SA`DynkinS[rep,nr]),{nr,1,Length[Gauge]}]; *)
-line[[16]]=Yijk[p1,p2,p3]  Sum[If[Gauge[[nr,2]]===U[1],0,SA`CasimirRGE[p3,nr] (49/4 SA`Casimir[nr] - 2kF SA`DynkinF[rep,nr] - 1/4 SA`DynkinS[rep,nr])],{nr,1,Length[Gauge]}]+Yijk[p1,p2,p3]Sum[Sum[-2 kF SA`CasimirSDynkinF[rep,getBlank[p3],nr,nr2]-1/4 SA`CasimirSDynkinS[rep,getBlank[p3],nr,nr2],{nr,1,Length[Gauge]}],{nr2,1,Length[Gauge]}];
+line[[14]]= Sum[(-97/6 SA`Casimir[nr] + 10/3 kF SA`DynkinF[rep,nr] +11/12 SA`DynkinS[rep,nr])(SA`CasimirRGE[p1,nr]+SA`CasimirRGE[p2,nr])Yijk[p1,p2,p3],{nr,1,Length[Gauge]}]-21/2 Sum[Sum[ SA`CasimirRGE[p3,nr] SA`CasimirRGE[p3,nr2] Yijk[p1,p2,p3],{nr,1,Length[Gauge]}],{nr2,1,Length[Gauge]}];
+line[[16]]=Yijk[p1,p2,p3] Sum[ SA`CasimirRGE[p3,nr] (49/4 SA`Casimir[nr] - 2kF SA`DynkinF[rep,nr] - 1/4 SA`DynkinS[rep,nr]),{nr,1,Length[Gauge]}];
 linesave=line;
 Return[ExpandTermNS[Plus@@line]];
 ];

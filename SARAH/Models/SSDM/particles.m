@@ -46,7 +46,7 @@ ParticleDefinitions[GaugeES] = {
     {ss   , {  Description -> "Singlet",
 	       PDG -> {6666635},
 	       PDG.IX -> {101000002},
-               FeynArtsNr -> 10,
+               FeynArtsNr -> 2,
                LaTeX -> "S",
                ElectricCharge -> 0,
                LHPC -> {"gold"},
@@ -54,7 +54,6 @@ ParticleDefinitions[GaugeES] = {
 
                  
      {Ah   ,  {  Description -> "Pseudo-Scalar Higgs",
-                 FeynArtsNr -> 2,
                  PDG -> {0},
                  PDG.IX ->{0},
                  Mass -> {0},
@@ -62,7 +61,6 @@ ParticleDefinitions[GaugeES] = {
       
       
      {Hp,     { Description -> "Charged Higgs", 
-                 FeynArtsNr -> 3,
                  PDG -> {0},
                  PDG.IX ->{0},
                  Width -> {0}, 

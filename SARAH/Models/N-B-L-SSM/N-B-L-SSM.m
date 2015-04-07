@@ -119,37 +119,32 @@ DEFINITION[EWSB][Phases]=
 (* Dirac-Spinors *)
 (*------------------------------------------------------*)
 
-DEFINITION[EWSB][DiracSpinors]={
- Fd ->{  FDL, conj[FDR]},
- Fe ->{  FEL, conj[FER]},
- Fu ->{  FUL, conj[FUR]},
- Fv ->{  Fvm, conj[Fvm]},
- Chi ->{ L0, conj[L0]},
- Cha ->{ Lm, conj[Lp]},
- Glu ->{ fG, conj[fG]}
-};
+dirac[[1]] = {Fd,  FDL, conj[FDR]};
+dirac[[2]] = {Fe,  FEL, conj[FER]};
+dirac[[3]] = {Fu,  FUL, conj[FUR]};
+dirac[[4]] = {Fv,  Fvm, conj[Fvm]};
+dirac[[5]] = {Chi, L0, conj[L0]}; 
+dirac[[6]] = {Cha, Lm, conj[Lp]};
+dirac[[7]] = {Glu, fG, conj[fG]}; 
 
 
 (* Unbroken EW *)
 
-
-DEFINITION[GaugeES][DiracSpinors]={
-  Bino ->{fB, conj[fB]},
-  Wino -> {fWB, conj[fWB]},
-  Glu -> {fG, conj[fG]},
-  H0 -> {FHd0, conj[FHu0]},
-  HC -> {FHdm, conj[FHup]},
-  Fd1 -> {FdL, 0},
-  Fd2 -> {0, FdR},
-  Fu1 -> {FuL, 0},
-  Fu2 -> {0, FuR},
-  Fe1 -> {FeL, 0},
-  Fe2 -> {0, FeR},
-  Fv1 -> {FvL, 0},
-  Fv2 -> {0, FvR},
-  FC -> {FC10, conj[FC20]},
-  FB -> {fBp, conj[fBp]}
-};
+dirac[[8]] = {Bino, fB, conj[fB]};
+dirac[[9]] = {Wino, fWB, conj[fWB]};
+dirac[[10]] = {H0, FHd0, conj[FHu0]};
+dirac[[11]] = {HC, FHdm, conj[FHup]};
+dirac[[12]] = {Fd1, FdL, 0};
+dirac[[13]] = {Fd2, 0, FdR};
+dirac[[14]] = {Fu1, FuL, 0};
+dirac[[15]] = {Fu2, 0, FuR};
+dirac[[16]] = {Fe1, FeL, 0};
+dirac[[17]] = {Fe2, 0, FeR};
+dirac[[18]] = {Fv1, FvL, 0};
+dirac[[19]] = {Fv2, 0, FvR};
+dirac[[20]] = {FC, FC10, FC20};
+dirac[[21]] = {FB, fBp, conj[fBp]};
+dirac[[22]] = {ChiX, L0X, conj[L0X]}; 
 
 
 

@@ -96,23 +96,8 @@ int qnumbers_(char*pname, int *spin2,int*charge3,int*cdim,int len)
                                                                                                    
 double darkomega_(double * Xf,int*Fast,double *Beps){return darkOmega(Xf,*Fast,*Beps);}
 double darkomegafo_(double*Xf,int*fast,double*Beps){return darkOmegaFO(Xf,*fast,*Beps);}
-double darkomega2_(int*Fast,double *Beps){return darkOmega2(*Fast,*Beps);}
 
- double  vs1120f_(double *T){ return  vs1120F(*T);}
- double  vs2200f_(double *T){ return  vs2200F(*T);}
- double  vs1100f_(double *T){ return  vs1100F(*T);}
- double  vs1210f_(double *T){ return  vs1210F(*T);}
- double  vs1122f_(double *T){ return  vs1122F(*T);}
- double  vs2211f_(double *T){ return  vs2211F(*T);}
- double  vs1110f_(double *T){ return  vs1110F(*T);}
- double  vs2220f_(double *T){ return  vs2220F(*T);}
- double  vs1112f_(double *T){ return  vs1112F(*T);}
- double  vs1222f_(double *T){ return  vs1222F(*T);}
- double  vs1220f_(double *T){ return  vs1220F(*T);}
- double  vs2210f_(double *T){ return  vs2210F(*T);}
- double  vs2221f_(double *T){ return  vs2221F(*T);}
- double  vs1211f_(double *T){ return  vs1211F(*T);}
-      
+
 double printchannels_(double*Xf,double*cut,double*Beps,int* prcnt,int *Nu)
 {
   char fname[20];
@@ -157,7 +142,7 @@ double decay2info_(char * pname, int *Nch, int len)
   return res;
 }
 
-int slhadecayprint_(char * pname,int*dVirt,int *Nch,int len)
+int slhadecayprint_(char * pname,int *Nch,int len)
 { double res;
   char cname[20]; 
   char fname[20];
@@ -166,18 +151,14 @@ int slhadecayprint_(char * pname,int*dVirt,int *Nch,int len)
   sprintf(fname,"%d.tmptxt",getpid());
   f=fopen(fname,"w");
   fName2c(pname,cname,len);    
-  res=slhaDecayPrint(cname,*dVirt,f);
+  res=slhaDecayPrint(cname,f);
   fclose(f);
   fortreread_(Nch,fname,strlen(fname));
   unlink(fname); 
   return res;
 }
 
-double vsigma_(double*T,double*Beps,int*Fast,double*alpha)
-{
-  return vSigma(*T,*Beps,*Fast,alpha);
-}
-
+double vsigma_(double*T,double*Beps,int*Fast){ return vSigma(*T,*Beps,*Fast);}
 
 static int channels(aChannel* Chann, int *i, double *w, int*pdg, char* txt, int len)
 { int k,j;
@@ -190,14 +171,12 @@ static int channels(aChannel* Chann, int *i, double *w, int*pdg, char* txt, int 
   for(j=0;j<2;j++) sprintf(txt+strlen(txt),"%s ",Chann[k].prtcl[j]);
   strcpy(txt+strlen(txt),"-> ");
   for(j=2;j<4;j++) sprintf(txt+strlen(txt),"%s ",Chann[k].prtcl[j]);
-  for(j=0;j<4;j++) pdg[j]=pNum(Chann[k].prtcl[j]);
+  for(j=0;j<4;j++) pdg[j]=pNum(Chann[k].prtcl[j]);        
   if(Chann[k].prtcl[4]) 
   {  sprintf(txt+strlen(txt),"%s ",Chann[k].prtcl[j]);
       pdg[j]=pNum(Chann[k].prtcl[j]);
   } else pdg[j]=0;    
   for(j=strlen(txt);j<len;j++) txt[j]=' '; 
-  
-  
   return 1;
 }
  
@@ -210,10 +189,6 @@ int vsigmach_(int *i,double*w,int*pdg,char*txt,int len) {return channels(vSigmaC
 
 static double(*_fDv)(double*);
 static double fDv_(double v){ return (*_fDv)(&v);}
-
-void cleandecaytable_(void) { cleanDecayTable(); } 
-void setvvdecay_(int*vwdecay,int*vzdecay ){ VWdecay=*vwdecay;  VZdecay=*vzdecay;  cleanDecayTable(); }
-
 
 
 int neutrinoflux_( double(*fDv)(double*), int* forSun, double* nu, double * Nu)
@@ -228,11 +203,13 @@ int neutrinoflux_( double(*fDv)(double*), int* forSun, double* nu, double * Nu)
 void muonupward_(double*nu, double*Nu, double*mu) { muonUpward(nu, Nu, mu);}
 void muoncontained_(double*nu,double*Nu,double *rho, double*mu) { muonContained(nu,Nu,*rho, mu);}
 
+void cleandecaytable_(void) { cleanDecayTable(); } 
+void setvvdecay_(int*vwdecay,int*vzdecay ){ VWdecay=*vwdecay;  VZdecay=*vzdecay;  cleanDecayTable(); }
 
-double captureaux_(double(*fDv)(double*),int*forSun, double*csIp,double*csIn,double*csDp, double*csDn)
+double captureaux_(int*forSun,double(*fDv)(double*), double*csIp,double*csIn,double*csDp, double*csDn)
 {
   _fDv=fDv; 
-  return captureAux(fDv_, *forSun,*csIp, *csIn,*csDp,*csDn);
+  captureAux(*forSun,fDv_, *csIp,*csIn,*csDp,*csDn);
 }
 
-
+void setbwrange_(double * newValue) { BWrange=*newValue;}

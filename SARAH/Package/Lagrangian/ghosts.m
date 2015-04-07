@@ -21,23 +21,16 @@
 
 CalcGaugeTransformations:=Block[{i},
 
-PrintDebug["Calc Gauge Transformations"];
-Print["Calculate gauge transformations: ",Dynamic[DynamicGaugeTNr],"/",AnzahlChiral+Length[Gauge]," (",Dynamic[DynamicGaugeTName],")"];
+Print["Calc Gauge Transformations"];
 
 GaugeTransformation={};
 
 For[i=1,i<=Length[Gauge],
-DynamicGaugeTNr=i;
-DynamicGaugeTName=SGauge[[i]];
-PrintDebug["   ",SGauge[[i]]];
 ai=ADI[i];
 GaugeTransformation=Join[GaugeTransformation,{{(SGauge[[i]]/.subGC[1]),Gauge[[i,4]] getStructureConstant[i,ai /. subGC[1],ai /. subGC[2],ai /. subGC[3]] part[gGauge[[i]],2] part[SGauge[[i]],3]}}];
 i++;];
 
 For[i=1,i<=AnzahlChiral,
-DynamicGaugeTNr=i+Length[Gauge];
-DynamicGaugeTName=SFields[[i]];
-PrintDebug["   ",SFields[[i]]];
 If[SFields[[i]]=!=0,
 temp= - (I KovariantGhost[i,1,2,3])*part[SFields[[i]],2];
 If[temp=!=0,
@@ -60,30 +53,24 @@ GaugeTransformation=Join[GaugeTransformation, {{SFieldsMultiplets[[i]],gaugeT}}]
 ];
 ];
 i++;];
-DynamicGaugeTName="All Done";
+
 GaugeTransformation=DeleteCases[GaugeTransformation,{_,_,0}] /.{GetGen -> getGen,GetGenStart->getGenStart};
 ];
 
 
-
-UpdateGaugeTransformations[sub_,subInv_,nameUGT_]:=Block[{i,temp},
-
-Print["   Update gauge transformations: ",Dynamic[DynamicUGT[nameUGT]],"/",Length[Particles[Current]]," (",Dynamic[DynamicUGTname[nameUGT]],")"];
-PrintDebug["   Update gauge transformations"];
+UpdateGaugeTransformations[sub_,subInv_]:=Block[{i,temp},
+Print["Update Gauge Transformations"];
 
 If[sub=!={} ,
 NewGaugeTransformation={};
 For[i=1,i<=Length[Particles[Current]],
-DynamicUGTname[nameUGT]=Particles[Current][[i,1]];
-DynamicUGT[nameUGT]=i;
-PrintDebug[Particles[Current][[i,1]]];
 If[Particles[Current][[i,4]]===S || Particles[Current][[i,4]]===V,
 temp = DeltaGT[ReplaceAll[replaceGen[ReleaseHold[getFull[Particles[Current][[i,1]]] /.subGC[1] /. subInv /. gen1->pre1],rgNr], gen1->tem1]];
 rgNr++;
 NewGaugeTransformation=Join[NewGaugeTransformation,{{Particles[Current][[i,1]],(replaceGen[ReleaseHold[temp/. sub],rgNr] /.pre1->gen1 /.tem1->int10  )}}];
 ];
 i++;];
-DynamicUGTname[nameUGT]="All Done";
+
 GaugeTransformation=DeleteCases[NewGaugeTransformation,{_,_,0}] /.{GetGen -> getGen,GetGenStart->getGenStart};
 ];
 
@@ -255,12 +242,8 @@ scalars=Transpose[scalars][[1]];
 CalcImp=True;
 Update[];
 
-Print["  ... generate gauge fixing terms: ",Dynamic[DynamicGFnr[name]],"/",Length[gb]," (",Dynamic[DynamicGFname[name]],")"];
 
 For[i=1,i<=Length[gb],
-DynamicGFnr[name]=i;
-DynamicGFname[name]=gb[[i]];
-PrintDebug["   ",gb[[i]]];
 res=0;
 If[conj[gb[[i]]]===gb[[i]],num=2;,num=1;];
 nameXi=RXi[ToExpression[StringDrop[ToString[gb[[i]]],1]]];
@@ -277,7 +260,6 @@ res=0;
 temp=Join[temp,{{Der[gb[[i]]]+res*nameXi,-1/(num nameXi)}}];
 SA`GaugeFixingRXi = Join[SA`GaugeFixingRXi,{{nameXi,gb[[i]]}}];
 i++;];
-DynamicGFname[name]="All Done";
 CalcImp=False;
 SA`GaugeFixingRXi = Intersection[SA`GaugeFixingRXi];
 
@@ -303,7 +285,7 @@ subGhostC=Join[subGhostC,{conj[Particles[Current][[i,1]][{x_}]]->ToExpression[To
 
 i++;]; 
 
-Print["  ... calculate Ghost interactions"];
+Print["Calc Ghost Interactions"];
 
 LGhosttemp=0;
 LGhostSS=0;

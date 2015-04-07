@@ -106,7 +106,7 @@ LaTeX -> "Z_{\\sigma v}",
 
 {YSL, {OutputName -> YSL,
        LesHouches -> YSL,
-     LaTeX -> "Y_{SL}"}},
+     LaTeX -> "\\Y_{SL}"}},
 
        
 {B[MUS], {OutputName -> BMUS,
@@ -117,7 +117,7 @@ LaTeX -> "Z_{\\sigma v}",
 
 
 {T[YSL],{  Description -> "Trilinear-YLS-Coupling",
-			 LaTeX -> "T_{Y_{SL}}",
+			 LaTeX -> "T_{\\Y_{SL}}",
              Value -> None, 
              LesHouches -> TYSL,
              OutputName-> TYSL             }},     

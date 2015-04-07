@@ -25,7 +25,7 @@ try:
     import madgraph.iolibs.file_writers as file_writers
     import madgraph.iolibs.files as files 
     import models.check_param_card as param_card_reader
-    from madgraph import MG5DIR, InvalidCmd
+    from madgraph import MG5DIR
     MADEVENT = False
 except ImportError:
     MADEVENT = True
@@ -33,7 +33,6 @@ except ImportError:
     import internal.files as files
     import internal.check_param_card as param_card_reader
     import internal.misc as misc
-    from internal import InvalidCmd
     
     MEDIR = os.path.split(os.path.dirname(os.path.realpath( __file__ )))[0]
     MEDIR = os.path.split(MEDIR)[0]
@@ -65,9 +64,7 @@ class Banner(dict):
     def __init__(self, banner_path=None):
         """ """
         if isinstance(banner_path, Banner):
-            dict.__init__(self, banner_path)
-            self.lhe_version = banner_path.lhe_version
-            return     
+            return dict.__init__(self, banner_path)     
         else:
             dict.__init__(self)
         
@@ -79,8 +76,9 @@ class Banner(dict):
             self['mgversion'] = info['version']+'\n'
         
         self.lhe_version = None
+        
 
-   
+            
         if banner_path:
             self.read_banner(banner_path)
 
@@ -231,7 +229,7 @@ class Banner(dict):
             header = open(pjoin(MEDIR, 'Source', 'banner_header.txt')).read()
         else:
             header = open(pjoin(MG5DIR,'Template', 'LO', 'Source', 'banner_header.txt')).read()
-            
+    
         if not self.lhe_version:
             self.lhe_version = self.get('run_card', 'lhe_version', default=1.0)
             if float(self.lhe_version) < 3:
@@ -304,17 +302,6 @@ class Banner(dict):
 
     def add_text(self, tag, text):
         """Add the content of the file to the banner"""
-
-        if tag == 'param_card':
-            tag = 'slha'
-        elif tag == 'run_card':
-            tag = 'mgruncard' 
-        elif tag == 'proc_card':
-            tag = 'mg5proccard' 
-        elif tag == 'shower_card':
-            tag = 'mgshowercard'
-        elif tag == 'FO_analyse_card':
-            tag = 'foanalyse'
         
         self[tag.lower()] = text
     
@@ -408,14 +395,14 @@ class Banner(dict):
                 try:
                     return card.info[arg[0]]
                 except KeyError, error:
-                    if 'default' in opt:
+                    if opt['default']:
                         return opt['default']
                     else:
                         raise
             try:
                 return card[arg[0]]
             except KeyError:
-                if 'default' in opt:
+                if opt['default']:
                     return opt['default']
                 else:
                     raise                
@@ -423,12 +410,10 @@ class Banner(dict):
             try:
                 return card[arg[0]].get(arg[1:])
             except KeyError:
-                if 'default' in opt:
+                if opt['default']:
                     return opt['default']
                 else:
                     raise  
-        elif len(arg) == 0:
-            return card
         else:
             raise Exception, "Unknow command"
     
@@ -473,7 +458,7 @@ class Banner(dict):
             card[args[:-1]] = args[-1]
         
     
-    @misc.multiple_try()
+
     def add_to_file(self, path, seed=None):
         """Add the banner to a file and change the associate seed in the banner"""
 
@@ -538,8 +523,7 @@ def recover_banner(results_object, level, run=None, tag=None):
     
 
 
-class InvalidRunCard(InvalidCmd):
-    pass
+
 
 class RunCard(dict):
     """A class object for the run_card"""
@@ -588,15 +572,8 @@ class RunCard(dict):
                 return '.false.'
             
         elif format == 'int':
-            try:
-                return str(int(value))
-            except ValueError:
-                fl = float(value)
-                if int(fl) == fl:
-                    return str(int(fl))
-                else:
-                    raise
-                
+            return str(int(value))
+        
         elif format == 'float':
             if isinstance(value, str):
                 value = value.replace('d','e')
@@ -661,7 +638,7 @@ class RunCard(dict):
     
         self.add_line('maxjetflavor', 'int', 4)
         if int(self['maxjetflavor']) > 6:
-            raise InvalidRunCard, 'maxjetflavor should be lower than 5! (6 is partly supported)'
+            raise Exception, 'maxjetflavor should be lower than 5! (6 is partly supported)'
         self.add_line('auto_ptj_mjj', 'bool', True)
         self.add_line('cut_decays', 'bool', True)
         # minimum pt
@@ -833,7 +810,7 @@ class RunCard(dict):
                     logger.warning('Since use_syst=T, We change the value of \'alpsfact\' to 1')
                     self['alpsfact'] = 1.0
             if int(self['maxjetflavor']) == 6:
-                raise InvalidRunCard, 'maxjetflavor at 6 is NOT supported for matching!'
+                raise Exception, 'maxjetflavor at 6 is NOT supported for matching!'
             self.add_line('alpsfact', 'float', 1.0)
             self.add_line('pdfwgt', 'bool', True)
             self.add_line('clusinfo', 'bool', False)
@@ -871,12 +848,6 @@ class RunCard(dict):
         self.add_line('bwcutoff', 'float', 15.0)
         #  Collider pdf
         self.add_line('pdlabel','str','cteq6l1')
-        
-        # check validity of the pdf set
-        possible_set = ['lhapdf','mrs02nl','mrs02nn', 'mrs0119','mrs0117','mrs0121','mrs01_j', 'mrs99_1','mrs99_2','mrs99_3','mrs99_4','mrs99_5','mrs99_6', 'mrs99_7','mrs99_8','mrs99_9','mrs9910','mrs9911','mrs9912', 'mrs98z1','mrs98z2','mrs98z3','mrs98z4','mrs98z5','mrs98ht', 'mrs98l1','mrs98l2','mrs98l3','mrs98l4','mrs98l5', 'cteq3_m','cteq3_l','cteq3_d', 'cteq4_m','cteq4_d','cteq4_l','cteq4a1','cteq4a2', 'cteq4a3','cteq4a4','cteq4a5','cteq4hj','cteq4lq', 'cteq5_m','cteq5_d','cteq5_l','cteq5hj','cteq5hq', 'cteq5f3','cteq5f4','cteq5m1','ctq5hq1','cteq5l1', 'cteq6_m','cteq6_d','cteq6_l','cteq6l1', 'nn23lo','nn23lo1','nn23nlo']
-        if self['pdlabel'] not in possible_set:
-            raise InvalidRunCard, 'Invalid PDF set (argument of pdlabel) possible choice are:\n %s' % ','.join(possible_set)
-    
         if self['pdlabel'] == 'lhapdf':
             self.add_line('lhaid', 'int', 10042)
         else:
@@ -902,34 +873,7 @@ class RunCardNLO(RunCard):
         
     def write_include_file(self, output_path):
         """writing the run_card.inc file""" 
-
-        # For FxFx merging, make sure that the following parameters are set correctly:
-        true = ['true', 'True','.true.','T', True, 1,'TRUE']
-        if int(self['ickkw']) == 3:
-                # 1. Renormalization and factorization (and ellis-sexton scales) are not fixed
-            scales=['fixed_ren_scale','fixed_fac_scale','fixed_QES_scale']
-            for scale in scales:
-                if self[scale] in true :
-                    logger.info('''For consistency in the FxFx merging, \'%s\' has been set to false'''
-                                % scale,'$MG:color:BLACK')
-                    self[scale]='F'
-                # 2. Use kT algorithm for jets with pseudo-code size R=1.0
-            jetparams=['jetradius','jetalgo']
-            for jetparam in jetparams:
-                if float(self[jetparam]) != 1.0:
-                    logger.info('''For consistency in the FxFx merging, \'%s\' has been set to 1.0'''
-                                % jetparam ,'$MG:color:BLACK')
-                    self[jetparam]='1.0'
         
-        #ensure that iappl is present in the card!
-        self.get_default('iappl', '0', log_level=10)
-        # For interface to APPLGRID, need to use LHAPDF and reweighting to get scale uncertainties
-        if self['iappl'] != '0' and self['pdlabel'].lower() != 'lhapdf':
-            raise self.InvalidRunCard('APPLgrid generation only possible with the use of LHAPDF')
-        if self['iappl'] != '0' and self['reweight_scale'] not in true:
-            raise self.InvalidRunCard('APPLgrid generation only possible with including' +\
-                                      ' the reweighting to get scale dependence')
-
         self.fsock = file_writers.FortranWriter(output_path)    
 ################################################################################
 #      Writing the lines corresponding to the cuts
@@ -980,9 +924,9 @@ class RunCardNLO(RunCard):
         self.add_line('reweight_PDF', 'bool', True, fortran_name='do_rwgt_pdf')
         self.add_line('PDF_set_min', 'int', 21101)
         self.add_line('PDF_set_max', 'int', 21140)
-        self.add_line('iappl', 'int', 0)
         # FxFx merging stuff
         self.add_line('ickkw', 'int', 0)
+        # self.add_line('fixed_couplings', 'bool', True, log=10)
         self.add_line('jetalgo', 'float', 1.0)
         # Collider energy and type
         self.add_line('lpp1', 'int', 1, fortran_name='lpp(1)')
@@ -1000,13 +944,6 @@ class RunCardNLO(RunCard):
         self.add_line('isoEM', 'bool', True)
         #  Collider pdf
         self.add_line('pdlabel','str','cteq6_m')
-        # check validity of the pdf set
-        possible_set = ['lhapdf','mrs02nl','mrs02nn', 'mrs0119','mrs0117','mrs0121','mrs01_j', 'mrs99_1','mrs99_2','mrs99_3','mrs99_4','mrs99_5','mrs99_6', 'mrs99_7','mrs99_8','mrs99_9','mrs9910','mrs9911','mrs9912', 'mrs98z1','mrs98z2','mrs98z3','mrs98z4','mrs98z5','mrs98ht', 'mrs98l1','mrs98l2','mrs98l3','mrs98l4','mrs98l5', 'cteq3_m','cteq3_l','cteq3_d', 'cteq4_m','cteq4_d','cteq4_l','cteq4a1','cteq4a2', 'cteq4a3','cteq4a4','cteq4a5','cteq4hj','cteq4lq', 'cteq5_m','cteq5_d','cteq5_l','cteq5hj','cteq5hq', 'cteq5f3','cteq5f4','cteq5m1','ctq5hq1','cteq5l1', 'cteq6_m','cteq6_d','cteq6_l','cteq6l1', 'nn23lo','nn23lo1','nn23nlo']
-        if self['pdlabel'] not in possible_set:
-            raise InvalidRunCard, 'Invalid PDF set (argument of pdlabel) possible choice are:\n %s' % ','.join(possible_set)
-    
-        
-        
         if self['pdlabel'] == 'lhapdf':
             self.add_line('lhaid', 'int', 21100)
         else:
@@ -1179,11 +1116,9 @@ class ProcCard(list):
             # update the counter to pass to the next element
             nline -= 1
         
-    def __getattr__(self, tag, default=None):
+    def __getattr__(self, tag):
         if isinstance(tag, int):
             list.__getattr__(self, tag)
-        elif tag == 'info' or tag == "__setstate__":
-            return default #for pickle
         else:
             return self.info[tag]
             

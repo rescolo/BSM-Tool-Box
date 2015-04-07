@@ -27,7 +27,7 @@ GenerateBoundarySUSY;
 GenerateBoundaryHS;
 
 If[SupersymmetricModel=!=False,
-If[getGen[Electron]==3 && getGen[TopQuark]==3 && getGen[BottomQuark]==3,
+If[getGen[Electron]==3 && getGen[Electron]==3 && getGen[Electron]==3,
 GenerateBoundaryEW;,
 GenerateBoundaryEW2;
 ];,
@@ -54,13 +54,9 @@ Close[sphenoSugra];
 WriteHeadSugraRuns:=Block[{i},
 
 
-(*
 Print["-----------------------------------"];
 Print["Write SugraRuns"];
 Print["-----------------------------------"];
-*)
-
-Print[StyleForm["Write 'SugraRuns'","Section",FontSize->12]];
 
 WriteCopyRight[sphenoSugra];
 
@@ -131,7 +127,7 @@ WriteString[sphenoSugra, "Contains \n \n"];
 
 GenerateSugra:=Block[{i,j,NumberNewMasses},
 
-Print["  Write 'Sugra'"];
+Print["Write Sugra"];
 
 MakeSubroutine[];
 
@@ -188,10 +184,6 @@ WriteString[sphenoSugra,"End If \n"];
 
 
 WriteString[sphenoSugra,"Write(*,*) \"Calculating mass spectrum\" \n"];
-
-WriteString[sphenoSugra,"CalculateOneLoopMassesSave = CalculateOneLoopMasses \n"];
-WriteString[sphenoSugra,"CalculateOneLoopMasses = .false. \n"];
-
 
 WriteString[sphenoSugra,"Do j=1,niter \n"];
 
@@ -301,9 +293,7 @@ WriteBoundaryConditionsSUSY[sphenoSugra];
 
 
 WriteTadpoleSolutionOnlyHigh[sphenoSugra];
-
 MakeCall["OneLoopMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"kont"},sphenoSugra];
-
 WriteString[sphenoSugra," FirstRun = .False. \n"];
 
 WriteString[sphenoSugra,"If (kont.Ne.0) Then\n"];
@@ -346,7 +336,7 @@ WriteString[sphenoSugra,"If ((deltag0.Lt.delta0).And.(j.Gt.1)) Then! require at 
 WriteString[sphenoSugra,"   FoundResult= .True.\n"];
 WriteString[sphenoSugra,"If (SignOfMassChanged) Then\n"];
 WriteString[sphenoSugra,"  If (.Not.IgnoreNegativeMasses) Then\n"];
-WriteString[sphenoSugra,"  Write(*,*) \" Mass spectrum converged, but negative mass squared present.\" \n"];
+WriteString[sphenoSugra,"  Write(*,*) \" Stopping calculation because of negative mass squared.\" \n"];
 WriteString[sphenoSugra,"   Call TerminateProgram \n"];
 WriteString[sphenoSugra,"  Else \n"];
 WriteString[sphenoSugra,"   SignOfMassChanged = .False. \n"];
@@ -355,7 +345,7 @@ WriteString[sphenoSugra,"  End If\n"];
 WriteString[sphenoSugra,"End If\n"];
 WriteString[sphenoSugra,"If (SignOfMuChanged) Then\n"];
 WriteString[sphenoSugra,"  If (.Not.IgnoreMuSignFlip) Then\n"];
-WriteString[sphenoSugra,"  Write(*,*) \" Mass spectrum converged, but negative |mu|^2 from tadpoles.\" \n"];
+WriteString[sphenoSugra,"  Write(*,*) \" Stopping calculation because of negative mass squared in tadpoles.\" \n"];
 WriteString[sphenoSugra,"   Call TerminateProgram \n"];
 WriteString[sphenoSugra,"  Else \n"];
 WriteString[sphenoSugra,"   SignOfMuChanged = .False. \n"];
@@ -367,8 +357,8 @@ WriteString[sphenoSugra,"Exit\n"];
 WriteString[sphenoSugra,"Else\n"];
 
 WriteString[sphenoSugra,"If (SignOfMassChanged) Then\n"];
-WriteString[sphenoSugra,"  If ((j.ge.MinimalNumberIterations).And.(.Not.IgnoreNegativeMasses)) Then\n"];
-WriteString[sphenoSugra,"  Write(*,*) \" Still a negative mass squared after \",MinimalNumberIterations,\" iterations. Stop calculation. \"  \n"];
+WriteString[sphenoSugra,"  If ((j.gt.4).And.(.Not.IgnoreNegativeMasses)) Then\n"];
+WriteString[sphenoSugra,"  Write(*,*) \" Still a negative mass after 5 iterations. Stop calculation. \"  \n"];
 WriteString[sphenoSugra,"   Call TerminateProgram \n"];
 WriteString[sphenoSugra,"  Else \n"];
 WriteString[sphenoSugra,"   SignOfMassChanged = .False. \n"];
@@ -377,8 +367,8 @@ WriteString[sphenoSugra,"  End If\n"];
 WriteString[sphenoSugra,"End If\n"];
 
 WriteString[sphenoSugra,"If (SignOfMuChanged) Then\n"];
-WriteString[sphenoSugra,"  If ((j.ge.MinimalNumberIterations).And.(.Not.IgnoreMuSignFlip)) Then\n"];
-WriteString[sphenoSugra,"  Write(*,*) \" Still a negative |mu|^2 after \",MinimalNumberIterations,\" iterations. Stop calculation. \"  \n"];
+WriteString[sphenoSugra,"  If ((j.gt.4).And.(.Not.IgnoreMuSignFlip)) Then\n"];
+WriteString[sphenoSugra,"  Write(*,*) \" Still a negative mass after 5 iterations. Stop calculation. \"  \n"];
 WriteString[sphenoSugra,"   Call TerminateProgram \n"];
 WriteString[sphenoSugra,"  Else \n"];
 WriteString[sphenoSugra,"   SignOfMuChanged = .False. \n"];
@@ -390,7 +380,6 @@ WriteString[sphenoSugra,"mass_old=mass_new \n"];
 
 WriteString[sphenoSugra,"If (.Not.UseFixedScale) Then \n"];
 WriteString[sphenoSugra,"mudimNew=Max(mZ**2,Abs("<> SPhenoForm[RenormalizationScale]<>")) \n"];
-WriteString[sphenoSugra,"If (HighScaleModel.eq.\"LOW\") GUT_Scale = sqrt(mudimNew) \n "];
 (* WriteString[sphenoSugra,"Call SetRGEScale(mudim) \n"]; *)
 WriteString[sphenoSugra,"UseFixedScale= .False. \n"];
 WriteString[sphenoSugra,"End If \n"];
@@ -406,7 +395,7 @@ WriteRemoveGUTnormalization[sphenoSugra];
 
 WriteBoundaryConditionsEWSBrunningDown[sphenoSugra];
 
-If[UseBoundarySUSYatEWSB===True,WriteBoundaryConditionsSUSY[sphenoSugra];];
+WriteBoundaryConditionsSUSY[sphenoSugra];
 WriteBoundaryConditionsEWSB[sphenoSugra];
 
 
@@ -446,33 +435,6 @@ WriteString[sphenoSugra,"End If\n"];
 WriteString[sphenoSugra,"End Do\n"];
 
 
-WriteString[sphenoSugra,"If (CalculateOneLoopMassesSave) Then \n"];
-WriteString[sphenoSugra,"CalculateOneLoopMasses =  CalculateOneLoopMassesSave \n"];
-WriteString[sphenoSugra,"Write(*,*) \"Calculate loop corrected masses \" \n"];
-MakeCall["OneLoopMasses",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"kont"},sphenoSugra];
-
-WriteString[sphenoSugra,"If (SignOfMassChanged) Then\n"];
-WriteString[sphenoSugra,"  If (.Not.IgnoreNegativeMasses) Then\n"];
-WriteString[sphenoSugra,"  Write(*,*) \" Mass spectrum converged, but negative mass squared present.\" \n"];
-WriteString[sphenoSugra,"   Call TerminateProgram \n"];
-WriteString[sphenoSugra,"  Else \n"];
-WriteString[sphenoSugra,"   SignOfMassChanged = .False. \n"];
-WriteString[sphenoSugra,"   kont = 0 \n"];
-WriteString[sphenoSugra,"  End If\n"];
-WriteString[sphenoSugra,"End If\n"];
-WriteString[sphenoSugra,"If (SignOfMuChanged) Then\n"];
-WriteString[sphenoSugra,"  If (.Not.IgnoreMuSignFlip) Then\n"];
-WriteString[sphenoSugra,"  Write(*,*) \" Mass spectrum converged, but negative |mu|^2 from tadpoles.\" \n"];
-WriteString[sphenoSugra,"   Call TerminateProgram \n"];
-WriteString[sphenoSugra,"  Else \n"];
-WriteString[sphenoSugra,"   SignOfMuChanged = .False. \n"];
-WriteString[sphenoSugra,"   kont = 0 \n"];
-WriteString[sphenoSugra,"  End If\n"];
-WriteString[sphenoSugra,"End If\n"];
-
-
-WriteString[sphenoSugra,"End if \n"];
-
 WriteString[sphenoSugra,"Iname=Iname-1\n \n"];
 
 WriteString[sphenoSugra,"End Subroutine Sugra\n \n"];
@@ -482,7 +444,7 @@ WriteString[sphenoSugra,"End Subroutine Sugra\n \n"];
 
 GenerateBoundaryHS:=Block[{i,j},
 
-Print["  Write 'BoundaryHS'"];
+Print["Write BoundaryHS"];
 
 WriteString[sphenoSugra,"Subroutine BoundaryHS(gA,gB) \n"];
 
@@ -518,7 +480,6 @@ MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{
 ];
 ];
 
-WriteString[sphenoSugra,"If (HighScaleModel.ne.\"LOW\") Then \n "];
 If[SeveralBoundaryConditions===False,
 For[i=1,i<=Length[BoundaryHighScale],
 If[FreeQ[Transpose[ListAllInputParameters][[1]],BoundaryHighScale[[i,1]]]==False || FreeQ[listParametersOtherRegimes,BoundaryHighScale[[i,1]]]==False,
@@ -567,29 +528,6 @@ j++;];
 WriteString[sphenoSugra,"End Select \n"];
 ];
 
-WriteString[sphenoSugra,"else If (HighScaleModel.Eq.\"LOW\") Then \n "];
-WriteString[sphenoSugra,"! Setting values \n "];
-For[i=1,i<=Length[listVEVsIN],
-If[MemberQ[ParametersToSolveTadpoles,listVEVs[[i]]]==False && FreeQ[{VEVSM1,VEVSM2,VEVSM},listVEVs[[i]]],
-WriteString[sphenoSugra,StringDrop[SPhenoForm[listVEVsIN[[i]]],-2] <>" = " <>SPhenoForm[listVEVsIN[[i]]]<>" \n "];
-];
-i++;];
-For[i=1,i<=Length[HighScaleList],
-If[MemberQ[ParametersToSolveTadpoles,HighScaleList[[i,2]]]==False,
-WriteString[sphenoSugra,StringDrop[SPhenoForm[highScaleIn[[i]]],-2] <>" = " <>SPhenoForm[highScaleIn[[i]]]<>" \n "];
-];
-i++;];
-For[i=1,i<=Length[LowScaleList],
-If[MemberQ[ParametersToSolveTadpoles,LowScaleList[[i,2]]]==False&& FreeQ[{leftCoupling,hyperchargeCoupling,strongCoupling,UpYukawa,DownYukawa,ElectronYukawa},LowScaleList[[i,1]]],
-WriteString[sphenoSugra,StringDrop[SPhenoForm[lowScaleIn[[i]]],-2] <>" = " <>SPhenoForm[lowScaleIn[[i]]]<>" \n "];
-];
-i++;];
-
-For[i=1,i<=Length[BoundaryLowScaleInput],
-WriteString[sphenoSugra,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>" = " <>SPhenoForm[BoundaryLowScaleInput[[i,2]]]<>"\n"];
-i++;];
-WriteString[sphenoSugra,"End if\n \n "];
-
 If[Head[RegimeNr]=!=Integer,
 For[i=1,i<=Length[highScaleNames],
 WriteString[sphenoSugra, SPhenoForm[highScaleNames[[i]]]<>"GUT =" <> SPhenoForm[highScaleNames[[i]]]<>"\n"];
@@ -609,8 +547,8 @@ If[Head[RegimeNr]===Integer,
 For[j=1,j<2(*RegimeNr*),
 For[i=1,i<=Length[YukawaCouplingsAllRegimes],
 If[Length[getDimSPheno[YukawaCouplingsAllRegimes[[j,i]]]]>0 &&getDimSPheno[YukawaCouplingsAllRegimes[[j,i]]]=!={1},
-WriteString[sphenoSugra,"If (Maxval(Abs("<>SPhenoForm[YukawaCouplingsAllRegimes[[j,i]] /. a_[i1,b___]->a]<>")).gt.3._dp) Then \n"];,
-WriteString[sphenoSugra,"If (Abs("<>SPhenoForm[YukawaCouplingsAllRegimes[[j,i]] /. a_[i1,b___]->a]<>").gt.3._dp) Then \n"];
+WriteString[sphenoSugra,"If (Maxval(Abs("<>SPhenoForm[YukawaCouplingsAllRegimes[[j,i]] /. a_[i1,b___]->a]<>")).gt.3_dp) Then \n"];,
+WriteString[sphenoSugra,"If (Abs("<>SPhenoForm[YukawaCouplingsAllRegimes[[j,i]] /. a_[i1,b___]->a]<>").gt.3_dp) Then \n"];
 ];
 WriteString[sphenoSugra,"Write(*,*) \"Non pertubative coupling at GUT scale "<>SPhenoForm[YukawaCouplingsAllRegimes[[j,i]]/. a_[i1,b___]->a] <>"\" \n"];
 WriteString[sphenoSugra,"If (ErrorLevel.gt.0) Call TerminateProgram \n"];
@@ -618,8 +556,8 @@ WriteString[sphenoSugra,"End if \n"];
 i++;];
 For[i=1,i<=Length[GaugeCouplingsAllRegimes],
 If[Length[getDimSPheno[GaugeCouplingsAllRegimes[[j,i]]]]>0 &&getDimSPheno[GaugeCouplingsAllRegimes[[j,i]]]=!={1},
-WriteString[sphenoSugra,"If (Maxval(Abs("<>SPhenoForm[GaugeCouplingsAllRegimes[[j,i]] /. a_[i1,b___]->a]<>")).gt.3._dp) Then \n"];,
-WriteString[sphenoSugra,"If (Abs("<>SPhenoForm[GaugeCouplingsAllRegimes[[j,i]] /. a_[i1,b___]->a]<>").gt.3._dp) Then \n"];
+WriteString[sphenoSugra,"If (Maxval(Abs("<>SPhenoForm[GaugeCouplingsAllRegimes[[j,i]] /. a_[i1,b___]->a]<>")).gt.3_dp) Then \n"];,
+WriteString[sphenoSugra,"If (Abs("<>SPhenoForm[GaugeCouplingsAllRegimes[[j,i]] /. a_[i1,b___]->a]<>").gt.3_dp) Then \n"];
 ];
 WriteString[sphenoSugra,"Write(*,*) \"Non pertubative coupling at GUT scale "<>SPhenoForm[GaugeCouplingsAllRegimes[[j,i]]/. a_[i1,b___]->a] <>"\" \n"];
 WriteString[sphenoSugra,"If (ErrorLevel.gt.0) Call TerminateProgram \n"];
@@ -631,8 +569,8 @@ j++;];
 If[Head[RegimeNr]=!=Integer,
 For[i=1,i<=Length[BetaYijk],
 If[Length[getDimSPheno[BetaYijk[[i,1]]]]>0 &&getDimSPheno[BetaYijk[[i,1]]]=!={1},
-WriteString[sphenoSugra,"If (Maxval(Abs("<>SPhenoForm[BetaYijk[[i,1]] /. a_[i1,b___]->a]<>")).gt.3._dp) Then \n"];,
-WriteString[sphenoSugra,"If (Abs("<>SPhenoForm[BetaYijk[[i,1]] /. a_[i1,b___]->a]<>").gt.3._dp) Then \n"];
+WriteString[sphenoSugra,"If (Maxval(Abs("<>SPhenoForm[BetaYijk[[i,1]] /. a_[i1,b___]->a]<>")).gt.3_dp) Then \n"];,
+WriteString[sphenoSugra,"If (Abs("<>SPhenoForm[BetaYijk[[i,1]] /. a_[i1,b___]->a]<>").gt.3_dp) Then \n"];
 ];
 WriteString[sphenoSugra,"Write(*,*) \"Non pertubative coupling at GUT scale "<>SPhenoForm[BetaYijk[[i,1]]/. a_[i1,b___]->a] <>"\" \n"];
 WriteString[sphenoSugra,"If (ErrorLevel.gt.0) Call TerminateProgram \n"];
@@ -641,8 +579,8 @@ i++;];
 
 For[i=1,i<=Length[BetaGauge],
 If[Length[getDimSPheno[BetaGauge[[i,1]]]]>0 &&getDimSPheno[BetaGauge[[i,1]]]=!={1},
-WriteString[sphenoSugra,"If (Maxval(Abs("<>SPhenoForm[BetaGauge[[i,1]]]<>")).gt.3._dp) Then \n"];,
-WriteString[sphenoSugra,"If (Abs("<>SPhenoForm[BetaGauge[[i,1]]]<>").gt.3._dp) Then \n"];
+WriteString[sphenoSugra,"If (Maxval(Abs("<>SPhenoForm[BetaGauge[[i,1]]]<>")).gt.3_dp) Then \n"];,
+WriteString[sphenoSugra,"If (Abs("<>SPhenoForm[BetaGauge[[i,1]]]<>").gt.3_dp) Then \n"];
 ];
 WriteString[sphenoSugra,"Write(*,*) \"Non pertubative coupling at GUT scale appearing for: "<>SPhenoForm[BetaGauge[[i,1]]] <>"\" \n"];
 WriteString[sphenoSugra,"If (ErrorLevel.gt.0) Call TerminateProgram \n"];
@@ -693,7 +631,7 @@ WriteString[sphenoSugra,"End Subroutine BoundaryHS \n \n"];
 
 
 GenerateBoundarySUSY:=Block[{i,j},
-Print["  Write 'BoundarySUSY'"];
+Print["Write BoundarySUSY"];
 
 WriteString[sphenoSugra,"Subroutine BoundarySUSY(gA,gB) \n"];
 
@@ -767,7 +705,7 @@ WriteString[sphenoSugra,"End Subroutine BoundarySUSY \n \n"];
 
 GenerateFirstGuess:=Block[{i,j,k}, 
 
-Print["  Write 'FirstGuess'"];
+Print["Write First Guess"];
 
 MakeSubroutineTitle["FirstGuess",Join[NewMassParameters,Join[listVEVs,listAllParameters]],{},{"kont"},sphenoSugra];
 
@@ -794,8 +732,6 @@ WriteString[sphenoSugra,"Logical::TwoLoopRGE_save, UseFixedScale_save \n"];
 WriteString[sphenoSugra,"Iname=Iname+1 \n"];
 WriteString[sphenoSugra,"NameOfUnit(Iname)=\"FirstGuess\" \n"];
 
-WriteString[sphenoSugra,"If (HighScaleModel.eq.\"LOW\") UseFixedGUTScale = .true. \n\n"];
-
 For[i=1,i<=Length[InitializationValues],
 WriteString[sphenoSugra,SPhenoForm[InitializationValues[[i,1]]] <>" = "<> SPhenoForm[InitializationValues[[i,2]]]<>" \n"];
 i++;];
@@ -814,11 +750,11 @@ WriteString[sphenoSugra, "End if \n"];
 
 If[AddOHDM=!=True,
 WriteString[sphenoSugra,"If (tanbeta.gt.3._dp) Then \n"];
-WriteString[sphenoSugra," tanb = tanbeta \n"];
-WriteString[sphenoSugra," tanbetaMZ = tanbeta \n"];
+WriteString[sphenoSugra,"tanb = tanbeta \n"];
+WriteString[sphenoSugra,"tanbetaMZ = tanbeta \n"];
 WriteString[sphenoSugra,"Else \n"];
-WriteString[sphenoSugra," tanb = 5._dp \n"];
-WriteString[sphenoSugra," tanbetaMZ = 5._dp \n"];
+WriteString[sphenoSugra,"tanb = 5._dp \n"];
+WriteString[sphenoSugra,"tanbetaMZ = 5._dp \n"];
 WriteString[sphenoSugra,"End if \n"];
 ];
 
@@ -827,33 +763,17 @@ WriteString[sphenoSugra,"mW2=mZ2*(0.5_dp+Sqrt(0.25_dp-Alpha_Mz*pi/(sqrt2*G_F*mZ2
 WriteString[sphenoSugra,"mW=Sqrt(mW2) \n"];
 WriteString[sphenoSugra,"cosW2=mw2/mZ2 \n"];
 WriteString[sphenoSugra,"sinW2=1._dp-cosW2 \n"];
-WriteString[sphenoSugra,"cosW=Sqrt(cosW2) \n \n"];
+WriteString[sphenoSugra,"cosW=Sqrt(cosW2) \n"];
 
 
-If[AddOHDM=!=True,
-WriteString[sphenoSugra,"If (tanbeta.gt.5._dp) Then \n"];
-];
-WriteString[sphenoSugra," k_fac=1._dp-alpha*(oo6pi & \n"];
-WriteString[sphenoSugra,"  &-oo2pi*(57._dp*Log(10._dp)+16._dp*Log(mf_u(3)/mZ))/9._dp) \n"];
-If[AddOHDM=!=True,
-WriteString[sphenoSugra,"Else \n"];
-WriteString[sphenoSugra," k_fac=1._dp \n"];
-WriteString[sphenoSugra,"End if \n"];
-];
+WriteString[sphenoSugra,"k_fac=1._dp-alpha*(oo6pi& \n"];
+WriteString[sphenoSugra,"&-oo2pi*(57._dp*Log(10._dp)+16._dp*Log(mf_u(3)/mZ))/9._dp) \n"];
 WriteString[sphenoSugra,"gauge(1)=Sqrt(20._dp*pi*alpha_mZ/(k_fac*3._dp*(1._dp-sinW2))) \n"];
 WriteString[sphenoSugra,"gauge(2)=Sqrt(4._dp*pi*alpha_mZ/(k_fac*sinW2)) \n"];
-If[AddOHDM=!=True,
-WriteString[sphenoSugra,"If (tanbeta.gt.5._dp) Then \n"];
-];
-WriteString[sphenoSugra," k_fac=1-AlphaS_mZ*oo2pi*(0.5_dp-4._dp*Log(10._dp) &\n"];
-WriteString[sphenoSugra,"  &-2._dp*Log(mf_u(3)/mZ)/3._dp) \n"];
-If[AddOHDM=!=True,
-WriteString[sphenoSugra,"Else \n"];
-WriteString[sphenoSugra," k_fac=1._dp \n"];
-WriteString[sphenoSugra,"End if \n"];
-];
+WriteString[sphenoSugra,"k_fac=1-AlphaS_mZ*oo2pi*(0.5_dp-4._dp*Log(10._dp)&\n"];
+WriteString[sphenoSugra,"&-2._dp*Log(mf_u(3)/mZ)/3._dp) \n"];
 WriteString[sphenoSugra,"gauge(3)=Sqrt(4._dp*pi*alphas_mZ) \n"];
-WriteString[sphenoSugra,"gauge(3)=Sqrt(4._dp*pi*alphas_mZ/k_fac) \n \n"];
+WriteString[sphenoSugra,"gauge(3)=Sqrt(4._dp*pi*alphas_mZ/k_fac) \n"];
 
 
 
@@ -957,19 +877,13 @@ WriteString[sphenoSugra,"UseFixedScale = UseFixedScale_save \n"];
 
 
 WriteString[sphenoSugra,"If (.Not.UseFixedScale) Then \n"];
-WriteString[sphenoSugra,"  If (HighScaleModel.eq.\"LOW\") Then \n "];
-WriteString[sphenoSugra,"    mudim=1000._dp**2 \n"]; 
-WriteString[sphenoSugra,"   Else \n"]; 
-WriteString[sphenoSugra,"    mudim= Real("<>SPhenoForm[RenormalizationScaleFirstGuess]<> ", dp) \n"]; 
-WriteString[sphenoSugra,"    mudim=Max(mf_u2(3),mudim) \n"];
-WriteString[sphenoSugra,"  End if  \n"]; 
+WriteString[sphenoSugra,"   mudim= Real("<>SPhenoForm[RenormalizationScaleFirstGuess]<> ", dp) \n"]; 
+WriteString[sphenoSugra,"   mudim=Max(mf_u2(3),mudim) \n"];
 WriteString[sphenoSugra,"   Call SetRGEScale(mudim) \n"];
 WriteString[sphenoSugra,"   UseFixedScale= .False. \n"];
 WriteString[sphenoSugra,"Else \n"];
 WriteString[sphenoSugra,"  mudim=GetRenormalizationScale() \n"];
 WriteString[sphenoSugra,"End If \n"];
-
-WriteString[sphenoSugra,"If (HighScaleModel.eq.\"LOW\") GUT_Scale = sqrt(mudim) \n "];
 
 WriteString[sphenoSugra,"TwoLoopRGE= .False. \n"];
 WriteString[sphenoSugra,"kont=0 \n"];
@@ -1116,7 +1030,6 @@ WriteString[file,"! ----------------------- \n \n"];
 
 WriteBoundaryConditionsSUSY[file_]:=Block[{i,j},
 WriteString[file,"\n \n ! --- Boundary conditions at SUSY-scale --- \n"];
-WriteString[sphenoSugra,"If (HighScaleModel.ne.\"LOW\") Then \n "];
 If[SeveralBoundaryConditions==False,
 For[i=1,i<=Length[BoundarySUSYScale],
 If[(BoundarySUSYScale[[i,2]]=!= RUNNING) &&  (BoundarySUSYScale[[i,2]]=!= TADPOLES),
@@ -1145,67 +1058,16 @@ i++;];
 j++;];
 WriteString[file,"End Select \n\n"];
 ];
-
-
-WriteString[sphenoSugra,"else If (HighScaleModel.Eq.\"LOW\") Then \n "];
-WriteString[sphenoSugra,"! Setting values \n "];
-For[i=1,i<=Length[listVEVsIN],
-If[MemberQ[ParametersToSolveTadpoles,listVEVs[[i]]]==False && FreeQ[{VEVSM1,VEVSM2,VEVSM},listVEVs[[i]]],
-WriteString[sphenoSugra,StringDrop[SPhenoForm[listVEVsIN[[i]]],-2] <>" = " <>SPhenoForm[listVEVsIN[[i]]]<>" \n "];
-];
-i++;];
-For[i=1,i<=Length[HighScaleList],
-If[MemberQ[ParametersToSolveTadpoles,HighScaleList[[i,2]]]==False,
-WriteString[sphenoSugra,StringDrop[SPhenoForm[highScaleIn[[i]]],-2] <>" = " <>SPhenoForm[highScaleIn[[i]]]<>" \n "];
-];
-i++;];
-For[i=1,i<=Length[LowScaleList],
-If[MemberQ[ParametersToSolveTadpoles,LowScaleList[[i,2]]]==False&& FreeQ[{leftCoupling,hyperchargeCoupling,strongCoupling,UpYukawa,DownYukawa,ElectronYukawa},LowScaleList[[i,1]]],
-WriteString[sphenoSugra,StringDrop[SPhenoForm[lowScaleIn[[i]]],-2] <>" = " <>SPhenoForm[lowScaleIn[[i]]]<>" \n "];
-];
-i++;];
-
-For[i=1,i<=Length[BoundaryLowScaleInput],
-WriteString[sphenoSugra,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>" = " <>SPhenoForm[BoundaryLowScaleInput[[i,2]]]<>"\n"];
-i++;];
-WriteString[sphenoSugra,"End if\n \n "];
-
 WriteString[file,"! ----------------------- \n \n"];
 ];
 
 WriteBoundaryConditionsEWSBrunningDown[file_]:=Block[{},
 WriteString[file,"\n \n ! --- Boundary conditions at EW-scale when running down --- \n"];
-
 If[SeveralBoundaryConditions===False,
 For[i=1,i<=Length[BoundaryEWSBScaleRunningDown],
 WriteString[file,SPhenoForm[BoundaryEWSBScaleRunningDown[[i,1]]]<>" = " <> SPhenoForm[BoundaryEWSBScaleRunningDown[[i,2]]]  <> "\n"];
 i++;];
 ];
-
-(*
-WriteString[sphenoSugra,"If (HighScaleModel.Eq.\"LOW\") Then \n "];
-WriteString[sphenoSugra,"! Setting values \n "];
-For[i=1,i<=Length[listVEVsIN],
-If[MemberQ[ParametersToSolveTadpoles,listVEVs[[i]]]==False && FreeQ[{VEVSM1,VEVSM2,VEVSM},listVEVs[[i]]],
-WriteString[sphenoSugra,StringDrop[SPhenoForm[listVEVsIN[[i]]],-2] <>" = " <>SPhenoForm[listVEVsIN[[i]]]<>" \n "];
-];
-i++;];
-For[i=1,i<=Length[HighScaleList],
-If[MemberQ[ParametersToSolveTadpoles,HighScaleList[[i,2]]]==False,
-WriteString[sphenoSugra,StringDrop[SPhenoForm[highScaleIn[[i]]],-2] <>" = " <>SPhenoForm[highScaleIn[[i]]]<>" \n "];
-];
-i++;];
-For[i=1,i<=Length[LowScaleList],
-If[MemberQ[ParametersToSolveTadpoles,LowScaleList[[i,2]]]==False&& FreeQ[{leftCoupling,hyperchargeCoupling,strongCoupling,UpYukawa,DownYukawa,ElectronYukawa},LowScaleList[[i,1]]],
-WriteString[sphenoSugra,StringDrop[SPhenoForm[lowScaleIn[[i]]],-2] <>" = " <>SPhenoForm[lowScaleIn[[i]]]<>" \n "];
-];
-i++;];
-
-For[i=1,i<=Length[BoundaryLowScaleInput],
-WriteString[sphenoSugra,SPhenoForm[BoundaryLowScaleInput[[i,1]]]<>" = " <>SPhenoForm[BoundaryLowScaleInput[[i,2]]]<>"\n"];
-i++;];
-WriteString[sphenoSugra,"End if\n \n "];
-*)
 WriteString[file,"! ----------------------- \n \n"];
 ];
 

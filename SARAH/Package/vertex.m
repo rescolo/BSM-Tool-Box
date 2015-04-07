@@ -154,7 +154,7 @@ Switch[partCode,
 	];	
 	Lag = LagFFS[Eigenstates];
 	vfactor=I;
-	LorentzNeeded=True;
+	LorentzNeeded=False;
 	subVacuum = vacuumS;,
 
 (* FFV *)
@@ -183,65 +183,8 @@ Switch[partCode,
 	lorStructure={1};
 	PartInv={teilchen};
 	];
-	Lag = LagFFV[Eigenstates]+ LagFFSV[Eigenstates];
+	Lag = LagFFV[Eigenstates];
 	LorentzNeeded=True;
-	subVacuum = vacuumV;,
-
-(* FFVV *)
-2020,
-	If[FreeQ[diracFermions[Eigenstates],getBlank[teilchen[[1]]]]==False || FreeQ[diracFermions[Eigenstates],getBlank[teilchen[[2]]]]==False,
-	FermFirst=True;
-	PartInv={{},{}};
-         For[i=1,i<=4,
-	   If[FermionQ[teilchen[[i]]]==False,
-	PartInv[[1]]=Join[PartInv[[1]],{teilchen[[i]]}];
-	PartInv[[2]]=Join[PartInv[[2]],{teilchen[[i]]}];,
-	If[Head[teilchen[[i]]]===bar,
-	ferm=conj[Reverse[RE[teilchen[[i]]]/.diracSub[Eigenstates]]];,
-	ferm=teilchen[[i]]/.diracSub[Eigenstates];
-	];
-	If[FermFirst==True,
-	PartInv[[1]] = Join[PartInv[[1]],{ferm[[2]]}];
-	PartInv[[2]] = Join[PartInv[[2]],{ferm[[1]]}];
-	FermFirst=False;,
-	PartInv[[1]] = Join[PartInv[[1]],{ferm[[1]]}];
-	PartInv[[2]] = Join[PartInv[[2]],{ferm[[2]]}];
-	];
-	];
-	 i++;];
-	lorStructure={PL,PR};,
-	lorStructure={1};
-	PartInv={teilchen};
-	];
-	Lag = LagFFVV[Eigenstates];
-	LorentzNeeded=True;
-	LorentzCond={WithGamma,WithGamma,WithGamma,WithGamma};
-	subVacuum = {};,
-
-(* FFSV *)
-2110,
-	If[FreeQ[diracFermions[Eigenstates],getBlank[teilchen[[1]]]]==False || FreeQ[diracFermions[Eigenstates],getBlank[teilchen[[2]]]]==False,
-	FermFirst=True;
-	PartInv={{},{}};
-         For[i=1,i<=4,
-           If[FermionQ[teilchen[[i]]]==False,
-	PartInv[[1]]=Join[PartInv[[1]],{teilchen[[i]]}];
-	PartInv[[2]]=Join[PartInv[[2]],{teilchen[[i]]}];,
-	If[Head[teilchen[[i]]]===bar,
-	ferm=conj[Reverse[RE[teilchen[[i]]]/.diracSub[Eigenstates]]];,
-	ferm=teilchen[[i]]/.diracSub[Eigenstates];
-	];
-	PartInv[[1]] = Join[PartInv[[1]],{ferm[[1]]}];
-	PartInv[[2]] = Join[PartInv[[2]],{ferm[[2]]}]; 
-	];
-	 i++;];  
-	lorStructure={PL,PR};,
-	lorStructure={1};
-	PartInv={teilchen};
-	];
-	Lag = LagFFSV[Eigenstates];
-	LorentzNeeded=True;
-	LorentzCond={WithGamma,WithGamma,WithGamma,WithGamma};
 	subVacuum = {};,
 
 (* SSV *)
@@ -366,9 +309,9 @@ Switch[partCode,
 	PartInv = Join[PartInv,{{Fermion[[1,1]],Fermion[[2,1]],NoFermion[[1]],NoFermion[[2]]}}];
 	PartInv = Join[PartInv,{{Fermion[[1,2]],Fermion[[2,1]],NoFermion[[1]],NoFermion[[2]]}}];
 		PartInv = Join[PartInv,{{Fermion[[1,2]],Fermion[[2,1]],NoFermion[[1]],NoFermion[[2]]}}];
-	lorStructure={PL,PR};
-	LorentzCond={NoGamma,NoGamma};
-	subVacuum = {};, 
+	lorStructure={LorentzProduct[PL,PL], LorentzProduct[PR,PL],LorentzProduct[PL,PR],LorentzProduct[PR,PR],LorentzProduct[PL,PL], LorentzProduct[PR,PL],LorentzProduct[PL,PR],LorentzProduct[PR,PR]};
+	LorentzCond={NoGamma,NoGamma,NoGamma,NoGamma,WithGamma,WithGamma,WithGamma,WithGamma};
+	subVacuum = {};,
 
 (* FFSS *)
 2200,
@@ -378,9 +321,15 @@ Switch[partCode,
 	Fermion = Fermion  /. bar[x_] -> invO[x]/. diracSub[Eigenstates] /. invO[{x_,y_}]->conj[{y,x}];
 	PartInv = Join[PartInv,{{Fermion[[1,1]],Fermion[[2,1]],NoFermion[[1]],NoFermion[[2]]}}];
 		PartInv = Join[PartInv,{{Fermion[[1,2]],Fermion[[2,2]],NoFermion[[1]],NoFermion[[2]]}}];
-		LorentzNeeded=True;
-		lorStructure={PL,PR};
-	LorentzCond={NoGamma,NoGamma};
+		PartInv = Join[PartInv,{{Fermion[[1,1]],Fermion[[2,2]],NoFermion[[1]],NoFermion[[2]]}}];
+		PartInv = Join[PartInv,{{Fermion[[1,2]],Fermion[[2,1]],NoFermion[[1]],NoFermion[[2]]}}];
+		PartInv = Join[PartInv,{{Fermion[[1,2]],Fermion[[2,1]],NoFermion[[1]],NoFermion[[2]]}}];
+	PartInv = Join[PartInv,{{Fermion[[1,1]],Fermion[[2,2]],NoFermion[[1]],NoFermion[[2]]}}];
+	PartInv = Join[PartInv,{{Fermion[[1,1]],Fermion[[2,1]],NoFermion[[1]],NoFermion[[2]]}}];
+	PartInv = Join[PartInv,{{Fermion[[1,2]],Fermion[[2,2]],NoFermion[[1]],NoFermion[[2]]}}];
+	LorentzNeeded=True;
+		lorStructure={LorentzProduct[PL,PL], LorentzProduct[PR,PL],LorentzProduct[PL,PR],LorentzProduct[PR,PR],LorentzProduct[PL,PL], LorentzProduct[PR,PL],LorentzProduct[PL,PR],LorentzProduct[PR,PR]};
+	LorentzCond={NoGamma,NoGamma,NoGamma,NoGamma,WithGamma,WithGamma,WithGamma,WithGamma};
 		subVacuum = {};,
 
 
@@ -448,10 +397,11 @@ subInvMatrices= Join[subInvMatrices,{conj[A_[b_,a_]]^2 Inv[A_][c_,b_]->conj[A[b,
 subInvMatrices= Join[subInvMatrices,subInvMatrices/.conj[x_]->x];
 
 
+
 tempSave2=temp;
 tempWithLorentz=makeSumAll[CalcDelta[temp /.subVert /. subAlways] /.subInvMatrices/. subFinal]  /.subAlways;
- tempWithLorentz = Simplify[tempWithLorentz,Trig->True] /. Inv[X_][a_,b_]->conj[X[b,a]] /. Mom[a_,b_]^2:>Mass[a /. diracSubBack[Eigenstates]]^2; 
-(* tempWithLorentz = tempWithLorentz/. Inv[X_][a_,b_]->conj[X[b,a]] /. Mom[a_,b_]^2:>Mass[a /. diracSubBack[Eigenstates]]^2; *)
+tempWithLorentz = Simplify[tempWithLorentz,Trig->True] /. Inv[X_][a_,b_]->conj[X[b,a]];
+
 
 If[tempWithLorentz=!=0,
 If[LorentzNeeded==True,
@@ -484,8 +434,7 @@ Coeff={tempWithLorentz};
 Lor={1};
 ];
 For[k=1,k<=Length[Coeff],
-(* Result = Join[Result,{{vfactor Coeff[[k]],AppendLorentz[Lor[[k]],lorStructure[[j]]]}}]; *)
-Result = Join[Result,{{vfactor Coeff[[k]],LorentzProduct[Lor[[k]],lorStructure[[j]]]}}];
+Result = Join[Result,{{vfactor Coeff[[k]],AppendLorentz[Lor[[k]],lorStructure[[j]]]}}];
 k++;];,
 Result = Join[Result,{{0,lorStructure[[j]]}}]; 
 ];
@@ -530,9 +479,7 @@ i++;];
 ];
 
 ExtractLorentz[x_]:=Block[{temp,i,j},
-saveLorIn=x;
-
-If[(FreeQ[x,lt3]==True) && (FreeQ[x,lt1]==True) &&(FreeQ[x,lt2]==True) &&(FreeQ[x,lt4]==True)&&(FreeQ[x,lor5]==True),
+If[(FreeQ[x,lt3]==True) && (FreeQ[x,lt1]==True) &&(FreeQ[x,lt2]==True) &&(FreeQ[x,lt4]==True),
 Lor={1};
 Coeff={x};
 Return[];
@@ -541,10 +488,6 @@ Return[];
 If[Head[x]=!=Times,
 temp=Simplify[x];,
 temp=x;
-];
-
-If[AddGravitino===True,
-temp  = Simplify[Expand[temp] /. LP[a___,gamma[b_],c___] Mom[A_,b_]:>LP[a,c] Mass[A/. diracSubBack[ALL]] /; getType[A]===F/. gamma[b_]Mom[A_,b_]:> Mass[A/. diracSubBack[ALL]] /; getType[A]===F /.g[c_,b_] Mom[a_,c_]->Mom[a,b] /. {lor3->lt5,lor4->lt5,lor5->lt5}];
 ];
 
 If[Head[temp]===Plus,
@@ -560,10 +503,7 @@ Coeff[[j]]*=temp2[[i]];
 i++;];
 j++;];,
 Lor={1};
-If[temp===0,
-Coeff={0};,
 Coeff={1};
-];
 For[i=1,i<=Length[temp],
 If[(FreeQ[temp[[i]],lt3]==False) || (FreeQ[temp[[i]],lt1]==False) ||(FreeQ[temp[[i]],lt2]==False) ||(FreeQ[temp[[i]],lt4]==False), 
 Lor[[1]]*=temp[[i]];,
@@ -613,56 +553,7 @@ Coeff[[1]]=-Coeff[[1]];
 ];
 ];
 
-Lor=Lor /. {lor3->lt5,lor4->lt5, lor5->lt5};
 
-];
-
-LP[x__]:=LorentzProduct[x];
-LorentzProduct[x_Plus]:=LorentzProduct/@x;
-conj[LorentzProduct[x__]]:=LorentzProduct@@Reverse[{x}];
-LorentzProduct[A__,LorentzProduct[B_],C__]:=LorentzProduct[A,B,C];
-LorentzProduct[B___,A__ Mom[b__],C___]:=LorentzProduct[B,A,C] Mom[b];
-LorentzProduct[B___, Mom[b__],C___]:=LorentzProduct[B,C] Mom[b];
-LorentzProduct[A___ ,c_?NumericQ,B___]:=c LorentzProduct[A,B];
-LorentzProduct[A___ ,c_?NumericQ C__,B___]:=c LorentzProduct[A,C,B];
-LorentzProduct[LorentzProduct[x__],C___]:=LorentzProduct[x,C];
-LorentzProduct[x_Plus,y__]:=LorentzProduct[#,y]&/@x;
-LorentzProduct[(A_ + B_) C_,y__]:=LorentzProduct[A C + B C,y] ;
-
-ExtractLorentzNew[vertexIN_]:=Block[{i,j,k,l,temp={},subs,current,coeff,vertex},
-LorentzHeaders={g,gamma,sig,Mom};
-LorentzInd={lt1,lt2,lt3,lt4,lt4,lt5};
-
-(* contract g_\mu\n u *)
-
-vertex=Expand[vertexIN]/. A_[b__,l1_] g[l1_,l_]->A[b,l];
-
-CS = Intersection[Cases[vertex,x_?((FreeQ[LorentzHeaders,Head[#]]==False && Head[#]=!=List )&),10]];
-
-If[CS=={}, (* only Lorentz singlets *)
-temp = Join[temp,{{1,term}}];,
-subs=DeleteCases[Reverse[Subsets[CS]],{}]; (* all possible combinations of Lorentz structures *)
-For[j=1,j<=Length[subs],
-current=Times@@subs[[j]]; 
-coeff= ExtractLorentzCoeff[vertex,current]; (* get the coefficients *)
-
-(* check, if there is no lorentz structure left in the coefficient *)
-If[coeff=!= 0 &&  Intersection[Cases[coeff,x_?((FreeQ[LorentzHeaders,Head[#]]==False && Head[#]=!=List )&),10]]=={},
-temp=Join[temp,{{current,coeff}}];
-];
-j++;];
-];
-Return[temp];
-
-];
-
-ExtractLorentzCoeff[vertex_,lor_]:=Block[{i,temp},
-If[Head[lor]===Times,
-temp=vertex;
-For[i=1,i<=Length[lor],temp=D[temp,lor[[i]]];i++;];
-Return[temp];,
-Return[D[vertex,lor]];
-];
 ];
 
 

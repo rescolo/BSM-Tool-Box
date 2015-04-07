@@ -1,6 +1,6 @@
 .PHONY: clean all
 
-NMSSMTools = $(CURDIR)/../../Packages/NMSSMTools_4.4.1
+NMSSMTools = ../../Packages/NMSSMTools_4.1.2
 CALCHEP =    ../../CalcHEP_src
 all:  aLib.a $(NMSSMTools)/main/nmhdecay 
 

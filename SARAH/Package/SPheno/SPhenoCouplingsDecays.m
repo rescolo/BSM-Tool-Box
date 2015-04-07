@@ -20,19 +20,15 @@
 
 
 GenerateSPhenoRunningCouplingsDecay:=Block[{i,currentRegime,readRegime},
-(*
 Print["--------------------------------------"];
 Print["Writing file for running couplings in decays "];
 Print["--------------------------------------"];
-*)
-
-Print[StyleForm["Write routine for running couplings in decays","Section",FontSize->12]];
 
 $sarahCurrentSPhenoDir=ToFileName[{$sarahCurrentOutputDir,"SPheno"}];
 sphenoCoup=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"CouplingsForDecays_"<>ModelName<>".f90"]];
 
 
-Print["  Writing module header"];
+Print["Writing Module Header"];
 
 WriteCopyRight[sphenoCoup];
 
@@ -60,21 +56,15 @@ WriteString[sphenoCoup, "Contains \n \n "];
 
 WriteString[sphenoCoup,"\n \n"];
 
-Print["  writing running couplings for 2-body decays: ",Dynamic[DynamicRunCoupD2B],"/",Length[savedDecayInfos]," (",Dynamic[DynamicRunCoupNameD2B],")"];
+Print["Writing running couplings"];
 For[i=1,i<=Length[savedDecayInfos],
-DynamicRunCoupD2B=i;
-DynamicRunCoupNameD2B=savedDecayInfos[[i,1]];
 GenerateRunningCouplings[savedDecayInfos[[i,1]],Flatten[savedDecayInfos[[i,2]]],"2B"];
 i++;];
-DynamicRunCoupNameD2B="All Done";
 
-Print["  writing running couplings for 3-body decays: ",Dynamic[DynamicRunCoupD3B],"/",Length[savedDecayInfos3Body]," (",Dynamic[DynamicRunCoupNameD3B],")"];
 For[i=1,i<=Length[savedDecayInfos3Body],
-DynamicRunCoupD3B=i;
-DynamicRunCoupNameD3B=savedDecayInfos3Body[[i,1]];
 GenerateRunningCouplings[savedDecayInfos3Body[[i,1]],savedDecayInfos3Body[[i,3]],"3B"];
 i++;];
-DynamicRunCoupNameD3B="All Done";
+
 
 (*
 For[i=1,i<=Length[savedDecayInfos3Body],
@@ -104,7 +94,6 @@ AppendSourceCode["RunSM.f90",sphenoCoup];
 WriteString[sphenoCoup,"End Module CouplingsForDecays_"<>ModelName<>"\n"];
 Close[sphenoCoup];
 ];
-
 
 
 GenerateRunningCouplings[particle_,couplings_,suffix_]:=Block[{i,j,i1,i2,i3,temp,res,alreadyCalculated, SPhenoCouplings},

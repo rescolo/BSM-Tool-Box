@@ -21,7 +21,7 @@
 
 
 BeginPackage["Susyno`LieGroups`"]
-{name,result,i,E6,g2,f4,n,j,k,weight,index,w,x,Adjoint,input,w,x,x$,ex,el,DimR,delta,dim,m,matrix,up,down,dim1,dim2,col,begin,b1,b2,b3,Casimir,b,e,b$,res,n2,v,RepMatrices,rep,Invariants,a,x1,x2,c,x3,y1,x1$,x2$,y1$,conj,expr,j1,j2,j3,res1,res2,var1,var2,var3,weights,l1,end,groups,group,max,adjoint,cas,ConjugateIrrep,DynkinIndex,repsWithSizeN,CongruencyClass, sR,TriangularAnomalyValue,InvariantsBaseMethod,reps,vector,i1,pos,dims,r, v1, v2,Conjugations,r1,r2,SU3};
+{name,result,i,E6,g2,f4,n,j,k,weight,index,w,x,Adjoint,input,w,x,x$,ex,el,DimR,delta,dim,m,matrix,up,down,dim1,dim2,col,begin,b1,b2,Casimir,b,e,b$,res,n2,v,RepMatrices,rep,Invariants,a,x1,x2,c,x3,y1,x1$,x2$,y1$,conj,expr,j1,j2,j3,res1,res2,var1,var2,var3,weights,l1,end,groups,group,max,adjoint,cas,ConjugateIrrep,DynkinIndex,repsWithSizeN,CongruencyClass, sR,TriangularAnomalyValue,InvariantsBaseMethod,reps,vector,i1,pos,dims,r, v1, v2,Conjugations};
 EndPackage[]
 BeginPackage["Susyno`SusyRGEs`"]
 EndPackage[]
@@ -49,29 +49,25 @@ $sarahRGEsDir=ToFileName[{$sarahDir,"RGEs"}]
 $sarahInputDir=ToFileName[{$sarahDir,"Input"}]
 $sarahSusynoDir=ToFileName[{$sarahDir,"Susyno"}]
 
-SA`Version = "4.5.1";
+SA`Version = "4.2.1";
 
 
 
 Off[CreateDirectory::ioerr];
-If[NumericQ[ToExpression[SA`Version]],
-Print[StyleForm["SARAH ","Section",FontSize->14],StyleForm[SA`Version ,"Section",FontSize->14] ],
-Print[StyleForm["SARAH ","Section",FontSize->14],StyleForm["(Private Version)","Section",FontSize->14] ]
-]
-Print["by Florian Staub, 2015"]
-Print[StyleForm["contributions by M. D. Goodsell, K. Nickel",FontSize->10] ];
+
+Print["SARAH ",SA`Version ]
+Print["by Florian Staub, 2014"]
 Print[""];
-Print[StyleForm["References:","Section",FontSize->10]]
+Print["References:"]
 Print["  Comput.Phys.Commun.181 (2010) 1077-1086. (arXiv:0909.2863[hep-ph])"]
 Print["  Comput.Phys.Commun.182 (2011) 808-833. (arXiv:1002.0840[hep-ph])"]
 Print["  Comput.Phys.Commun.184 (2013) 1792-1809. (arXiv:1207.0906[hep-ph])"]
 Print["  Comput.Phys.Commun.185 (2014) 1773-1790. (arXiv:1309.7223[hep-ph])"]
-Print[StyleForm["Download and Documentation:","Section",FontSize->10]]
+Print["Download and Documentation:"]
 Print["  http://sarah.hepforge.org"]
 Print[""]
-Print["Start evaluation of a model with:"];
-Print[StyleForm["   Start[\"Name of Model\"]","Section",FontSize->12]];
-Print["e.g. Start[\"MSSM\"] or Start[\"NMSSM\",\"CKM\"]"];
+Print["Begin evaluation of Model with:       ",StyleForm["Start[\"Name of Model\"]","Section",FontSize->12]];
+Print["  e.g. Start[\"MSSM\"] or Start[\"NMSSM\",\"CKM\"]"];
 Print["To get a list with all installed models, use ",StyleForm["ShowModels","Section",FontSize->12]];
 
 
@@ -91,14 +87,10 @@ Block[{$Path={$sarahPackageDir}},
 
 <<loopCorrections`; 
 
-<<TwoLoopEffPot`;
-
 <<wilson`;
 Get[ToFileName[$sarahSPhenoPackageDir,"SPheno.m"]];
 <<processes`;
 <<checkModel`; 
-
-<< TwoLoopPole`;
 
 ];
 
@@ -141,8 +133,7 @@ Block[{$Path={$sarahDir}},
 <<SARAH.config;
 ]
 
-Start[model_,sub___]:=Block[{i,startedtime},
-startedtime=TimeUsed[];
+Start[model_,sub___]:=Block[{i},
 InitArrays;
 ModelLoaded=False;
 i=1;
@@ -251,12 +242,12 @@ ModelNameLaTeX = Model`NameLaTeX;
 
 SetOptions[MakeVevacious,OutputFile->ModelName<>".vin"];
 
-(*Print["*****************************"];*)
-Print[StyleForm["Model files loaded   ","Section",FontSize->12]];
-Print["  Model    : ",StyleForm[Model`Name,"Section",FontSize->10] ];
-Print["  Author(s): ",StyleForm[Model`Authors,"Section",FontSize->10]];
-Print["  Date     : ",StyleForm[Model`Date,"Section",FontSize->10]];
-(*Print["*****************************"];*)
+Print["*****************************"];
+Print["Model files loaded   "];
+Print["  Model    : ",Model`Name ];
+Print["  Author(s): ",Model`Authors];
+Print["  Date     : ",Model`Date];
+Print["*****************************"];
 
 
 If[FileExistsQ[$sarahOutputDir]=!=True,CreateDirectory[$sarahOutputDir];];
@@ -273,7 +264,6 @@ CheckAnomalies;
 ];
 
 
-PrintAll[StyleForm["Derive Lagrangian","Section",FontSize->12]];
 If[SupersymmetricModel=!=False,
 GetSuperpotential;
 CalcSuperpotential;
@@ -287,8 +277,6 @@ If[SupersymmetricModel=!=False,
 CalcDTerms;
 CalcGaugino;
 ];
-If[AddGravitino===True && SupersymmetricModel=!=False,CalcGravitino;];
-
 CalcVectorBoson;
 (* GenerateSusyNoInvariants; *)
 CalcGaugeTransformations;
@@ -302,9 +290,7 @@ CleanUpGaugeConstants;
 SetOptions[MakeSPheno,Eigenstates ->Last[NameOfStates]];
 
 Print[""];
-Print["All Done. ",model," is ready!"];
-Print["(Model initialized in ",TimeUsed[]-startedtime,"s)"];
-
+Print["All Done... ",model," is ready!"];
 Print[""];
 Print[""];
 Print["Are you unfamiliar with SARAH? Use ",StyleForm["SARAH`FirstSteps","Section",FontSize->12]];,

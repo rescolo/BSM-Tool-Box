@@ -16,14 +16,14 @@ Model`Date = "2012-09-01";
 
 
 Global[[1]]={Z[2],RParity};
-Global[[2]]={U[1],NLep};  
+Global[[2]]={Z[2], NLep, Additive};  
 RpM = {-1,-1,1}; RpP = {1,1,-1};
 
 (* Vector Superfields *)
 
-Gauge[[1]]={B,   U[1], hypercharge, g1,False, RpM, 1};
-Gauge[[2]]={WB, SU[2], left,        g2,True,  RpM, 1};
-Gauge[[3]]={G,  SU[3], color,       g3,False, RpM, 1};
+Gauge[[1]]={B,   U[1], hypercharge, g1,False, RpM, 0};
+Gauge[[2]]={WB, SU[2], left,        g2,True,  RpM, 0};
+Gauge[[3]]={G,  SU[3], color,       g3,False, RpM, 0};
 
 
 (* Chiral Superfields *)
@@ -105,9 +105,9 @@ DEFINITION[EWSB][GaugeSectorOld]=
 DEFINITION[EWSB][VEVs]= 
   {{SHd0, {vd, 1/Sqrt[2]}, {sigmad, I/Sqrt[2]},{phid, 1/Sqrt[2]}},
    {SHu0, {vu, 1/Sqrt[2]}, {sigmau, I/Sqrt[2]},{phiu, 1/Sqrt[2]}},
-   {SvL,  {0,0}, {sigmaL, I/Sqrt[2]},{phiL, 1/Sqrt[2]}},
-   {SvR, {0, 0}, {sigmaR, I/Sqrt[2]},{phiR, 1/Sqrt[2]}},
-   {SsR, {0, 0}, {sigmaS, I/Sqrt[2]},{phis, 1/Sqrt[2]}}
+{SvL,  {vL,0}, {sigmaL, I/Sqrt[2]},{phiL, 1/Sqrt[2]}},
+{SvR, {vR, 0}, {sigmaR, I/Sqrt[2]},{phiR, 1/Sqrt[2]}},
+{SsR, {vs, 0}, {sigmas, I/Sqrt[2]},{phis, 1/Sqrt[2]}}
 
 };
 
@@ -118,7 +118,7 @@ DEFINITION[EWSB][VEVs]=
 DEFINITION[EWSB][MatterSector]= 
 {    {{SdL, SdR}, {Sd, ZD}},
      {{phiL,phiR,phis}, {SvsRe,Zphiv}},
-     {{sigmaL,sigmaR,sigmaS},{SvsI,Zsigmav}},
+     {{sigmaL,sigmaR,sigmas},{SvsI,Zsigmav}},
      {{SuL, SuR}, {Su, ZU}},
      {{SeL, SeR}, {Se, ZE}},
      {{phid, phiu}, {hh, ZH}},

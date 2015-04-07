@@ -62,6 +62,17 @@ BoundaryLowScaleInput={
 ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
+ConditionForMassOrdering={
+{Ah,
+"If ((Abs(ZA(1,3)).gt.Abs(ZA(2,3))).And.(MAh2(1).lt.1._dp).And.(MAh2(2).lt.1._dp)) Then \n
+   MAh2temp = MAh2 \n
+   ZAtemp = ZA \n
+   ZA(1,:) = ZAtemp(2,:) \n
+   ZA(2,:) = ZAtemp(1,:) \n
+   MAh2(1) = MAh2temp(2) \n
+   MAh2(2) = MAh2temp(1) \n
+End If \n \n"}
+};
 
 DefaultInputValues[1] = {m0 -> 70, m12 -> 400, TanBeta -> 10, SignumMu->1, Azero -> 300, Bzero->100, Lzero->0, LambdaInput -> 0.1, KappaInput -> 0.8,  ALambdaInput -> 200,  AKappaInput -> 30,  vSInput -> 600, MSInput->-100};
 

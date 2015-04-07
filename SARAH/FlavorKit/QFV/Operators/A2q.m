@@ -4,7 +4,7 @@
 (* Created at 11:59 on 3.4.2014 *) 
  
  
-PrintDebug["   ... ",A2q]; 
+Print["   ... ",A2q]; 
 NamesParticles =  {DownQuark, bar[DownQuark], PseudoScalar}; 
  NamesOperators =  {OAh2qSL, OAh2qSR}; 
  NameProcess = A2q; 
@@ -31,7 +31,7 @@ WriteCodeObservablePreSARAH[A2q][masses_,couplings_,tree_,wave_,penguin_,file_] 
 NeededMassesAllSaved[A2q] = masses; 
 NeededCouplingsAllSaved[A2q] = couplings; 
 NeededCombinations[A2q] = {{2, 1, ALL}, {3, 1, ALL}, {3, 2, ALL}}; 
-PrintDebug["     writing SPheno code for ",A2q]; 
+Print["     writing SPheno code for ",A2q]; 
 MakeSubroutineTitle["CalculateA2q",Flatten[{masses,couplings}],{"gt1","gt2","gt3","OnlySM"}, 
 {"OAh2qSL", "OAh2qSR"},file]; 
 WriteString[file,"! ---------------------------------------------------------------- \n"]; 

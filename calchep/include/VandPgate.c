@@ -1,5 +1,4 @@
 #include<string.h>
-#include <pthread.h>
 #include"VandP.h"
 
 
@@ -12,13 +11,13 @@ double usrfun_(char * name,int n_in, int n_out,double * pvect,char**pnames,int*p
 extern double  alphaspdf_(double *Q );
 extern void   getdatapath_(char* dirpath, int len);
 
-extern void  initpdfsetbynamem_(int *P,char *name, int len);
+extern void   initpdfsetbynamem_(int *P,char *name, int len);
 extern void  evolvepdfm_(int* P,double *x,double *Q,double *f);
 extern void  initpdfm_(int* P,int * nSet );
 extern void  numberpdfm_(int* P,int * nMax);
-extern double   alphaspdfm_(int*,double*);
 
-double alphaspdfm(int*S,double*Q){ return alphaspdfm_(S,Q);}
+
+double alpha_lha(double q ) { return alphaspdf_(&q); }
 
 void   getdatapath(char* dirpath, int len){ getdatapath_(dirpath, len);}
 void   initpdfsetbynamem(int *P,char *name, int len){ initpdfsetbynamem_(P,name,len);}

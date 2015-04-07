@@ -1,5 +1,3 @@
-(* ::Package:: *)
-
 (*
 
    $Id: WOMathematicaInterface.m 3666 2012-01-14 17:03:09Z cnspeckn $
@@ -11,13 +9,6 @@
    currently are the FR data structures, but I plan to refine this as I find time.
 
    Christian Speckner, 2009 - 2011
-*)
-
-(*
-   Maintaining the interface since 2013. For any question, please send a mail to
-   florian.staub@cern.ch
-  
-   Florian Staub
 *)
 
 (*
@@ -45,21 +36,16 @@ WO`BackendRevision = "$Id: WOMathematicaInterface.m 3666 2012-01-14 17:03:09Z cn
    be played to create copies in other namespaces if desired.
 *)
 
-Print["  Loading interface to WHIZARD"];
-Print["  by C. Speckner, maintained by F. Staub"];
-Print["  last change 29.06.2014"];
-Print[""];
-
 Options[WO`WriteOutput] = {
    WO`WOVertexList -> {},
    WO`WOModelName -> "unknown",
    WO`WOMaxNcf -> 4,
    WO`WOGauge -> WO`WOUnitarity,
    WO`WOGaugeParameter -> "Rxi",
-   WO`WOWhizardVersion -> "2.2.0",
+   WO`WOWhizardVersion -> "2.0.3",
    WO`WOVerbose -> False,
    WO`WOAutoGauge -> True,
-   WO`WOMaxCouplingsPerFile -> 150,
+   WO`WOMaxCouplingsPerFile -> 500,
    WO`WORunParameters -> {aS, G},
    WO`WOOutputDir -> Null,
    WO`WOOplotter -> False,
@@ -74,7 +60,7 @@ Options[WO`WriteOutput] = {
 };
 
 Options[WO`WriteExtParams] = {
-   WO`WOWhizardVersion -> "2.2.0",
+   WO`WOWhizardVersion -> "2.0.3",
    WO`WOEParamList -> {},
    WO`WOModelName -> "unknown",
    WO`WOMassList -> {},
@@ -105,16 +91,14 @@ WO`WOWhizardVersion::usage = (""
    <> "   \"1.93\" : >= 1.93\n"
    <> "   \"1.96\" : >= 1.96\n"
    <> "   \"2.0\"  : 2.0 - 2.0.2\n"
-   <> "   \"2.0.3\"  : 2.0.3 - 2.1.7\n"
-   <> "   \"2.2.0\": 2.2.0 - 2.2.2\n"
-   <> "   \"2.2.3\": 2.2.3 - 2.2.3 ");
+   <> "   \"2.0.3\": 2.0.3 (default)");
 WO`WOVerbose::usage = (""
    <> "Verbose output. At the moment, this enables more detailed information "
    <> "on skipped vertices. Default: False");
 WO`WOAutoGauge::usage = (""
    <> "Automagically assign goldstone boson masses and add gauge parameter if necessary. Default: True");
 WO`WOMaxCouplingsPerFile::usage = (""
-   <> "Maximum number of couplings that get calculated in one FORTRAN module. Default: 150");
+   <> "Maximum number of couplings that get calculated in one FORTRAN module. Default: 500");
 WO`WORunParameters::usage = (""
    <> "A list of all derived parameters which should be evolved together with the strong coupling. "
    <> "Default: {aS, G}");
@@ -151,10 +135,10 @@ WO`GlobalSetup := Module[{},
    WO`appendAlphas = False;
    WO`gauge = WO`WOUnitarity;
    WO`gsym = "Rxi";
-   WO`whizv = "2.2.0";
+   WO`whizv = "2.0.3";
    WO`verbose = False;
    WO`autogauge = False;
-   WO`MaxCouplingsPerFile = 150;
+   WO`MaxCouplingsPerFile = 500;
    WO`RunParameters = {};
    WO`fast = True;
    WO`vlist = {};
@@ -192,7 +176,7 @@ WO`GlobalSetup := Module[{},
          {"_{2}", "_"},
          (* Leading underscores are moved to the end. *)
          {"^(_+)(.*)$", "$2$1"}} /. Rule -> RuleDelayed;
-(*   Print["WOMathematicaInterface.m running, revision: $Id: WOMathematicaInterface.m 3666 2012-01-14 17:03:09Z cnspeckn $"]; *)
+   Print["WOMathematicaInterface.m running, revision: $Id: WOMathematicaInterface.m 3666 2012-01-14 17:03:09Z cnspeckn $"];
 ];
 
 (* Conditionally redefine FortranForm *)
@@ -246,10 +230,10 @@ WO`WriteOutput[options___]:=Module[{dirName, modelname, onames, frpars, Addpar,
       Print["ERROR: WO`WriteOutput: unknown options: " <> WO`Concat[ToString /@ onames, " , "]];
       Return[Null];
    ];
-   Print["Used options to write files: "];
+
    (* Handle options; model short name *)
    modelname = WO`SanitizeString[ToLowerCase[WO`WOModelName /. opts]];
-   Print["   Short model name is \"",StyleForm[modelname,"Section",FontSize->10],"\""];
+   Print["Short model name is \"" <> modelname <> "\""];
   
    (* The diverse lists *)
    WO`masslist = WO`WOMassList /. opts;
@@ -261,34 +245,34 @@ WO`WriteOutput[options___]:=Module[{dirName, modelname, onames, frpars, Addpar,
    (* Maximum number of color flows *)
    WO`ncfmax = WO`WOMaxNcf /. opts;
    If[Not[IntegerQ[WO`ncfmax]] || WO`ncfmax < 2,
-      Print["   ERROR: WOMaxNcf must be a integer >= 2!"];
+      Print["ERROR: WOMaxNcf must be a integer >= 2!"];
       Return[Null];
    ];
    
    (* Gauge *)
    WO`gauge = WO`WOGauge /. opts;
    If[Not[MatchQ[WO`gauge, WO`WOUnitarity|WO`WOFeynman|WO`WORxi]],
-      Print["   ERROR: unknown gauge requested, take a look at ?WOGauge."];
+      Print["ERROR: unknown gauge requested, take a look at ?WOGauge."];
       Return[Null];
    ];
-   Print["   Gauge: " <> Switch[WO`gauge, WO`WOUnitarity, "Unitarity", WO`WOFeynman,
+   Print["Gauge: " <> Switch[WO`gauge, WO`WOUnitarity, "Unitarity", WO`WOFeynman,
       "Feynman", WO`WORxi, "Rxi", _, "unknown - BUG!"]];
    
    (* Gauge Symbol *)
    WO`gsym = Symbol[ToString[WO`WOGaugeParameter /. opts]];
-   If[WO`gauge === WO`WORxi, Print["   Gauge symbol: \"" <> ToString[WO`gsym] <> "\""]];
+   If[WO`gauge === WO`WORxi, Print["Gauge symbol: \"" <> ToString[WO`gsym] <> "\""]];
    
    (* WHIZARD version *)
    WO`whizv = ToString[WO`WOWhizardVersion /. opts];
-   Print["   Generating code for WHIZARD / O'Mega version " <> WO`whizv];
+   Print["Generating code for WHIZARD / O'Mega version " <> WO`whizv];
    
    (* Verbosity *)
    WO`verbose = WO`WOVerbose /. opts;
    If[WO`verbose =!= True && WO`verbose =!= False,
-      Print["   ERROR: WOVerbose must be either True or False."];
+      Print["ERROR: WOVerbose must be either True or False."];
       Return[Null];
    ];
-   If[WO`verbose, Print["   Verbose output enabled."]];
+   If[WO`verbose, Print["Verbose output enabled."]];
 
    (* Vertex processing progress meter *)
    WO`progress = WO`WOProgress /. opts;
@@ -296,14 +280,14 @@ WO`WriteOutput[options___]:=Module[{dirName, modelname, onames, frpars, Addpar,
    (* Automagic goldstone masses *)
    WO`autogauge = WO`WOAutoGauge /. opts;
    If[WO`autogauge =!= True && WO`autogauge =!= False,
-      Print["   ERROR: WOAutoGauge must be either True or False"];
+      Print["ERROR: WOAutoGauge must be either True or False"];
       Return[Null];
    ];
    If[Not[FreeQ[{WO`WOFeynman, WO`WORxi}, WO`gauge]] && WO`autogauge,
-      Print["   Automagically assigning Goldstone boson masses..."];
+      Print["Automagically assigning Goldstone boson masses..."];
    ];
    If[WO`gauge === WO`WORxi && WO`autogauge === True,
-      Print["   Adding gauge symbol to parameter list..."];
+      Print["Adding gauge symbol to parameter list..."];
       gsymfixed = WO`RegisterEParam[WO`gsym, 1, "Rxi gauge parameter"];
       If [ToString[gsymfixed] =!= ToString[WO`gsym],
          Print[""
@@ -317,17 +301,17 @@ WO`WriteOutput[options___]:=Module[{dirName, modelname, onames, frpars, Addpar,
    (* oplotter ? *)
    oplotter = WO`WOOplotter /. opts;
    If[oplotter =!= True && oplotter =!= False,
-      Print["   ERROR: WOOplotter must be either True or False"];
+      Print["ERROR: WOOplotter must be either True or False"];
       Return[Null];
    ];
    
    (* Maximum number of couplings per file. *)
    WO`MaxCouplingsPerFile = WO`WOMaxCouplingsPerFile /. opts;
    If[Not[IntegerQ[WO`MaxCouplingsPerFile]] || WO`MaxCouplingsPerFile <= 0,
-      Print["   ERROR: WOMaxCouplingsPerFile must be an positive integer!"];
+      Print["ERROR: WOMaxCouplingsPerFile must be an positive integer!"];
       Return[Null];
    ];
-   Print["   Maximum number of couplings per FORTRAN module: " <> ToString[WO`MaxCouplingsPerFile]];
+   Print["Maximum number of couplings per FORTRAN module: " <> ToString[WO`MaxCouplingsPerFile]];
    
    (* Which parameters should we run if \alpha_s is evolved? *)
    WO`RunParameters = WO`WORunParameters /. opts;
@@ -335,19 +319,19 @@ WO`WriteOutput[options___]:=Module[{dirName, modelname, onames, frpars, Addpar,
    (* Be pendantic? *)
    WO`fast = WO`WOFast /. opts;
    If[WO`fast =!= True && WO`fast =!= False,
-      Print["   ERROR: WOFast must be either True or False"];
+      Print["ERROR: WOFast must be either True or False"];
       Return[Null];
    ];
-   If[WO`fast, Print["   Extensive lorentz structure checks disabled."]];
+   If[WO`fast, Print["Extensive lorentz structure checks disabled."]];
 
    (* Check if the version is OK *)
-   Catch[WO`whizvn[], WO`EAbort, (Print["   ERROR: invalid WHIZARD version"]; Return[])&];
+   Catch[WO`whizvn[], WO`EAbort, (Print["ERROR: invalid WHIZARD version"]; Return[])&];
 
    (* -> Now it is time for version-dependent checks and status messages *)
-   If[WO`whizv19x[], Print["   Maximum number of color flows: " <> ToString[WO`ncfmax]]];
+   If[WO`whizv19x[], Print["Maximum number of color flows: " <> ToString[WO`ncfmax]]];
    Switch[{oplotter, WO`whizv19x[]},
       {True, False},
-         Print["   WARNING: oplotter output is not supported with WOWhizardVersion->\"2.0\", disabling..."];
+         Print["WARNING: oplotter output is not supported with WOWhizardVersion->\"2.0\", disabling..."];
          oplotter = False,
       {False, True},
          Print["Oplotter output disabled."],
@@ -401,11 +385,11 @@ WO`WriteOutput[options___]:=Module[{dirName, modelname, onames, frpars, Addpar,
       WO`vlist = Evaluate[ReleaseHold[WO`WOVertexList /. opts]];
       If[Head[WO`vlist] =!= List,
          Print[WO`vlist];
-         Print["   ERROR: vertex list invalid!"];
+         Print["ERROR: vertex list invalid!"];
          Return[];
       ];
       If[Length[WO`vlist] == 0,
-         Print["   Vertex list empty; nothing to, aborting..."];
+         Print["Vertex list empty; nothing to, aborting..."];
          Return[];
       ];
 
@@ -416,7 +400,7 @@ WO`WriteOutput[options___]:=Module[{dirName, modelname, onames, frpars, Addpar,
       ];
       WO`omeganame = WO`oplname = WO`whizname = ToLowerCase[modelname];
 
-      (* Print["   Writing files to ",dirName,"\n"]; *)
+      Print["Writing files to ",dirName,"\n"];
 
       WO`WriteOmega[omegadir]; 
       If[oplotter, WO`WriteOpl[opldir]];
@@ -452,10 +436,7 @@ WO`GaugeName[g_] := Switch[g, WO`WOUnitarity, "Unitarity", WO`WOFeynman, "Feynma
 WO`GaugeName[] := WO`GaugeName[WO`gauge];
 
 (* Version query helpers *)
-WO`whizvn[v_] := Switch[v, "1.93", 193, "1.95", 195, "1.96", 196, 
-"2.0", 200, "2.0.3", 203, "2.0.4", 204, "2.0.5", 205, "2.0.6", 206, "2.0.7", 207, 
-"2.1.0", 210, "2.1.1", 211, 
-"2.2.0", 220, "2.2.1", 221, "2.2.2", 222, "2.2.3", 223, _,
+WO`whizvn[v_] := Switch[v, "1.93", 193, "1.95", 195, "1.96", 196, "2.0", 200, "2.0.3", 203, "2.0.4", 204, "2.0.5", 205, "2.0.6", 206, "2.0.7", 207, "2.1.0", 210, "2.1.1", 211, _,
    Throw["BUG: invalid version in WO`whizvn, please report", WO`EAbort]];
 WO`whizvn[] := WO`whizvn[WO`whizv];
 WO`whizv2x[] := WO`whizvn[] >= WO`whizvn["2.0"];
@@ -564,14 +545,6 @@ WO`CommentMaker[s_, beg_, line_, end_] :=
 WO`StringReplaceAll[s_, l_List] := FixedPoint[StringReplace[#, l]&, s];
 WO`StringReplaceAll[s_, l_] := WO`StringReplaceAll[s, {l}];
 
-(*
-StringDrop[
- StringJoin[((# <> "& \n") & /@ (StringSplit[
-       StringReplace[
-        ToString[FortranForm[WO`cpldeflist[[1, 2]]]], {}]] //. {d___, 
-        a_, b_, c___} :> {d, StringJoin[a, b], 
-         c} /; (StringLength[a] + StringLength[b] ) < 75))], -3]
-*)
 (* Split a FORTRAN statement into lines of approximately 80 characters, indenting by 3 blanks and adding "&" *)
 WO`FortranSplit[s_] := WO`FortranSplit[s, 80, 3];
 WO`FortranSplit[str_, min_, ni_] := Module[{spacer, helper},
@@ -616,13 +589,8 @@ WO`ExtendString[s_, n_] := If[StringLength[s] < n,
  * Lines don't get broken if this would intruduce a blank line.                *)
 WO`SmartAppend[source_, target_, n_, cont_] := Module[{spacer, lastline, firstline},
    If[n > 1, spacer = StringJoin @@ Table[" ", {i, 1, n}], spacer = ""];
-(*
    lastline = StringCases[target, RegularExpression["[^\n]*$"]][[1]];
    firstline = StringCases[source, RegularExpression["^[^\n]*"]][[1]];
-*)
-    lastline=StringSplit[target,"\n"];
-If[lastline==={},lastline="";,lastline=lastline[[-1]];];
-    firstline=StringSplit[source,"\n"][[1]];
    If[StringLength[lastline <> firstline] <= 80 || StringMatchQ[lastline, RegularExpression["^\\s*$"]],
       target <> source, target <> cont <> "\n" <> spacer <> source]
 ];
@@ -659,11 +627,10 @@ WO`Concat[{}, _] := "";
 
 (* Transform a expression into sindarin via a piece of cheatery using FORTRAN form and
    regular expressions. *)
-
 WO`SindarinForm[e_] := Module[{},
    If[Not[FreeQ[e, Re] && FreeQ[e, Im] && FreeQ[e, Complex]],
       Print[""
-         <> "WARNING: parameter defined as real carries complex value. Continuing operation, "
+         <> "WARNING: complex calculus is not yet implemented in sindarin. Continuing operation, "
          <> "but the output is most likely dysfunctional."
       ]];
    WO`StringReplaceAll[ToString[FortranForm[e /.
@@ -671,29 +638,6 @@ WO`SindarinForm[e_] := Module[{},
          Sech[x_] :> 1/WO`cosh[x], Csch[x_] :> 1/WO`sinh[x] }
    ]], WO`f2sin]
 ];
-
-
-(*
-WO`SindarinForm[e_] := Module[{},
-   If[Not[FreeQ[e, Re] && FreeQ[e, Im] && FreeQ[e, Complex]],
-      Print[""
-         <> "WARNING: complex calculus is not yet implemented in sindarin. Continuing operation, "
-         <> "but the output is most likely dysfunctional."
-      ];
-   WO`StringReplaceAll[ToString[FortranForm[Re[e] /. {Re[x_]->x,Im[x_]->0} /.
-      {   Power[E, x_] :> WO`exp[x], Sec[x_] :> 1/WO`cos[x], Csc[x_] :> 1/WO`sin[x],
-         Sech[x_] :> 1/WO`cosh[x], Csch[x_] :> 1/WO`sinh[x] }
-   ]]<>" + I*"<>ToString[FortranForm[Im[e]/. {Re[x_]->x,Im[x_]->0} /.
-      {   Power[E, x_] :> WO`exp[x], Sec[x_] :> 1/WO`cos[x], Csc[x_] :> 1/WO`sin[x],
-         Sech[x_] :> 1/WO`cosh[x], Csch[x_] :> 1/WO`sinh[x] }
-   ]], WO`f2sin],
-   WO`StringReplaceAll[ToString[FortranForm[e /.
-      {   Power[E, x_] :> WO`exp[x], Sec[x_] :> 1/WO`cos[x], Csc[x_] :> 1/WO`sin[x],
-         Sech[x_] :> 1/WO`cosh[x], Csch[x_] :> 1/WO`sinh[x] }
-   ]], WO`f2sin]
-  ]
-]; *)
-
 
 (* Split a sindarin expression into multiple lines. *)
 WO`SindarinSplit[s_] := WO`FortranSplit[s, 80, 3];
@@ -721,10 +665,10 @@ WO`VersionCheck[dir_] := Module[{handle, v},
       handle = OpenRead[ToFileName[dir, "WhizardVersion"]];
       v = StringReplace[Read[handle, String], RegularExpression["\\s+"] -> ""];
       Close[handle];
-    (*  If[v != WO`whizv,
+      If[v != WO`whizv,
          Throw["ERROR: output directory already contains files generated for a differen WHIZARD / O'Mega version",
             WO`EAbort]
-      ]; *)
+      ];
    ];
 ];
 
@@ -741,10 +685,9 @@ WO`CopyAux[srcdir_, destdir_] := Module[{CopyHelper},
             StringReplace[#, RegularExpression[
                "^.*" <> WO`fileSlashRE <> "([^" <> WO`fileSlashRE <> "]+)$"] :> "$1"]])&];
          Catch[
-            (*If[( Print["Deleting " <> # <> " ..."]; DeleteFile[#]) === $Failed,*)
-            If[(  DeleteFile[#]) === $Failed,
+            If[(Print["Deleting " <> # <> " ..."]; DeleteFile[#]) === $Failed,
                Throw[Null, WO`EFileSystem]]& /@ destfiles;
-            If[((*Print["Copying " <> # <> " ..."];*)
+            If[(Print["Copying " <> # <> " ..."];
                   CopyFile[ToFileName[{srcdir, stem}, #], ToFileName[destdir, #]]) === $Failed,
                Throw[Null, WO`EFileSystem]]& /@ filenames;
          , WO`EFileSystem,
@@ -755,10 +698,7 @@ WO`CopyAux[srcdir_, destdir_] := Module[{CopyHelper},
    ];
    If[WO`whizv2x[],
       CopyHelper[{filea_, fileb_}] := Module[{src, dest, sdir, sfile, ddir, dfile},
-        If[WO`whizvn[]>222,
-         src = ToFileName[{srcdir, "2.2.3"}, filea];,
          src = ToFileName[{srcdir, "2.0"}, filea];
-         ];
          dest = ToFileName[destdir, fileb];
          StringReplace[src, RegularExpression[
             "^(.*" <> WO`fileSlashRE <> ")([^" <> WO`fileSlashRE <> "]+)$"] :>
@@ -768,11 +708,10 @@ WO`CopyAux[srcdir_, destdir_] := Module[{CopyHelper},
             (ddir = "$1"; dfile = "$2"; "")];
          Catch[
             If[Length[FileNames[{dfile}, ddir]] != 0,
-               (*If[(Print["Deleting " <> dest <> " ..."]; DeleteFile[dest]) === $Failed,*)
-            If[( DeleteFile[dest]) === $Failed,
+               If[(Print["Deleting " <> dest <> " ..."]; DeleteFile[dest]) === $Failed,
                   Throw[Null, WO`EFileSystem]]
             ];
-            If[((*Print["Copying " <> sfile <> " ..."];*) CopyFile[src, dest]) === $Failed,
+            If[(Print["Copying " <> sfile <> " ..."]; CopyFile[src, dest]) === $Failed,
                Throw[Null, WO`EFileSystem]];
          ,
             WO`EFileSystem, Throw["ERROR copying auxiliary files...", WO`EAbort]&
@@ -794,21 +733,21 @@ WO`CopyAux[srcdir_, destdir_] := Module[{CopyHelper},
 WO`WriteOmega[dir_] := Module[{prefix, drvname, cdrvname},
    prefix = ToFileName[dir, WO`omeganame];
    If [WO`whizv2x[],
-      (* Print["Writing O'Mega module signature to " <> prefix <> "_mdl.mli ..."]; *)
+      Print["Writing O'Mega module signature to " <> prefix <> "_mdl.mli ..."];
       WO`WriteOmegaSig[prefix <> "_mdl.mli"];
-      (* Print["Writing O'Mega module to " <> prefix <> "_mdl.ml ..."]; *)
+      Print["Writing O'Mega module to " <> prefix <> "_mdl.ml ..."];
       WO`WriteOmegaStruct[prefix <> "_mdl.ml"];
       drvname = ToFileName[dir, "omega_" <> WO`omeganame <> ".ml"];
-      (* Print["Writing O'Mega binary driver to " <> drvname <> " ..."]; *)
+      Print["Writing O'Mega binary driver to " <> drvname <> " ..."];
       WO`WriteOmegaBinary[drvname, "", WO`ncfmax];
    ,
-      (* Print["Writing O'Mega module signature to " <> prefix <> ".mli ..."]; *)
+      Print["Writing O'Mega module signature to " <> prefix <> ".mli ..."];
       WO`WriteOmegaSig[prefix <> ".mli"];
-      (* Print["Writing O'Mega module to " <> prefix <> ".ml ..."]; *)
+      Print["Writing O'Mega module to " <> prefix <> ".ml ..."];
       WO`WriteOmegaStruct[prefix <> ".ml"];
       drvname = ToFileName[dir, "f90_" <> WO`omeganame <> ".ml"];
       cdrvname = ToFileName[dir, "f90_" <> WO`omeganame <> "_Col.ml"];
-      (* Print["Writing O'Mega binary drivers to " <> drvname <> " and " <> cdrvname <> " ..."]; *)
+      Print["Writing O'Mega binary drivers to " <> drvname <> " and " <> cdrvname <> " ..."];
       WO`WriteOmegaBinary[drvname, cdrvname, WO`ncfmax];
    ];
 ];
@@ -855,7 +794,7 @@ WO`WriteOmegaSig[file_] := Module[{handle, contents},
 
 (* During the initial particle list parsing, a number of hashes is filled for later use. These are: *
  * "constr" O'Mega constructor / "lrep" lorentz representation / "oname" O'Mega name /              *
- * "colrep" SU (3) representation / "pdg" pdg number / "mass" mass / "revpdg" pdg -> tag,            *
+ * "colrep" SU(3) representation / "pdg" pdg number / "mass" mass / "revpdg" pdg -> tag,            *
  * "whizname" WHIZARD name, "conj" conjugation, "cpl" coupling <-> symbol                           *
  * "oids" omega identifier register, "goldstone" goldstone flag, "HC": WO`HC helper                 *)
 
@@ -1235,10 +1174,6 @@ WO`WriteOmegaStruct[file_] := Module[{handle, contents, preamble, flavor, color,
          <> StringJoin @@ lconjugators
          <> "\n(* Conjugation for the masses *)\n\n"
          <> conjugate;
-      orders = "(* Orders *) \n\n"
-         <> "type orders = int * int \n\n"
-         <>  "let orders = function  \n"
-         <>  "    | _ -> (0,0) \n\n";
       propagator = ""
          <> "let propagator = \n"
          <> "   let msg = \"" <> WO`omeganame <> ".Implementation: invalid lorentz rep in propagator\" in function\n"
@@ -1507,8 +1442,7 @@ WO`WriteOmegaStruct[file_] := Module[{handle, contents, preamble, flavor, color,
       (* Digest a single vertex *);
       DigestVertex[vspec_] := Module[{tag, partlist, coupling, arity, Digest3ary, Digets4ary,
          Digestnary, CheckLorentz, LInd, SInd, Met, CheckLorentzBackend, RegisterVertex, ID, Futile},
-         proNrWO=nproc+1;
-         proCoupWO=vspec[[2]];
+
          (* This tries to decompose a lorentz sructure in a given set of structures ("bricks"). *
           * These are assumed to decompose into disjunct sums of atoms, as is the structure. If *
           * successfull, a list if the resulting coefficients is returned.                      *)
@@ -1533,8 +1467,7 @@ WO`WriteOmegaStruct[file_] := Module[{handle, contents, preamble, flavor, color,
               (* Push total coefficient to the coefficient list *)
               AppendTo[coeffs, coeff];
               (* Return remainder. *)
-              (* res=Simplify[mstruct - coeff * brick, Trig -> False];, *)
-              res=Expand[mstruct - coeff * brick];,
+              res=Simplify[mstruct - coeff * brick, Trig -> False];,
               coeffs={mstruct};
               res=0;
               ];
@@ -1918,7 +1851,7 @@ WO`WriteOmegaStruct[file_] := Module[{handle, contents, preamble, flavor, color,
                      (* If it worked, check if the decomposition can be split in a prefactor and *
                       * a list of integers.                                                      *)
                      If[!TrueQ[cpl[[1]] == 0],
-                        fact = WO`Simplify[cpl / cpl[[1]], Trig -> False];
+                        fact = Simplify[cpl / cpl[[1]], Trig -> False];
                         nums = Numerator[fact];
                         dens = Denominator[fact];
                      ];
@@ -1990,7 +1923,7 @@ WO`WriteOmegaStruct[file_] := Module[{handle, contents, preamble, flavor, color,
                   {False, Futile[_]}, Throw[val, tag],
                   {False, _},
                      partlist = vspec[[2]] /. CC -> WO`HC;
-                     coupling = Simplify[vspec[[3]], ExcludedForms->{x_/;(FreeQ[x, Index] && FreeQ[x, Dot])}];
+                     coupling = FullSimplify[vspec[[3]], ExcludedForms->{x_/;(FreeQ[x, Index] && FreeQ[x, Dot])}];
                      Switch[arity, 3, Digest3ary[], 4, Digest4ary[], _, Digestnary[]]
                ],
             WO`ESkip, Function[{val, tag},
@@ -2005,11 +1938,9 @@ WO`WriteOmegaStruct[file_] := Module[{handle, contents, preamble, flavor, color,
             ]];
          ]];
          nproc++;
-(*
          If[WO`progress > 0 && Mod[nproc, WO`progress] == 0,
             Print["   " <> ToString[nproc] <> " of " <> ToString[Length[WO`vlist]] <> " vertices processed..."]
          ];
-*)
       ];
 
       (* Put the particle lists into a canonical order w.r.t. their lorentz representations. *
@@ -2023,7 +1954,7 @@ WO`WriteOmegaStruct[file_] := Module[{handle, contents, preamble, flavor, color,
          prepend = If[FreeQ[#[[1]], CC],
             Prepend[#, WO`hash["lrep", PartName[ #[[1]] ]]]
          ,
-            (* We _need _ the majorana modules for clashing arrow type stuff... *)
+            (* We _need_ the majorana modules for clashing arrow type stuff... *)
             WO`havemajoranas = True;
             Prepend[#, Switch[WO`hash["lrep", PartName[#[[1]] /. CC -> WO`HC]],
                (* As we have mapped CC to HC, we have an extra conjugation. *)
@@ -2038,15 +1969,12 @@ WO`WriteOmegaStruct[file_] := Module[{handle, contents, preamble, flavor, color,
          vlist = {tagger[#[[1]]], remove /@ #[[1]], #[[2]]}& /@ vlist;
       ];
       (* Process the vertices. *)
-      Print["Processing vertices: ",Dynamic[proNrWO] ,"/",Length[vlist]". (",Dynamic[proCoupWO],")"];
       DigestVertex /@ vlist;
-      proCoupWO="All done";
-      Print["   ... processed a total of " <> ToString[nproc] <> " vertices, kept "
+      Print["processed a total of " <> ToString[nproc] <> " vertices, kept "
          <> ToString[nproc - nskipped] <> " of them and threw away " <> ToString[nskipped]
          <> ", " <> ToString[nghost] <> " of which contained ghosts"
          <> If[WO`gauge === WO`WOUnitarity, " or goldstone bosons", ""] <> "."];
       (* Create constant type and translator. *)
-
       constant = ""
          <> "type constant =\n"
          <> WO`Indent[" | " <> WO`SmartConcat[#[[1]]& /@ WO`cpldeflist, " | "], 2]
@@ -2062,12 +1990,11 @@ WO`WriteOmegaStruct[file_] := Module[{handle, contents, preamble, flavor, color,
       (* Generate the actual vertex list. *)
       VlistMaker[Hold[list_]] := WO`Concat[
          ("(" <> #[[1]] <> "),\n " <> #[[2]] <> ",\n " <> #[[3]])& /@ list, "\n;\n"];
-      VlistSmartMaker[Hold[list_], lname_] :=Block[{},
+      VlistSmartMaker[Hold[list_], lname_] :=
          If[Length[list] > 0,
-            Return["let " <> lname <> " = [\n" <> WO`Indent[VlistMaker[Hold[list]], 3] <> "\n]\n"];,
-            Return["let " <> lname <> " = []\n"];
-               ];
-       ];
+            "let " <> lname <> " = [\n" <> WO`Indent[VlistMaker[Hold[list]], 3] <> "\n]\n",
+            "let " <> lname <> " = []\n"
+         ];
 
       vertices = ""
          <> VlistSmartMaker[Hold[v3deflist], "vertices_3"]
@@ -2173,7 +2100,7 @@ WO`WriteOmegaStruct[file_] := Module[{handle, contents, preamble, flavor, color,
    (* Assemble the module. *)
    WriteString[handle, "" 
       <> preamble <> "\n" <> WO`Indent [ ""
-         <> flavor <> "\n" <> If[WO`whizvn[]> 219, orders <> "\n",""] <> conjugate <> "\n" <> color <> "\n" <> pdg <> "\n" <> lorentz <> "\n" <> gauge <> "\n"
+         <> flavor <> "\n" <> conjugate <> "\n" <> color <> "\n" <> pdg <> "\n" <> lorentz <> "\n" <> gauge <> "\n"
          <> propagator <> "\n" <> widthsym <> "\n" <> width <> "\n" <> fermion <> "\n"
          <> colsymm <> "\n" <> flavors <> "\n" <> extflavors <> "\n" <> goldstone <> "\n"
          <> flavortostring <> "\n" <> If[FreeQ[{"1.92"}, WO`whizv], texsym <> "\n", ""]
@@ -2354,17 +2281,6 @@ WO`WriteOplGlue[file_] := Module[{header, footer, contents, pardefs, namelist, D
          WO`FortranSplit[name <> " = " <> ToString[FortranForm[cpl]]];
 
       (* Renders a coupling, taking care of the possibility of an array *)
-      ProcessCoupling[cpl_] :=Block[{},
-         WOprocCoupNr++;
-         If[Head[cpl[[2]]] === List,
-            Return[WO`Concat[
-               RenderCoupling[ToString[cpl[[1]]] <> "(" <> ToString[#[[1]]] <> ")", #[[2]]]& /@
-                  MapThread[{#1, #2}&, {Range[1, Length[cpl[[2]]]], cpl[[2]]}]
-               , "\n"]];,
-            Return[RenderCoupling[ToString[cpl[[1]]], cpl[[2]]]];
-         ];
-      ];
-(*
       ProcessCoupling[cpl_] :=
          If[Head[cpl[[2]]] === List,
             WO`Concat[
@@ -2372,14 +2288,12 @@ WO`WriteOplGlue[file_] := Module[{header, footer, contents, pardefs, namelist, D
                   MapThread[{#1, #2}&, {Range[1, Length[cpl[[2]]]], cpl[[2]]}]
                , "\n"],
             RenderCoupling[ToString[cpl[[1]]], cpl[[2]]]
-         ];*)
+         ];
       
       (* Internal parameter definitions. *)
       pardefs = {#[[1]], #[[2]]}& /@ WO`IParamList;
       initparams = "subroutine init_parameters\n";
       (* The imperative approach grantees the correct order of execution. *)
-      WOprocCoupNr=0;
-      Print["   ... coupling ",Dynamic[WOprocCoupNr]/Length[WO`cpldeflist]];
       For[i = 1, i <= Length[pardefs], i++,
          initparams = initparams <> WO`Indent[ProcessCoupling[pardefs[[i]]], 3] <> "\n"];
       (* The order of the couplings is irrelevant, so we use the functional approach... :) *)
@@ -2533,7 +2447,7 @@ WO`WriteWhizMdl[file_] := Module[{handle, content, header, params, DoParams, rep
       (* Generate replacement rules for the complex parameters. *)
       eparsc = Select[epars, #[[3]]&];
       RegisterCvar[#[[1]]]& /@ eparsc;
-      (* The following hacks are specific to WHIZARD v1 .9x *)
+      (* The following hacks are specific to WHIZARD v1.9x *)
       If[WO`whizv19x[],
          (* Hack: WHIZARDs perl scripts won't accept the assignment of a number to a derived parameter, so *
           * rewrite this case as 1. * x                                                                    *)
@@ -2724,7 +2638,7 @@ WO`WriteWhizMdl[file_] := Module[{handle, content, header, params, DoParams, rep
    (* Construct the vertex list. *)
    DoVertices[] := Module[{nmasses, reprules, massrules, verts, Weight, i},
 
-      (* Get the numeric mass of particle (s) . *)
+      (* Get the numeric mass of particle(s) . *)
       Weight[plist_List] := Plus @@ (Weight /@ plist);
       Weight[part_] := Module[{m},
          If[NumericQ[m = (part /. massrules)], m,
@@ -2791,7 +2705,7 @@ WO`WriteWhizGlue[filestem_] := Module[{handle, content, pubdefs, header, footer,
    RenderCoupling},
 
    (* Verbose open a file. *)
-   VOpen[file_] := ((* Print["Writing \"" <> file <> "\"..."]; *) OpenWrite[file]);
+   VOpen[file_] := (Print["Writing \"" <> file <> "\"..."]; OpenWrite[file]);
 
    (* These depends on the WHIZARD version. *)
    kind = If[WO`whizv2x[], "default", "omega_prec"];
@@ -2851,23 +2765,14 @@ WO`WriteWhizGlue[filestem_] := Module[{handle, content, pubdefs, header, footer,
       (* All complex parameters have to be salvaged from WHIZARD, recombining real and imaginary parts. *)
       cmplxs = WO`WeedOutList[ToString[#[[1]]]& /@ Select[pars, #[[2]]&]];
       (* Build the expressions for calculating the couplings, splitting this properly in several blocks.*)
-
-      Print[" ... rendering couplings"];      
-      cpltmp= RenderCoupling/@WO`cpldeflist;
-      couplings = Partition[cpltmp, WO`MaxCouplingsPerFile];
-      couplings = Join[couplings, {Take[cpltmp, {Length[couplings]*WO`MaxCouplingsPerFile + 1, Length[cpltmp]}]}];
-      (*
-      RenderCoupWO=0;
-      Print[" ... rendering coupling ",Dynamic[RenderCoupWO],"/",Length[WO`cpldeflist]];
       For[i = 1, i <= Length[WO`cpldeflist], i++,
-         RenderCoupWO=i;
          AppendTo[cpltmp, RenderCoupling[WO`cpldeflist[[i]]]];
          If[Length[cpltmp] == WO`MaxCouplingsPerFile,
             AppendTo[couplings, cpltmp];
             cpltmp = {};
          ];
-      ]; *)
-      (* If[Length[cpltmp] != 0, AppendTo[couplings, cpltmp]]; *)
+      ];
+      If[Length[cpltmp] != 0, AppendTo[couplings, cpltmp]];
       (* Build the local declaration module. *)
       local = ""
          <> WO`CommentMaker[WO`fileheader, "! ", "! ", ""] <> "\n"
@@ -3023,7 +2928,7 @@ WO`WriteWhizGlue[filestem_] := Module[{handle, content, pubdefs, header, footer,
    Close[handle];
    (* Make sure no old coupling modules are lying around. *)
    (
-      (* Print["Deleting " <> # <> " ..."]; *)
+      Print["Deleting " <> # <> " ..."];
       If [DeleteFile[#] === $Failed, Throw["ERROR: unable to delete " <> #, WO`EAbort]];
    )& /@ Select[FileNames[filestem <> "*f90"], StringMatchQ[#,
       RegularExpression[StringReplace[filestem, "." -> "\\."] <> "\\.cpl\\d+\\.f90"]]&];

@@ -41,14 +41,10 @@ Message[Anomalies::NoSUN];
 Return[];
 ];
 *)
-
-PrintDebug["Checking Anomalies"];
-Print["Checking for anomalies: ",Dynamic[DynamicCheckAnomalies]];
-
 GenerateQuadraticAndCubicDynkins;
 GetMultiplicites;
 
-
+Print["Checking Anomalies"];
 
 (* three times same couplings *)
 
@@ -56,26 +52,23 @@ If[SupersymmetricModel=!=False,
 FieldsToCheck=Fields;,
 FieldsToCheck=FermionFields;
 ];
-DynamicCheckAnomalies={};
-DynamicCheckAnomaliesChecked="Checked: ";
+
 For[gaugeNr=1,gaugeNr<=Length[Gauge],
-DynamicCheckAnomalies=Join[DynamicCheckAnomalies,{"("<>ToString[Gauge[[gaugeNr,3]]] <>")^3"}];
 If[Head[Gauge[[gaugeNr,2]]]===SU || Head[Gauge[[gaugeNr,2]]]===U ,
 sumAno=Sum[SA`Dynkin3[FieldsToCheck[[j,gaugeNr+3]],Gauge[[gaugeNr,2,1]]]*SA`MulFactor[FieldsToCheck[[j,3]],Gauge[[gaugeNr,3]]],{j,1,Length[FieldsToCheck]}];,
 sumAno=0;
 ];
 If[Simplify[sumAno]===0, 
-PrintDebug["     No (",Gauge[[gaugeNr,3]] ,")^3 Gauge Anomaly"];,
+Print["     No (",Gauge[[gaugeNr,3]] ,")^3 Gauge Anomaly"];,
 If[Cases[sumAno,x_?SymbolQS,2]==={},
 Print["     WARNING!  (",Gauge[[gaugeNr,3]] ,")^3 Gauge Anomaly!"];,
 Print["     WARNING!  (",Gauge[[gaugeNr,3]] ,")^3 Gauge Anomaly depends on choice of " <> ToString[Cases[sumAno,x_?SymbolQS,2]] <>": "<>ToString[InputForm[sumAno]] ];
 ];
 ];
 If[Gauge[[gaugeNr,2]]===U[1],
-DynamicCheckAnomalies=Join[DynamicCheckAnomalies,{"("<>ToString[Gauge[[gaugeNr,3]]] <>")x(gravity)^2"}];
 sumAno=Sum[FieldsToCheck[[j,gaugeNr+3]]*SA`MulFactor[FieldsToCheck[[j,3]],Gauge[[gaugeNr,3]]],{j,1,Length[FieldsToCheck]}];
 If[Simplify[sumAno]===0,
-PrintDebug["     No (",Gauge[[gaugeNr,3]] ,")x(gravity)^2 Anomaly"];,
+Print["     No (",Gauge[[gaugeNr,3]] ,")x(gravity)^2 Anomaly"];,
 If[Cases[sumAno,x_?SymbolQS,2]==={},
 Print["     WARNING!  (",Gauge[[gaugeNr,3]] ,")x(gravity)^2 Anomaly!"];,
 Print["     WARNING!  (",Gauge[[gaugeNr,3]] ,")x(gravity)^2 Anomaly depends on choice of " <> ToString[Cases[sumAno,x_?SymbolQS,2]]<>": "<>ToString[InputForm[sumAno]] ];
@@ -90,10 +83,9 @@ For[gaugeNr=1,gaugeNr<=Length[Gauge],
 If[Gauge[[gaugeNr,2]]===U[1],
 For[gaugeNr2=1,gaugeNr2<=Length[Gauge],
 If[gaugeNr=!=gaugeNr2,
-DynamicCheckAnomalies=Join[DynamicCheckAnomalies,{"("<>ToString[Gauge[[gaugeNr2,3]]] <>")^2 x "<>ToString[Gauge[[gaugeNr,3]]]}];
 sumAno=Sum[FieldsToCheck[[j,gaugeNr+3]]*SA`Dynkin2[FieldsToCheck[[j,gaugeNr2+3]],Gauge[[gaugeNr2,2,1]]]*SA`MulFactor[FieldsToCheck[[j,3]],Gauge[[gaugeNr2,3]]],{j,1,Length[FieldsToCheck]}];
 If[Simplify[sumAno]===0, 
-PrintDebug["     No (",Gauge[[gaugeNr2,3]] ,")^2 x ",Gauge[[gaugeNr,3]], " Gauge Anomaly"];,
+Print["     No (",Gauge[[gaugeNr2,3]] ,")^2 x ",Gauge[[gaugeNr,3]], " Gauge Anomaly"];,
 If[Cases[sumAno,x_?SymbolQS,2]==={},
 Print["     WARNING!  (",Gauge[[gaugeNr2,3]] ,")^2 x ",Gauge[[gaugeNr,3]]," Gauge Anomaly!"];,
 Print["     WARNING!  (",Gauge[[gaugeNr2,3]] ,")^2 x ",Gauge[[gaugeNr,3]]," Gauge Anomaly depends on choice of " <> ToString[Cases[sumAno,x_?SymbolQS,2]]<>": "<>ToString[InputForm[sumAno]]];
@@ -111,14 +103,12 @@ For[gaugeNr=1,gaugeNr<=Length[Gauge],
 For[gaugeNr2=gaugeNr+1,gaugeNr2<=Length[Gauge],
 For[gaugeNr3=gaugeNr2+1,gaugeNr3<=Length[Gauge],
 If[Gauge[[gaugeNr,2]]===U[1] && Gauge[[gaugeNr2,2]]===U[1]  && Gauge[[gaugeNr3,2]]===U[1],
-DynamicCheckAnomalies=Join[DynamicCheckAnomalies,{ToString[Gauge[[gaugeNr2,3]]] <>" x "<>ToString[Gauge[[gaugeNr,3]]]<>" x "<>ToString[Gauge[[gaugeNr3,3]]]}];
-
 sumAno=Sum[FieldsToCheck[[j,gaugeNr+3]]*FieldsToCheck[[j,gaugeNr2+3]]*FieldsToCheck[[j,gaugeNr3+3]]*SA`MulFactor[FieldsToCheck[[j,3]],Gauge[[gaugeNr2,3]]],{j,1,Length[FieldsToCheck]}];
 
 
 If[Simplify[sumAno]===0,
 If[Cases[sumAno,x_?SymbolQS,2]==={},
-PrintDebug["     No (",Gauge[[gaugeNr2,3]] ,")x(",Gauge[[gaugeNr,3]] ,")x(",Gauge[[gaugeNr3,3]] ,")  Gauge Anomaly"];,
+Print["     No (",Gauge[[gaugeNr2,3]] ,")x(",Gauge[[gaugeNr,3]] ,")x(",Gauge[[gaugeNr3,3]] ,")  Gauge Anomaly"];,
 Print["     WARNING!  (",Gauge[[gaugeNr2,3]] ,")x(",Gauge[[gaugeNr,3]] ,")x(",Gauge[[gaugeNr3,3]] ,") Gauge Anomaly!"];,
 Print["     WARNING!  (",Gauge[[gaugeNr2,3]] ,")x(",Gauge[[gaugeNr,3]] ,")x(",Gauge[[gaugeNr3,3]] ,") Gauge Anomaly depends on choice of "<>ToString[Cases[sumAno,x_?SymbolQS,2]]<>": "<>ToString[InputForm[sumAno]]];
 ];
@@ -136,13 +126,13 @@ gaugeNr++;];
 For[gaugeNr=1,gaugeNr<=Length[Gauge],
 If[Gauge[[gaugeNr,2]]===SU[2],
 sumDoub=Plus@@Table[If[Abs[FieldsToCheck[[j,3+gaugeNr]]]===2,SA`MulFactor[FieldsToCheck[[j,3]],Gauge[[gaugeNr,3]]],0],{j,1,Length[FieldsToCheck]}];
-DynamicCheckAnomalies=Join[DynamicCheckAnomalies,{"Witten Anomaly"<>ToString[Gauge[[gaugeNr,3]]]}];
 If[EvenQ[sumDoub]===True, 
-PrintDebug["     No Witten Anomaly (",Gauge[[gaugeNr,3]] ,")"];,
+Print["     No Witten Anomaly (",Gauge[[gaugeNr,3]] ,")"];,
 Print["     WARNING!  Odd number of doublets: Witten Anomaly (",Gauge[[gaugeNr,3]] ,")!"];
 ];
 ];
 gaugeNr++;];
+
 CheckU1mixing;
 
 ];
@@ -185,12 +175,11 @@ ChargeConservation::NoSUN="Check of charge conservation works so far only for SU
 Message[ChargeConservation::NoSUN];
 Return[];
 ];
-PrintDebug["  checking charge conservation"];
-Print["  checking charge conservation: ", Dynamic[DynamicCheckingCCSup]];
+Print["Checking charge conservation of superpotential"];
 
 InitChargeFactors;
 
-DynamicCheckingCCSup = "check local symmetries";
+
 For[i=1,i<=Length[SuperPotential],
 For[i1=1,i1<=Length[Gauge],
 sum=0;
@@ -212,7 +201,6 @@ violation=True;
 ];
 i1++;];
 
-DynamicCheckingCCSup = "check global symmetries";
 For[i1=1,i1<=Length[Global],
 If[CheckChargeConservationGlobal[SuperPotential[[i,2]],Global[[i1,2]]]==False,
 violationDiscrete=True;
@@ -221,10 +209,9 @@ Message[Superpotential::ViolationGlobal,Global[[i1,2]],SuperPotential[[i,2]]];
 i1++;];
 i++;];
 
-DynamicCheckingCCSup = "";
+
 If[violation==False,
-PrintDebug["     No violation of charge conservation in superpotential"];
-DynamicCheckingCCSup="local symmetries okay. ";
+Print["     No violation of charge conservation in superpotential"];
 ];
 
 (*
@@ -233,8 +220,7 @@ Print["     No violation of R-Parity in superpotential"];
 ];
 *)
 If[violationDiscrete==False && Length[Global]>0,
-PrintDebug["     No violation of a global in superpotential"];
-DynamicCheckingCCSup=DynamicCheckingCCSup<>"global symmetries okay.";
+Print["     No violation of a global in superpotential"];
 ];
 
 ];
@@ -293,14 +279,14 @@ If[FullSimplify[sum]=!=0,
 If[Gauge[[i1,2]]===U[1],
 If[printout==True,
 If[Cases[sum,x_?SymbolQS,2]==={},
-Message[Lagrange::ChargeViolation,Gauge[[i1,3]],term];,
+Message[Lagrange::ChargeViolation,Gauge[[i1,3]]];,
 Message[Lagrange::MaybeChargeViolation,Gauge[[i1,3]],Cases[sum,x_?SymbolQS,2]];
 ];
 ];
 violation=True;,
 
 If[Invariants[SusynoForm[Gauge[[i1,2]]],DeleteCases[reps,{0}]]==={},
-If[printout==True,Message[Lagrange::ChargeViolation,Gauge[[i1,3]],term];];
+If[printout==True,Message[Lagrange::ChargeViolation,Gauge[[i1,3]]];];
 violation=True;
 ];
 

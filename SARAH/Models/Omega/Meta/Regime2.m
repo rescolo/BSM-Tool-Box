@@ -13,7 +13,7 @@ listAllwithVEVs = {gBL, gL, gR, g3, ac1, Ye, Yv, b, bc, Yd, Yu, fc1, Mdeltac1, \
  
 listLow = {gBL, gL, gR, g3, ac1, Ye, Yv, b, bc, Yd, Yu, fc1, Mdeltac1, \[Mu], Momega, T[ac1], T[Ye], T[Yv], T[b], T[bc], T[Yd], T[Yu], T[fc1], B[Mdeltac1], B[\[Mu]], B[Momega], mqL2, mdR2, muR2, mlL2, meR2, mvR2, mHd2, mHu2, mdeltaR02, mdeltaRbar02, momegaL2, momegaR02, MassB, MassWL, MassWR0, MassG}; 
  
-listVEVsCurrent = {vBL, vR}; 
+listVEVsCurrent = {vR, vBL}; 
  
 listGaugeCurrent = {gBL, gL, gR, g3}; 
  

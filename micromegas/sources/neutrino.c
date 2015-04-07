@@ -22,7 +22,7 @@ static double RS=6.96E10;   /* cm */
 
 static double (*fvStat)(double)=NULL;
 static double v_stat,MA, muX, FFalpha;
-static char*CDM;
+
 /*
 double Tcapture(double T, double w, double v)
 { double mu=Mcdm/MA;
@@ -345,7 +345,7 @@ static double sigmaEarth(double pA0, double nA0, double pA5, double nA5, double 
   return  sumI;
 }
 
-double captureAux(double(*vfv)(double),int forSun, double csIp,double csIn,double csDp, double csDn)
+double captureAux(int forSun,double(*vfv)(double), double csIp,double csIn,double csDp, double csDn)
 { 
   double pA0, nA0, pA5, nA5;
   double MN=0.939;
@@ -365,7 +365,7 @@ static double  vcs22(numout * cc,int nsub,int * err)
 {
    int i;
    double pcm,r;
-   REAL pmass[4], pvect[16];
+   double pmass[4], pvect[16];
    double  GG=sqrt(4*M_PI*parton_alpha(3*Mcdm));
    for(i=1;i<=cc->interface->nvar;i++) if(cc->link[i]) 
    cc->interface->va[i]=*(cc->link[i]);
@@ -500,15 +500,14 @@ static void mInterpEarth(double Nmass,  int  CHin,int  CHout, double*tab)
 }   
   
                                                      
-int basicNuSpectra(int forSun, double Mass, int pdgN, int outN, double * tab)
+static int basicNuSpectra_(int forSun, double M, int pdgN, int outN, double * tab)
 { 
   int inP,i,j;
   int N=abs(pdgN);
   double tab100[100];
   double c=1;
   
-  tab[0]=Mass;
-  for(i=1;i<NZ;i++) tab[i]=0;
+  for(i=0;i<NZ;i++) tab[i]=0;
   
 //  if(N==12 ||N==14 ||N==16) {  if( pdgN*outN<0) return 0; else c=1;}
   
@@ -526,23 +525,26 @@ int basicNuSpectra(int forSun, double Mass, int pdgN, int outN, double * tab)
     case 12:
     case 14:
     case 16:  if(forSun) inP=0; else 
-              {  if((pdgN==14 && outN>0)||(pdgN==-14 && outN<0)) tab[1]=2/(Zi(1)-Zi(2)); 
+              {  if((pdgN==14 && outN>0)||(pdgN==-14 && outN<0)) tab[0]=2/(Zi(0)-Zi(1)); 
                  return 0; 
               }     /*nu */
               break;  
     default:                       return 1;
   }  
   
-  if(forSun) mInterpSun(Mass,inP,-(outN-1)/2,tab100); 
-    else     mInterpEarth(Mass,inP,-(outN-1)/2,tab100);
+  if(forSun) mInterpSun(M/2,inP,-(outN-1)/2,tab100); 
+    else     mInterpEarth(M/2,inP,-(outN-1)/2,tab100);
 
-  for(i=1;i<NZ;i++)
+  for(i=0;i<NZ;i++)
   { double x=exp(Zi(i));
     tab[i]+=c*x*polint3(x,100, xTab ,tab100);  
   }
 
   return 0;
 }
+
+int basicNuSpectra(int forSun, int pdgN, int outN, double * tab)
+{ return  basicNuSpectra_(forSun,2*Mcdm, pdgN, outN, tab);}
 
 
 /*  ===================  Spectra ========================== */
@@ -555,13 +557,13 @@ static void getSpectrum(int forSun, double M, double m1,double m2,char*n1,char*n
   int pdg[2];
   double mm[2],E[2],p2;
 
-  tab[0]=M/2;  
-  for(i=1;i<NZ;i++) tab[i]=0; 
+  
+  for(i=0;i<NZ;i++) tab[i]=0; 
 
   if(abs(N1)==abs(N2)) switch(abs(N1))
   { case 22: case 11: case 13: return;}
      
-  if(N1+N2==0  || (N1==21 && N2==21) || (N1==23 && N2==23) )  { if(basicNuSpectra(forSun, M/2, N1, outP,tab)==0) return;} 
+  if(N1+N2==0  || (N1==21 && N2==21) || (N1==23 && N2==23) )  { if(basicNuSpectra_(forSun, M, N1, outP,tab)==0) return;} 
 
   nn[0]=n1;  nn[1]=n2;
   mm[0]=m1;  mm[1]=m2;  
@@ -585,7 +587,7 @@ static void getSpectrum(int forSun, double M, double m1,double m2,char*n1,char*n
       double tabAux[NZ];
       
       if(abs(pdg[k])==11 || abs(pdg[k])==13 || abs(pdg[k])==22) continue;
-      if(basicNuSpectra(forSun,E[k],pdg[k], outP,tabAux)==0)
+      if(basicNuSpectra_(forSun,2*E[k],pdg[k], outP,tabAux)==0)
       { double kf; 
         dY=log(M/E[k]/2);
         switch(abs(pdg[k]))
@@ -594,14 +596,14 @@ static void getSpectrum(int forSun, double M, double m1,double m2,char*n1,char*n
           default: kf=0.5;
         } 
         boost(dY, M/2, E[k], 0., tabAux);
-        for(i=1;i<NZ;i++)tab[i]+=kf*tabAux[i]; 
+        for(i=0;i<NZ;i++)tab[i]+=kf*tabAux[i]; 
       }
       else
       { double w=0;
         numout * d2Proc;
         int l; 
         char* n[4];
-        REAL m[4];
+        double m[4];
         double tab_p[NZ];
         char process[40],plib[40];
         int ntot;
@@ -611,7 +613,7 @@ static void getSpectrum(int forSun, double M, double m1,double m2,char*n1,char*n
         strcpy(plib,"2width_");
         sprintf(process,"%s->2*x",nn[k]);
         pname2lib(nn[k],plib+7);
-        for(i=1;i<NZ;i++) tabAux[i]=0;
+        for(i=0;i<NZ;i++) tabAux[i]=0;
                      
         d2Proc=getMEcode(0,ForceUG,process,NULL,NULL,plib);
         if(!d2Proc) { fprintf(stderr,"Can not find decay modes for  mass %s\n",nn[k]); continue; }
@@ -627,8 +629,7 @@ static void getSpectrum(int forSun, double M, double m1,double m2,char*n1,char*n
               int N3=d2Proc->interface->pinfAux(l,3,NULL,NULL,NULL); 
               procInfo2(d2Proc,l,n,m);    
               getSpectrum(forSun,m[0],m[1],m[2],n[1],n[2],N2,N3,outP, tab_p);
-              tabAux[0]=tab_p[0];
-              for(i=1;i<NZ;i++) tabAux[i]+=wP*tab_p[i];
+              for(i=0;i<NZ;i++) tabAux[i]+=wP*tab_p[i];
               w+=wP;
             }
           }
@@ -640,8 +641,7 @@ static void getSpectrum(int forSun, double M, double m1,double m2,char*n1,char*n
                  }
         dY=acosh(E[k]/mm[k]);
         boost(dY, M/2, mm[k], 0., tabAux);
-        tab[0]=M/2;
-        for(i=1;i<NZ;i++)tab[i]+=tabAux[i]/w;
+        for(i=0;i<NZ;i++)tab[i]+=tabAux[i]/w;
       }
     } 
 }
@@ -658,8 +658,7 @@ static double calcSpectrum0(char *name1,char*name2, int forSun,   double *Spectr
   char name1L[10],name2L[10], lib[20],process[400];
   numout * libPtr;
   
-  Spectranu[0]=SpectraNu[0]=0.5*(pMass(name1)+pMass(name2));  
-  for(i=1;i<NZ;i++) Spectranu[i]=SpectraNu[i]=0;  
+  for(i=0;i<NZ;i++) Spectranu[i]=SpectraNu[i]=0;  
 
   pname2lib(name1,name1L);
   pname2lib(name2,name2L);
@@ -670,10 +669,6 @@ static double calcSpectrum0(char *name1,char*name2, int forSun,   double *Spectr
   
   
   if(!libPtr) return 0;
-  if(Qaddress && *Qaddress!=pMass(name1)+pMass(name2)) 
-  { *Qaddress=pMass(name1)+pMass(name2);
-     calcMainFunc();
-  }   
   passParameters(libPtr);
   procInfo1(libPtr,&ntot,NULL,NULL); 
   
@@ -681,7 +676,7 @@ static double calcSpectrum0(char *name1,char*name2, int forSun,   double *Spectr
   (*libPtr->interface->twidth)=0;
   
   for(k=0;k<ntot;k++)
-  { REAL m[4];
+  { double m[4];
     char *N[4];
     int pdg[4];
     int l,l_;
@@ -753,9 +748,9 @@ static double calcSpectrum0(char *name1,char*name2, int forSun,   double *Spectr
        }
 #endif       
     getSpectrum(forSun, pMass(name1)+pMass(name2), m[2], m[3],N[2],N[3],pdg[0],pdg[1], 1,tab2);
-    for(i=1;i<NZ;i++) Spectranu[i]+=tab2[i]*v_cs[k]/vcsSum;
+    for(i=0;i<NZ;i++) Spectranu[i]+=tab2[i]*v_cs[k]/vcsSum;
     getSpectrum(forSun, pMass(name1)+pMass(name2), m[2], m[3],N[2],N[3],pdg[0],pdg[1],-1,tab2);
-    for(i=1;i<NZ;i++) SpectraNu[i]+=tab2[i]*v_cs[k]/vcsSum;  
+    for(i=0;i<NZ;i++) SpectraNu[i]+=tab2[i]*v_cs[k]/vcsSum;  
   } 
   free(v_cs);
   if(alpha) { if(vcsSum>0) *alpha=vcsSum1/vcsSum; else *alpha=0;}
@@ -792,13 +787,9 @@ int neutrinoFlux(double (* fvf)(double), int forSun, double* nu, double * Nu)
   double Veff;
   double rho,T;
 
-  for(i=1;i<NZ;i++) nu[i]=Nu[i]=0;
-  
-  if(CDM1&&CDM2) { printf(" The 'neutrinoFlux' code is still not upgrated for 2DM case\n");  return 1;}
-  if(CDM1) CDM=CDM1; else CDM=CDM2;
-  nu[0]=Nu[0]=2*pMass(CDM);
-  err=nucleonAmplitudes(CDM,FeScLoop,pA0,pA5,nA0,nA5);
+  for(i=0;i<NZ;i++) nu[i]=Nu[i]=0;
 
+  err=nucleonAmplitudes(FeScLoop,pA0,pA5,nA0,nA5);
   if(err) return err;
   Cr0=forSun? captureSun(fvf,pA0[0],nA0[0],pA5[0],nA5[0]):captureEarth(fvf, pA0[0],nA0[0],pA5[0],nA5[0]); 
   
@@ -870,12 +861,12 @@ int neutrinoFlux(double (* fvf)(double), int forSun, double* nu, double * Nu)
       G11_=0.5*G01_*alpha/x;
 //      printf("x=%E G00 = %E/%E  G01 = %E/%E G11 = %E/%E\n",x, G00,G00_,G01,G01_,G11,G11_);
     }
-    for(i=1;i<NZ;i++) 
+    for(i=0;i<NZ;i++) 
     { nu[i]=Prop*(G01*nu[i]+G00*nu_[i]+G11*Nu_[i]); 
       Nu[i]=Prop*(G01*Nu[i]+G00*Nu_[i]+G11*nu_[i]);
     }  
     vcs1=calcSpectrum0(aname,aname,forSun, nu_,Nu_,NULL);     
-    for(i=1;i<NZ;i++)
+    for(i=0;i<NZ;i++)
     { nu[i]+=Prop*(G11*nu_[i]);
       Nu[i]+=Prop*(G11*Nu_[i]);
     }              
@@ -891,7 +882,7 @@ int neutrinoFlux(double (* fvf)(double), int forSun, double* nu, double * Nu)
     rf=0.5*An[0]*N*N*Prop;
 
 //printf("Rate Factor = %E(num.sol), =%E(formula)\n",rf,   0.5*Cr0*pow(tanh(Etime*sqrt(Cr0*vcs0/Veff)),2)*Prop);
-    for(i=1;i<NZ;i++) { nu[i]*=rf;  Nu[i]*=rf;}
+    for(i=0;i<NZ;i++) { nu[i]*=rf;  Nu[i]*=rf;}
   }
   return 0;
 }
@@ -963,9 +954,8 @@ void muonUpward(double*nu, double*Nu, double*mu)
    alpha_stat=0.002*rho;
    beta_stat=3.0E-6*rho;
 
-   mu[0]=nu[0];
-   mu[1]=0;
-   for(i=2;i<NZ;i++) 
+   mu[0]=0;
+   for(i=1;i<NZ;i++) 
    {  Emu_stat=Mcdm*exp(Zi(i));
       mu[i]=0;
       if(Emu_stat>0.01) for(k=0;k<2;k++) for(l=0;l<2;l++)
@@ -997,9 +987,9 @@ void muonContained(double*nu,double*Nu,double rho, double*mu)
   double*Sp[2]={nu,Nu};
   
   nuSpectrum=tabNuSpectrum; 
-  mu[0]=nu[0]; 
-  mu[1]=0;
-  for(i=2;i<NZ;i++)
+  mu[0]=0; 
+
+  for(i=1;i<NZ;i++)
   {  Emu_stat=Mcdm*exp(Zi(i));
      mu[i]=0;
      if(Emu_stat>0.01) for(k=0;k<2;k++) for(l=0;l<2;l++)

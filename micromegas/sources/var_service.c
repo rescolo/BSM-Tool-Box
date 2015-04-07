@@ -11,7 +11,7 @@ void printVar(FILE *f)
 
 int assignVal(char * name, double val)
 {
-  REAL * a=varAddress(name);
+  double * a=varAddress(name);
   if(a && a<=varValues+nModelVars )  {*a=val; return 0;} else return 1;
 }
 

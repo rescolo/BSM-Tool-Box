@@ -189,9 +189,10 @@ int change_parameter(int x,int y, int for22)
           for(i=0;i<nModelVars;i++) if(strcmp(name,varNames[i])==0) break;
           if(i==nModelVars)
           {
-             sprintf(txt,"unknown variable '%s' ignored",name);  
+             sprintf(txt,"'%s' - unknown variable",name);  
               messanykey(10,10,txt);
-          } else if(fscanf(f,"%lf",&val)!=1)
+          }
+          if(fscanf(f,"%lf",&val)!=1)
           { sprintf(txt," wrong defined number for '%s'",name);
             messanykey(10,10,txt);
           } else  { varValues[i]=val; returnCode=1;}

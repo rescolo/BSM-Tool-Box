@@ -6,8 +6,6 @@ ParameterDefinitions = {
 {AlphaS,    {Description -> "Alpha Strong"}},	
 {e,         { Description -> "electric charge"}}, 
 
-{\[Alpha],  { Description -> "Scalar mixing angle" }},  
-
 {Gf,        { Description -> "Fermi's constant"}},
 {aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
 

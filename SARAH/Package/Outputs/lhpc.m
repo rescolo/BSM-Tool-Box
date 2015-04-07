@@ -21,9 +21,7 @@
 
 MakeLHPCstyle[Eigenstates_]:=Block[{i,j,f,g,part,k},
 
-(* Print["Write style file for LHPC "]; *)
-
-Print[StyleForm["Generate style file for LHPC","Section"]];
+Print["Write style file for LHPC "];
 
 $sarahCurrentOutputDir=ToFileName[{$sarahCurrentOutputMainDir,ToString[Eigenstates]}];
 $sarahCurrentLHPCdir=ToFileName[{$sarahCurrentOutputDir,"LHPC"}];

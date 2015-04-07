@@ -19,7 +19,7 @@ Block EXTPAR 	 # Input parameters
 62 0.110000E+00 	  # KappaInput
 63 -1.50000E+03 	  # ALambdaInput
 64 -3.60000E+01 	  # AKappaInput
-65 9.650000E+02 	  # MuEff
+65 1.368900E+04 	  # vSInput
 Block SPhenoInput 	  # SPheno specific input 
 1 -1 	  # error level 
 2  1 	  # SPA conventions 

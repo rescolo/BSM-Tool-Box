@@ -34,7 +34,7 @@ ParameterDefinitions = {
               Form -> Diagonal}}, 
 
 {\[Mu],     { Description -> "Mu-parameter",
-              OutputName-> Mue}}, 
+              OutputName -> "Mue"}}, 
 {B[\[Mu]],  { Description -> "Bmu-parameter"}},        
 
 {mq2,       { Description -> "Softbreaking left Squark Mass",

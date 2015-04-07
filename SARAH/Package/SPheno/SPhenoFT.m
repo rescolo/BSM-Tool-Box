@@ -21,13 +21,9 @@
 
 GenerateFineTuning:=Block[{k},
 
-(*
 Print["--------------------------------------"];
 Print["Writing FineTuning Routines "];
 Print["--------------------------------------"];
-*)
-
-Print[StyleForm["Write routines to calcualte fine-tuning","Section",FontSize->12]];
 
 sphenoFT=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"FineTuning_"<>ModelName<>".f90"]];
 
@@ -70,7 +66,7 @@ Close[sphenoFT];
 
 
 WriteFineTuning:=Block[{i,j,temp,pos,name,tlist},
-(* Print["Write FT routines"]; *)
+Print["Write FT routines"];
 
 tlist = listAllParametersAndVEVs;
 temp={};
@@ -96,7 +92,6 @@ WriteString[sphenoFT,"Real(dp) :: delta0,gA("<>ToString[numberAll]<>"), gB("<>To
 WriteString[sphenoFT,"Real(dp) :: MZ2ref, MZ2current, variation, stepsize, dt, tz, factor \n"];
 WriteString[sphenoFT,"Real(dp) :: vdref, vuref, maxdiff \n"];
 WriteString[sphenoFT,"Real(dp) :: m_lo, m_hi \n"];
-WriteString[sphenoFT,"Logical :: NumericalProblem, GenerationMixingSave \n"];
 MakeVariableList[listAllParametersAndVEVs,"",sphenoFT];
 WriteString[sphenoFT, "Complex(dp) :: Tad1Loop("<>ToString[SA`NrTadpoleEquations]<>"), dmz2, mudim \n\n"];
 MakeVariableList[NewMassParameters,"",sphenoFT];
@@ -104,9 +99,6 @@ MakeVariableList[Union[Flatten[{NeededCouplingsUnmixed}]],"",sphenoFT];
 
 WriteString[sphenoFT,"Write(*,*) \"Calculate FineTuning\" \n"];
 
-WriteString[sphenoFT,"NumericalProblem = .False. \n"];
-WriteString[sphenoFT,"GenerationMixingSave=GenerationMixing \n"];
-WriteString[sphenoFT,"GenerationMixing= .false. \n"];
 WriteString[sphenoFT,"Tad1Loop = 0._dp \n"];
 WriteString[sphenoFT,"stepsize = 1.0E-5_dp \n \n"];
 WriteString[sphenoFT,"delta0 = stepsize/1000._dp\n \n"];
@@ -118,7 +110,7 @@ For[i=1,i<=Length[listAllParametersAndVEVs],
 WriteString[sphenoFT,SPhenoForm[listAllParametersAndVEVs[[i]]]<>" = "<>SPhenoForm[listAllParametersAndVEVs[[i]]]<>"input \n"];
 i++;];
 
-
+WriteGUTnormalization[sphenoFT];
 
 WriteString[sphenoFT,"! ------------------------- \n"];
 WriteString[sphenoFT,"! Initialization \n"];
@@ -126,26 +118,18 @@ WriteString[sphenoFT,"! ----------------------- \n \n"];
 
 WriteString[sphenoFT,"Fpar = 0 \n"];
 
-WriteGUTnormalization[sphenoFT];
-
-(*
 WriteString[sphenoFT,"! Run to MZ and get all tree-level values at that scale \n"];
-*)
 MakeCall["ParametersToG"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{},{"gC"},sphenoFT];
-(*
 WriteString[sphenoFT,"tz= Log(sqrt(mudim)/MZ)\n"];
 WriteString[sphenoFT,"dt=-tz/50._dp\n"];
-WriteString[sphenoFT,"Call odeint(gC,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n"];
-*)
-MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"gC"},{},sphenoFT];
 
+WriteString[sphenoFT,"Call odeint(gC,"<>ToString[numberAllwithVEVs]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAllwithVEVs]<>",kont)\n"];
+MakeCall["GToParameters"<>ToString[numberAllwithVEVs],listAllParametersAndVEVs,{"gC"},{},sphenoFT];
 WriteRemoveGUTnormalization[sphenoFT];
 
-(*
 For[i=1,i<=Length[listVEVs],
 WriteString[sphenoFT,SPhenoForm[listVEVs[[i]]] <>" = "<>SPhenoForm[listVEVs[[i]]]<>"MZ \n"];
 i++;];
-*)
 
 MakeCall["SolveTadpoleEquations",listAllParametersAndVEVs,{},{"Tad1Loop"},sphenoFT];
 
@@ -157,7 +141,6 @@ WriteString[sphenoFT,"Call BoundaryFT(gA,gB,0,variation)\n"];
 WriteRunningDownFT;
 
 WriteString[sphenoFT,"gDiff=Abs(gB-gRef) \n"];
-WriteString[sphenoFT,"Where (Abs(gDiff).lt.1E-12_dp) gDiff=0._dp \n"];
 WriteString[sphenoFT,"Where (Abs(gRef).Gt.0._dp) gDiff=gDiff/Abs(gRef) \n"];
 WriteString[sphenoFT,"maxdiff=Maxval(gDiff) \n"];
 
@@ -186,17 +169,6 @@ MakeCall["CouplingsForVectorBosons" , Join[parametersZW,namesZW],{},{},sphenoFT]
 MakeCall["Pi1Loop"<>ToString[VectorZ],Flatten[{massesZ,couplingsZ}],{"MZ2ref"},{"kont","dmZ2"},sphenoFT];
 WriteString[sphenoFT,"MZ2ref = MZ2ref+Real(dmz2,dp) \n"];
 WriteString[sphenoFT,"End if \n"];
-
-WriteString[sphenoFT,"If (i1.gt.99) Then \n"];
-WriteString[sphenoFT," NumericalProblem = .true. \n"];
-WriteString[sphenoFT,"Write(*,*) \"RGEs haven't converged with needed precission\" \n"];
-WriteString[sphenoFT,"End if \n"];
-
-WriteString[sphenoFT,"If (MZ2ref.lt.1000._dp) Then \n"];
-WriteString[sphenoFT," NumericalProblem = .true. \n"];
-WriteString[sphenoFT,"Write(*,*) \"Numerical problem in solving tadpole equations with respect to VEVs.\" \n"];
-WriteString[sphenoFT,"End if \n"];
-
 
 (*
 WriteString[sphenoFT,"\n ! Save starting parameters \n"];
@@ -262,16 +234,12 @@ WriteString[sphenoFT,"\n\n ! Calculate FineTuning \n"];
 WriteString[sphenoFT,"MZ2current = 1._dp/4._dp*("<>SPhenoForm[hyperchargeCoupling]<>"**2 + "<>SPhenoForm[leftCoupling]<> "**2)*("
 SPhenoForm[VEVSM1]<>"**2 + "<>SPhenoForm[VEVSM2]<>"**2) \n"];
 *)
+WriteString[sphenoFT,"FineTuningResultsAllVEVs(i1) = 0.5_dp*Abs((MZ2current-MZ2ref)/(MZ2ref))/stepsize*factor \n"];
+
+
 WriteString[sphenoFT,"If ((MZ2Current.lt.5000._dp).or.(MZ2Current.gt.10000._dp)) Then \n"];
 WriteString[sphenoFT,"Write(*,*) \" Large deviation in Z mass in fine-tuning routine: \", sqrt(MZ2Current) \n"];
 WriteString[sphenoFT,"Write(*,*) \" That's most likely a numerical problem! \" \n"];
-WriteString[sphenoFT," NumericalProblem = .true. \n"];
-WriteString[sphenoFT,"End If \n"];
-
-WriteString[sphenoFT,"If (NumericalProblem) Then \n"];
-WriteString[sphenoFT," FineTuningResultsAllVEVs(i1) = -1._dp \n"];
-WriteString[sphenoFT,"Else \n"];
-WriteString[sphenoFT," FineTuningResultsAllVEVs(i1) = 0.5_dp*Abs((MZ2current-MZ2ref)/(MZ2ref))/stepsize*factor \n"];
 WriteString[sphenoFT,"End If \n"];
 
 WriteString[sphenoFT,"! Write(*,*) sqrt((Real(vu-vuref,dp)**2+Real(vd-vdref,dp)**2)/(vdref**2+vuref**2))/stepsize*factor \n"];
@@ -279,15 +247,13 @@ WriteString[sphenoFT,"! Write(*,*) sqrt((Real(vu-vuref,dp)**2+Real(vd-vdref,dp)*
 
 WriteString[sphenoFT,"End Do \n"];
 
-WriteString[sphenoFT,"GenerationMixing = GenerationMixingSave \n"];
-
 WriteString[sphenoFT,"End Subroutine FineTuning \n"];
 ];
 
 
 GenerateBoundaryFT:=Block[{i,j,k},
 
-(* Print["Write BoundaryFT"]; *)
+Print["Write BoundaryFT"];
 
 WriteString[sphenoFT,"Subroutine BoundaryFT(gA,gB,FTpar,variation) \n"];
 
@@ -326,12 +292,6 @@ WriteString[sphenoFT,"End Select \n"];
 
 If[SeveralBoundaryConditions===False,
 For[i=1,i<=Length[BoundaryHighScale],
-If[FreeQ[Transpose[ListAllInputParameters][[1]],BoundaryHighScale[[i,1]]]==False || FreeQ[listParametersOtherRegimes,BoundaryHighScale[[i,1]]]==False,
-WriteString[sphenoFT,"If (InputValuefor"<>SPhenoForm[BoundaryHighScale[[i,1]]] <>") Then \n"];
-WriteString[sphenoFT,SPhenoForm[BoundaryHighScale[[i,1]]]<>" = " <> SPhenoForm[BoundaryHighScale[[i,1]]]<>"IN \n"];
-WriteString[sphenoFT,"Else \n"];
-];
-
 If[BoundaryHighScale[[i,2]]=!= RUNNING && FreeQ[ParametersToSolveTadpoles,BoundaryHighScale[[i,1]]] && FreeQ[Table[BetaGauge[[j,1]],{j,1,Length[BetaGauge]}],BoundaryHighScale[[i,1]]],
 If[FreeQ[BoundaryHighScale[[i,2]],DIAGONAL]==True,
 WriteString[sphenoFT,SPhenoForm[BoundaryHighScale[[i,1]]]<>" = " <> SPhenoForm[BoundaryHighScale[[i,2]]]<>"\n"];,
@@ -341,9 +301,6 @@ WriteString[sphenoFT,SPhenoForm[BoundaryHighScale[[i,1]]]<>"(i1,i1) = " <> SPhen
 WriteString[sphenoFT,"End Do\n"];
 ];
 ];
-If[FreeQ[Transpose[ListAllInputParameters][[1]],BoundaryHighScale[[i,1]]]==False || FreeQ[listParametersOtherRegimes,BoundaryHighScale[[i,1]]]==False,
-WriteString[sphenoFT,"End If \n"]
-];
 i++;];,
 
 
@@ -351,11 +308,6 @@ WriteString[sphenoFT,"Select Case(BoundaryCondition) \n"];
 For[j=1,j<=Length[BoundaryHighScale],
 WriteString[sphenoFT,"Case ("<>ToString[j]<>") \n"];
 For[i=1,i<=Length[BoundaryHighScale[[j]]],
-If[FreeQ[Transpose[ListAllInputParameters][[1]],BoundaryHighScale[[j,i,1]]]==False || FreeQ[listParametersOtherRegimes,BoundaryHighScale[[j,i,1]]]==False,
-WriteString[sphenoFT,"If (InputValuefor"<>SPhenoForm[BoundaryHighScale[[j,i,1]]] <>") Then \n"];
-WriteString[sphenoFT,SPhenoForm[BoundaryHighScale[[j,i,1]]]<>" = " <> SPhenoForm[BoundaryHighScale[[j,i,1]]]<>"IN \n"];
-WriteString[sphenoFT,"Else \n"]
-];
 If[BoundaryHighScale[[j,i,2]]=!= RUNNING && FreeQ[ParametersToSolveTadpoles,BoundaryHighScale[[j,i,1]]] && FreeQ[Table[BetaGauge[[k,1]],{k,1,Length[BetaGauge]}],BoundaryHighScale[[j,i,1]]],
 If[FreeQ[BoundaryHighScale[[j,i,2]],DIAGONAL]==True,
 WriteString[sphenoFT,SPhenoForm[BoundaryHighScale[[j,i,1]]]<>" = " <> SPhenoForm[BoundaryHighScale[[j,i,2]]]<>"\n"];,
@@ -364,9 +316,6 @@ WriteString[sphenoFT,"Do i1=1,"<>ToString[getDimSPheno[BoundaryHighScale[[j,i,1]
 WriteString[sphenoFT,SPhenoForm[BoundaryHighScale[[j,i,1]]]<>"(i1,i1) = " <> SPhenoForm[BoundaryHighScale[[j,i,2]] /. DIAGONAL->1]<>"\n"];
 WriteString[sphenoFT,"End Do\n"];
 ];
-];
-If[FreeQ[Transpose[ListAllInputParameters][[1]],BoundaryHighScale[[j,i,1]]]==False || FreeQ[listParametersOtherRegimes,BoundaryHighScale[[j,i,1]]]==False,
-WriteString[sphenoFT,"End If \n"]
 ];
 i++;];
 j++;];
@@ -399,13 +348,11 @@ MakeCall["ParametersToG"<>ToString[numberAll],listAllParameters,{},{"gA"},spheno
 
 If[ImplementThresholds===False,
 (* Without Thresholds *)
-(* WriteString[sphenoFT,"tz=Log(mz/mGUT)\n"]; *)
-WriteString[sphenoFT,"tz=Log(sqrt(mudim)/mGUT)\n"];
+WriteString[sphenoFT,"tz=Log(mz/mGUT)\n"];
 WriteString[sphenoFT,"dt=-tz/50._dp\n"];
-WriteString[sphenoFT,"Call odeint(gA,"<>ToString[numberAll]<>",tz,0._dp,0.001_dp*delta0,dt,0._dp,rge"<>ToString[numberAll]<>",kont)\n"];,
+WriteString[sphenoFT,"Call odeint(gA,"<>ToString[numberAll]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAll]<>",kont)\n"];,
 (* With Thresholds *)
-(* WriteString[sphenoFT,"m_lo=mZ \n"]; *)
-WriteString[sphenoFT,"m_lo= sqrt(mudim) \n"];
+WriteString[sphenoFT,"m_lo=mZ \n"];
 For[k=1, k<= Length[Thresholds],
 WriteString[sphenoFT,"\n\n ! --------- Running up to "<>ToString[k]<>". threshold scale --------- \n"];
 WriteString[sphenoFT,"If ("<>SPhenoForm[Thresholds[[k,1]]]<>".lt.Abs(mgut)) Then\n"];
@@ -417,14 +364,14 @@ WriteString[sphenoFT," IncludeThresholdsAtScale = .False. \n"];
 WriteString[sphenoFT,"Endif \n"];
 WriteString[sphenoFT,"tz=Log(Abs(m_lo/m_hi))\n"];
 WriteString[sphenoFT,"dt=-tz/50._dp\n"];
-WriteString[sphenoFT,"Call odeint(gA,"<>ToString[numberAll]<>",tz,0._dp,0.001_dp*delta0,dt,0._dp,rge"<>ToString[numberAll]<>",kont)\n"];
+WriteString[sphenoFT,"Call odeint(gA,"<>ToString[numberAll]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAll]<>",kont)\n"];
 WriteString[sphenoFT,"m_lo=m_hi\n"];
 MakeCall["BoundaryConditionUpFT_"<>ToString[k],{},{"gA","IncludeThresholdsAtScale"},{},sphenoFT];
 k++;];
 WriteString[sphenoFT,"\n\n ! --------- Running up to GUT scale --------- \n"];
 WriteString[sphenoFT,"tz=Log(m_lo/mGUT)\n"];
 WriteString[sphenoFT,"dt=-tz/50._dp\n"];
-WriteString[sphenoFT,"Call odeint(gA,"<>ToString[numberAll]<>",tz,0._dp,0.001_dp*delta0,dt,0._dp,rge"<>ToString[numberAll]<>",kont)\n"];
+WriteString[sphenoFT,"Call odeint(gA,"<>ToString[numberAll]<>",tz,0._dp,delta0,dt,0._dp,rge"<>ToString[numberAll]<>",kont)\n"];
 
 ];
 ];
@@ -432,10 +379,9 @@ WriteString[sphenoFT,"Call odeint(gA,"<>ToString[numberAll]<>",tz,0._dp,0.001_dp
 WriteRunningDownFT:=Block[{i,j,k,pos},
 If[ImplementThresholds===False,
 (* Without Thresholds *)
-(* WriteString[sphenoFT,"tz=Log(mz/mGUT)\n"]; *)
-WriteString[sphenoFT,"tz=Log(sqrt(mudim)/mGUT)\n"];
+WriteString[sphenoFT,"tz=Log(mz/mGUT)\n"];
 WriteString[sphenoFT,"dt=tz/50._dp\n"];
-WriteString[sphenoFT,"Call odeint(gB,"<>ToString[numberAll]<>",0._dp,tz,0.001_dp*delta0,dt,0._dp,rge"<>ToString[numberAll]<>",kont)\n"];,
+WriteString[sphenoFT,"Call odeint(gB,"<>ToString[numberAll]<>",0._dp,tz,delta0,dt,0._dp,rge"<>ToString[numberAll]<>",kont)\n"];,
 
 (* With Thresholds *)
 WriteString[sphenoFT,"m_hi=mGUT \n"];
@@ -460,16 +406,14 @@ WriteString[sphenoFT,"m_lo=Abs(m_hi)\n"];
 WriteString[sphenoFT,"Endif \n"];
 WriteString[sphenoFT,"tz=Log(Abs(m_lo/m_hi))\n"];
 WriteString[sphenoFT,"dt=-tz/50._dp\n"];
-WriteString[sphenoFT,"Call odeint(gB,"<>ToString[numberAll]<>",0._dp,tz,0.001_dp*delta0,dt,0._dp,rge"<>ToString[numberAll]<>",kont)\n"];
+WriteString[sphenoFT,"Call odeint(gB,"<>ToString[numberAll]<>",0._dp,tz,delta0,dt,0._dp,rge"<>ToString[numberAll]<>",kont)\n"];
 WriteString[sphenoFT,"m_hi=m_lo\n"];
 MakeCall["BoundaryConditionDownFT_"<>ToString[k],{},{"gB","IncludeThresholdsAtScale","variation","Fpar"},{},sphenoFT];
 k--;];
-(* WriteString[sphenoFT,"\n\n ! ------- Running down to mz scale ------- \n"]; *)
-(* WriteString[sphenoFT,"tz=Log(mz/m_hi)\n"]; *)
-WriteString[sphenoFT,"\n\n ! ------- Running down to SUSY scale ------- \n"];
-WriteString[sphenoFT,"tz=Log(sqrt(mudim)/m_hi)\n"];
+WriteString[sphenoFT,"\n\n ! ------- Running down to mz scale ------- \n"];
+WriteString[sphenoFT,"tz=Log(mz/m_hi)\n"];
 WriteString[sphenoFT,"dt=tz/50._dp\n"];
-WriteString[sphenoFT,"Call odeint(gB,"<>ToString[numberAll]<>",0._dp,tz,0.001_dp*delta0,dt,0._dp,rge"<>ToString[numberAll]<>",kont)\n"];
+WriteString[sphenoFT,"Call odeint(gB,"<>ToString[numberAll]<>",0._dp,tz,delta0,dt,0._dp,rge"<>ToString[numberAll]<>",kont)\n"];
 ];
 MakeCall["GToParameters"<>ToString[numberAll],listAllParameters,{"gB"},{},sphenoFT];
 WriteRemoveGUTnormalization[sphenoFT];

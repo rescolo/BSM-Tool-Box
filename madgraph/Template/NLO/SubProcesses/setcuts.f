@@ -199,14 +199,6 @@ c
       common/to_mass/emass
       logical firsttime
       data firsttime /.true./
-      if (firsttime) then
-         do i = 1,lmaxconfigs
-            do j = -nexternal,0
-               pmass(j,i) = 0d0
-               pwidth(j,i) = 0d0
-            end do
-         end do
-      endif
       include "born_props.inc"
 
       if(.not.IS_A_J(NEXTERNAL))then
@@ -224,11 +216,6 @@ c not necessarily the softest.  Therefore, it could be that even though
 c the Born does not have enough energy to pass the cuts set by ptj, the
 c event could.
       if (firsttime) then
-         do i=-nexternal,nexternal
-            xm(i)=0d0
-            xw(i)=0d0
-            mass_min(i)=0d0
-         end do
          firsttime=.false.
          do iFKS=1,fks_configs
             j_fks=FKS_J_D(iFKS)
@@ -422,7 +409,7 @@ c mass of the BW
                if ( itree(1,i).eq.1 .or. itree(1,i).eq.2 ) t_channel=i
                if (t_channel.ne.0) exit ! only s-channels
                mass_min(i)=mass_min(itree(1,i))+mass_min(itree(2,i))
-               if (xm(i).lt.mass_min(i)-vtiny) then
+               if (xm(i).lt.mass_min(i)) then
                   write (*,*)
      $                 'ERROR in the determination of conflicting BW',i
      $                 ,xm(i),mass_min(i)
@@ -489,7 +476,6 @@ c s-channel masses
                sum_all_s=0d0
                do i=t_channel,-(nexternal-3),-1
 c Breit-wigner can never go on-shell:
-                  if (itree(2,i).gt.0) cycle
                   if ( pmass(itree(2,i),iconfig).gt.sqrt(stot) .and.
      $                 pwidth(itree(2,i),iconfig).gt.0d0) then
                      cBW_FKS(iFKS,itree(2,i))=2
@@ -500,7 +486,6 @@ c     s-channel is always 2nd argument of itree, sum it to sum_all_s
                if (sum_all_s.gt.sqrt(stot)) then
 c     conflicting BWs: set all s-channels as conflicting
                   do i=t_channel,-(nexternal-3),-1
-                     if (itree(2,i).gt.0) cycle
                      if (cBW_FKS(iFKS,itree(2,i)).ne.2) then
                         cBW_FKS(iFKS,itree(2,i))=1
                         cBW_FKS_mass(iFKS,itree(2,i),-1)=sqrt(stot)/2d0

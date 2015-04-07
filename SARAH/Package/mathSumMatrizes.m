@@ -131,11 +131,7 @@ SigmaProd[gen4_Integer,gen3_Integer][a_Integer,b_Integer] := Sig[gen4,a,b]*Sig[g
 
 (*--------SU3----------*)
 
-(* Gell-Mann matrices *)
 Lambda={{{0,1,0},{1,0,0},{0,0,0}},{{0,-I,0},{I,0,0},{0,0,0}},{{1,0,0},{0,-1,0},{0,0,0}},{{0,0,1},{0,0,0},{1,0,0}},{{0,0,-I},{0,0,0},{I,0,0}},{{0,0,0},{0,0,1},{0,1,0}},{{0,0,0},{0,0,-I},{0,I,0}},1/Sqrt[3] {{1,0,0},{0,1,0},{0,0,-2}}};
-
-(* Represenation matrices of Susyno *)
-Lambda={{{0,1,0},{1,0,0},{0,0,0}},{{0,0,0},{0,0,1},{0,1,0}},{{0,0,I},{0,0,0},{-I,0,0}},{{0,-I,0},{I,0,0},{0,0,0}},{{0,0,0},{0,0,-I},{0,I,0}},{{0,0,-1},{0,0,0},{-1,0,0}},{{2/Sqrt[3],0,0},{0,-(1/Sqrt[3]),0},{0,0,-(1/Sqrt[3])}},{{0,0,0},{0,1,0},{0,0,-1}}};
 
 Lam[a_Integer,b_Integer,c_Integer] :=Lambda[[a,b,c]];
 
@@ -439,7 +435,6 @@ jnf[x_]:=ToExpression["j"<>ToString[x]];
 (* -------------------------------------------- *)
 
 
-(* Gell-Mann basis*)
 Levi=Table[0,{8},{8},{8}];
 Levi[[1,2,3]]=1; Levi[[3,1,2]]=1; Levi[[2,3,1]]=1; Levi[[3,2,1]]=-1; Levi[[2,1,3]]=-1;Levi[[1,3,2]]=-1;
 
@@ -455,9 +450,6 @@ Levi[[4,5,8]]=Sqrt[3]/2; Levi[[8,4,5]]=Sqrt[3]/2; Levi[[5,8,4]]=Sqrt[3]/2;
 Levi[[4,8,5]]=-Sqrt[3]/2; Levi[[8,5,4]]=-Sqrt[3]/2;Levi[[5,4,8]]=-Sqrt[3]/2;
 Levi[[6,7,8]]=Sqrt[3]/2; Levi[[8,6,7]]=Sqrt[3]/2; Levi[[7,8,6]]=Sqrt[3]/2; 
 Levi[[6,8,7]]=-Sqrt[3]/2; Levi[[8,7,6]]=-Sqrt[3]/2; Levi[[7,6,8]]=-Sqrt[3]/2;
-
-(* Basis of Susyno *)
-Levi=I {{{0,0,0,0,0,0,0,0},{0,0,I/2,0,0,0,0,0},{0,-I/2,0,0,0,0,0,0},{0,0,0,0,0,0,(-I/2)*Sqrt[3],I/2},{0,0,0,0,0,-I/2,0,0},{0,0,0,0,I/2,0,0,0},{0,0,0,(I/2)*Sqrt[3],0,0,0,0},{0,0,0,-I/2,0,0,0,0}},{{0,0,-I/2,0,0,0,0,0},{0,0,0,0,0,0,0,0},{I/2,0,0,0,0,0,0,0},{0,0,0,0,0,I/2,0,0},{0,0,0,0,0,0,0,-I},{0,0,0,-I/2,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,I,0,0,0}},{{0,I/2,0,0,0,0,0,0},{-I/2,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,-I/2,0,0,0},{0,0,0,I/2,0,0,0,0},{0,0,0,0,0,0,(I/2)*Sqrt[3],I/2},{0,0,0,0,0,(-I/2)*Sqrt[3],0,0},{0,0,0,0,0,-I/2,0,0}},{{0,0,0,0,0,0,(I/2)*Sqrt[3],-I/2},{0,0,0,0,0,-I/2,0,0},{0,0,0,0,I/2,0,0,0},{0,0,0,0,0,0,0,0},{0,0,-I/2,0,0,0,0,0},{0,I/2,0,0,0,0,0,0},{(-I/2)*Sqrt[3],0,0,0,0,0,0,0},{I/2,0,0,0,0,0,0,0}},{{0,0,0,0,0,I/2,0,0},{0,0,0,0,0,0,0,I},{0,0,0,-I/2,0,0,0,0},{0,0,I/2,0,0,0,0,0},{0,0,0,0,0,0,0,0},{-I/2,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,-I,0,0,0,0,0,0}},{{0,0,0,0,-I/2,0,0,0},{0,0,0,I/2,0,0,0,0},{0,0,0,0,0,0,(-I/2)*Sqrt[3],-I/2},{0,-I/2,0,0,0,0,0,0},{I/2,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,(I/2)*Sqrt[3],0,0,0,0,0},{0,0,I/2,0,0,0,0,0}},{{0,0,0,(-I/2)*Sqrt[3],0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,(I/2)*Sqrt[3],0,0},{(I/2)*Sqrt[3],0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,(-I/2)*Sqrt[3],0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}},{{0,0,0,I/2,0,0,0,0},{0,0,0,0,-I,0,0,0},{0,0,0,0,0,I/2,0,0},{-I/2,0,0,0,0,0,0,0},{0,I,0,0,0,0,0,0},{0,0,-I/2,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}}};
 
 fSU3[a_,b_,c_]:=-fSU3[b,a,c]/;OrderedQ[{a,b}]==False
 fSU3[a_,b_,c_]:=-fSU3[a,c,b]/;OrderedQ[{b,c}]==False
@@ -539,6 +531,7 @@ noSUN =Select[temp,(Head[Head[#]]==RM)&,5];
 InvariantMatrix=Select[temp,(Head[Head[#]]==InvMat)&,5];
 epsilons= Select[temp,(Head[#]==epsTensor) &,5];
 deltas=Select[temp,(Head[#]==Delta) &,5];
+
 For[i=1,i<=Length[noSUN],
 pos=Position[SA`NonZeroEntries,noSUN[[i,0]]][[1,1]];
 entry=Extract[SA`NonZeroEntries,pos];
@@ -552,15 +545,6 @@ entry=Extract[SA`NonZeroEntries,pos];
 sub = Join[sub,Table[InvariantMatrix[[i,j]]->SA`NonZeroEntries[[pos,2,j]],{j,1,Length[entry[[2]]]}]];
 fac=fac*(InvariantMatrix[[i]]/.sub);
 i++;];
-
- If[Head[term]===Times,
-temp=term;
-
-While[FreeQ[temp,Delta[b_Symbol,a_Integer]]==False|| FreeQ[temp,Delta[a_Integer,b_Symbol]]==False,sub=Join[sub,DeleteCases[Select[List@@temp,FreeQ[#,Delta]==False&] /. Delta[a_Symbol,b_Symbol]->1 /. Delta[a_Integer,b_Symbol]->(b->a)/. Delta[b_Symbol,a_Integer]->(b->a),1]];
-temp=temp/.sub;
-deltas=Select[deltas /. sub,FreeQ[#,x_Integer]&];
-];
-];
 
 sub = Join[sub,{Flatten[Table[Map[(#->1)&,List@@deltas[[i]]],{i,1,Length[deltas]}]]}];
 sub = Join[sub,{Flatten[Table[Map[(#->Position[List@@epsilons[[i]],#][[1,1]])&,List@@epsilons[[i]]],{i,1,Length[epsilons]}]]}];

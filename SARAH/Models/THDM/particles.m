@@ -36,13 +36,12 @@ ParticleDefinitions[GaugeES] = {
       {hh ,  { Description -> "Higgs"}}, 
       {Ah ,  { Description -> "Pseudo-Scalar Higgs"}}, 
       
-      {Hm,  { Description -> "Charged Higgs"}},                                                  
+      {Hpm,  { Description -> "Charged Higgs"}},                                                  
       
       {VP,   { Description -> "Photon"}}, 
       {VZ,   { Description -> "Z-Boson"}}, 
       {VG,   { Description -> "Gluon" }},          
-      {VWm,  { Description -> "W-Boson",
-               Goldstone -> Hm[{1}] }},         
+      {VWm,  { Description -> "W-Boson" }},         
       {gP,   { Description -> "Photon Ghost"}},                                                   
       {gWm,  { Description -> "Negative W-Boson Ghost"}}, 
       {gWmC, { Description -> "Positive W-Boson Ghost" }}, 
@@ -66,18 +65,6 @@ ParticleDefinitions[GaugeES] = {
                  Mass -> Automatic,
                  LaTeX -> "H",
                  OutputName -> "" }},
-
-   {H10, {LaTeX -> "H_1^0"}},
-   {H20, {LaTeX -> "H_2^0"}},
-   {H1p, {LaTeX -> "H_1^+"}},
-   {H2p, {LaTeX -> "H_2^+"}},
-
-   {sigma1, {LaTeX -> "\\sigma_1"}},
-   {sigma2, {LaTeX -> "\\sigma_2"}},
-
-   {phi1, {LaTeX -> "\\phi_1"}},
-   {phi2, {LaTeX -> "\\phi_2"}},
-
 
    {dR,     {LaTeX -> "d_R" }},
    {eR,     {LaTeX -> "e_R" }},

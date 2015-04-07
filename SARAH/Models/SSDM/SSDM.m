@@ -3,13 +3,13 @@ Off[General::spell]
 Model`Name = "SSDM";
 Model`NameLaTeX ="Singlet scalar Dark Matter";
 Model`Authors = "Diego Restrepo (based on SM model by F.Staub)";
-Model`Date = "2014-11-06";
+Model`Date = "2013-11-20";
 
 (* 2013-01-24: changed normalization of lambda term to convention of hep-ph/0207271 *)
 (* 2013-06-24: using new name conventions (without inital "S" and "F" for scalar and matter fields) *)
 (* 2013-09-01: changing to new conventions for FermionFields/MatterFields *)
 (* 2013-11-20: Singlet Scalar DM implemented *)
-(* 2014-11-06: Changed sign in Lagrangian *)
+
 
 (*-------------------------------------------*)
 (*   Particle Content*)
@@ -57,7 +57,7 @@ DEFINITION[GaugeES][LagrangianInput]= {
 
 
 LagNoHC = -(mu2 conj[H].H + Lambda1/2 conj[H].H.conj[H].H + MS2/2 S.S + LamSH S.S.conj[H].H  + LamS/2 S.S.S.S);
-LagHC =  -(Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q);
+LagHC =  Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q;
 
 
 

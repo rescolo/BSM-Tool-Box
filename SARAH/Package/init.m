@@ -25,11 +25,7 @@
 
 
 InitFields:= Block[{i,h,j,k,off,tempS1,tempF1,tempS2,tempF2,tempS1b,tempF1b,tempS2b,tempF2b,S1,F1,S2,F2,j2,diff,temp},
-(* PrintAll["Generate all Superfields"]; *)
-
-PrintAll[StyleForm["Initialization","Section",FontSize->12]];
-PrintDebug["Initialization"];
-
+Print["Generate all Superfields"];
 
 (*Delete unneeded Array Elemtns*)
 
@@ -102,25 +98,19 @@ CheckModelFile;
 
 (* Create All Fields *)
 
-PrintDebug["Initialize gauge groups"];
-Print["Initialize gauge groups: ",Dynamic[DynamicInitGaugeG]];
+Print["Check for needed generators"];
 InitGaugeGroups;
-DynamicInitGaugeG="All Done";
 
-PrintDebug["Create all component Fields"];
-Print["Initialize field: ",Dynamic[DynamicInitFields]];
+Print["Create all component Fields"];
 
 If[SupersymmetricModel=!=False,
 CreateVectorSuperfields;
-CreateChiralSuperfields;
-If[AddGravitino==True,CreateTensorSuperfields;];,
+CreateChiralSuperfields;,
 CreateVectorSuperfields;
 CreateMatterFields;
 ];
-DynamicInitFields="All Done";
 
-DynamicInitMisc="";
-Print["Preprocessing necessary information: ",Dynamic[DynamicInitMisc]];
+
 CreateSubstitutions;
 
 (*---------------- Majorana Particles ------*)
@@ -131,7 +121,7 @@ DeleteFields;
 
 
 CheckForU1mixing;
-DynamicInitMisc="All Done";
+
 ];
 
 
@@ -142,16 +132,6 @@ diracSubBack1={};
 diracSubBack2={};
 diracFermion = {};
 weylFermion={};
-
-If[AddGravitino==True,
-For[i=1,i<=Length[NameOfStates],
-If[Head[DEFINITION[NameOfStates[[i]]][DiracSpinors]]===List,
-DEFINITION[NameOfStates[[i]]][DiracSpinors]=Join[DEFINITION[NameOfStates[[i]]][DiracSpinors],{GMU->{Gmu,conj[Gmu]}}];
-DEFINITION[NameOfStates[[i]]][DiracSpinors]=Join[DEFINITION[NameOfStates[[i]]][DiracSpinors],{GOL->{Gol,conj[Gol]}}];
-];
-i++;];
-];
-
 
 For[i=1,i<=Length[dirac],
 diracSub=Join[diracSub,{dirac[[i,1]]->{dirac[[i,2]],dirac[[i,3]]}}];
@@ -258,8 +238,7 @@ i++;];
 ];
 
 CreateMatterFields:=Block[{i,h,j,k,off,tempS1,tempF1,tempS2,tempF2,tempS1b,tempF1b,tempS2b,tempF2b,S1,F1,S2,F2,j2,diff,temp},
-PrintDebug["   matter fields: "];
-DynamicInitFields="matter fields";
+Print["   matter fields: "];
 
 For[i=1, i<= AnzahlChiral,
 temp= GenerateAllIndizes[i];
@@ -504,8 +483,8 @@ subFieldsOne=Join[subFieldsOne,{Fields[[i,3]][{c__}][d_]->(FFieldsMultiplets [[i
 ];,
 If[Last[Fields[[i]]]===S,
 If[SupersymmetricModel===False,
-Set[ToExpression[ToString[Fields[[i,3]]]][{x__Integer}][{c__}],Hold[(Extract[SFieldsMultiplets [[NR]],{x}]/(DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4]/.{0:>1})) DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4][{c}] ] /. NR->i];,
-Set[ToExpression["S"<>ToString[Fields[[i,3]]]][{x__Integer}][{c__}],Hold[(Extract[SFieldsMultiplets [[NR]],{x}]/(DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4]/.{0:>1})) DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4][{c}] ] /. NR->i];
+Set[ToExpression[ToString[Fields[[i,3]]]][{x__Integer}][{c__}],Hold[(Extract[SFieldsMultiplets [[NR]],{x}]/DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4]) DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4][{c}] ] /. NR->i];,
+Set[ToExpression["S"<>ToString[Fields[[i,3]]]][{x__Integer}][{c__}],Hold[(Extract[SFieldsMultiplets [[NR]],{x}]/DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4]) DeleteCases[Extract[SFieldsMultiplets [[NR]],{x}],y_?NumberQ,4][{c}] ] /. NR->i];
 ];
 ];
 If[Last[Fields[[i]]]===F,
@@ -557,8 +536,7 @@ i++;];
 
 CreateChiralSuperfields:=Block[{i,h,j,k,off,tempS1,tempF1,tempS2,tempF2,tempS1b,tempF1b,tempS2b,tempF2b,S1,F1,S2,F2,j2,diff,temp},
 
-PrintDebug["   chiral superfields"];
-DynamicInitFields="chiral superfields";
+Print["   chiral superfields"];
 SFields = Table[{}, {AnzahlChiral}];
 SFieldsNoTensor = Table[{}, {AnzahlChiral}];
 FFields = Table[{}, {AnzahlChiral}];
@@ -844,7 +822,6 @@ i++;];
 
 
 CheckForU1mixing:=Block[{i,j},
-DynamicInitMisc="Check for gauge kinetic mixing";
 For[i=1,i<=AnzahlGauge,
 If[Gauge[[i,2]]=!=U[1],
 Gauge[[i]] = Join[Gauge[[i]],{1}];
@@ -895,32 +872,9 @@ SA`ListGaugeMixedAll = Join[SA`ListGaugeMixedAll,SA`ListGaugeMixed2];
 
 ];
 
-CreateTensorSuperfields:=Block[{i},
-PrintDebug["  gravitino superfields"];
-DynamicInitFields="gravitino superfields";
-TFields={Gmu[{lorentz}],Gol};
-addParticle[Gmu,{{lorentz,4}},1,F];
-addParticle[Gol,{},1,F];
-SA`ListAllFieldsInit=Join[SA`ListAllFieldsInit,{{Gmu[{lorentz}],{{}},{}}}];
-SA`ListAllFieldsInit=Join[SA`ListAllFieldsInit,{{Gol,{{}},{}}}];
-typeList=Join[typeList,{{Gmu[{lorentz}],F}}];
-typeList=Join[typeList,{{Gol,F}}];
-diracFermions[ALL]=Join[diracFermions[ALL],{GMU}];
-diracFermions[ALL]=Join[diracFermions[ALL],{GOL}];
-(* diracSub[ALL]=Join[diracSub[ALL],{GMU->{Gmu,conj[Gmu]}}]; *)
-For[i=1,i<=Length[NameOfStates],
-(* diracSub[NameOfStates[[i]]]=Join[diracSub[NameOfStates[[i]]],{GMU->{Gmu,conj[Gmu]}}]; *)
-diracFermions[NameOfStates[[i]]]=Join[diracFermions[NameOfStates[[i]]],{GMU}];
-diracFermions[NameOfStates[[i]]]=Join[diracFermions[NameOfStates[[i]]],{GOL}];
-i++;];
-parameters=Join[parameters,{{MP,{},{}},{m32,{},{}}}];
-realVar=Join[realVar,{MP,m32}];
-];
-
 
 CreateVectorSuperfields:=Block[{i,h,j,k,off,tempS1,tempF1,tempS2,tempF2,tempS1b,tempF1b,tempS2b,tempF2b,S1,F1,S2,F2,j2,diff,temp},
-PrintDebug["   vector superfields"];
-DynamicInitFields="vector superfields";
+Print["   vector superfields"];
 
 SGauge=Table[{},{AnzahlGauge}]; 
 FGauge=Table[{},{AnzahlGauge}]; 
@@ -1022,17 +976,9 @@ For[j2=1,j2<=Length[Gauge],
 If[i=!=j2,
 SA`DynL[ToExpression["V"<>ToString[Gauge[[i,1]]]],j2]={0};
 SA`DynL[ToExpression["g"<>ToString[Gauge[[i,1]]]],j2]={0};
-SA`Dynkin[ToExpression["V"<>ToString[Gauge[[i,1]]]],j2]=0;
-SA`Dynkin[ToExpression["g"<>ToString[Gauge[[i,1]]]],j2]=0;
-SA`Casimir[ToExpression["V"<>ToString[Gauge[[i,1]]]],j2]=0;
-SA`Casimir[ToExpression["g"<>ToString[Gauge[[i,1]]]],j2]=0;
 If[SupersymmetricModel=!=False,
 SA`DynL[ToExpression["f"<>ToString[Gauge[[i,1]]]],j2]={0};
 SA`DynL[ToExpression["a"<>ToString[Gauge[[i,1]]]],j2]={0};
-SA`Dynkin[ToExpression["f"<>ToString[Gauge[[i,1]]]],j2]=0;
-SA`Dynkin[ToExpression["a"<>ToString[Gauge[[i,1]]]],j2]=0;
-SA`Casimir[ToExpression["f"<>ToString[Gauge[[i,1]]]],j2]=0;
-SA`Casimir[ToExpression["a"<>ToString[Gauge[[i,1]]]],j2]=0;
 ];
 ];
 j2++;];
@@ -1054,8 +1000,7 @@ i++;];
 ];
 
 CreateSubstitutions:= Block[{i,h,j,k,off,tempS1,tempF1,tempS2,tempF2,tempS1b,tempF1b,tempS2b,tempF2b,S1,F1,S2,F2,j2,diff,temp},
-PrintDebug["    Create Substitution rules"];
-DynamicInitMisc="Create substitution rules";
+Print["    Create Substitution rules"];
 subIndizes={};
 subIndizesRE={};
 subIndizesRE2={};
@@ -1090,7 +1035,7 @@ subIndizesMixStart=Join[subIndizesMixStart,{getAdjointIndex[Gauge[[i,3]]]->ToExp
 subIndizesMixEnde=Join[subIndizesMixEnde,{getAdjointIndex[Gauge[[i,3]]]->ToExpression["a"<>StringTake[ToString[Gauge[[i,3]]],3]]}]; 
 *)
 
-For[j=1,j<=7,
+For[j=1,j<=4,
 subIndizes=Join[subIndizes,{ToExpression[ToString[Gauge[[i,3]]]<>appendIndex[[j]]]->(Hold[ToExpression[basis<>ToString[number]<>app]]/.{basis->StringTake[ToString[Gauge[[i,3]]],3],app->appendIndex[[j]]})}];
 subIndizesRule=Join[subIndizesRule,{ToExpression[ToString[Gauge[[i,3]]]<>appendIndex[[j]]]->(Hold[ToExpression[basis<>ToString[number]<>app<>"_"]]/.{basis->StringTake[ToString[Gauge[[i,3]]],3],app->appendIndex[[j]]})}];
 subIndizesRE=Join[subIndizesRE,{(Hold[ToExpression[basis<>ToString[number1]<>app]]->Hold[ToExpression[basis<>ToString[number2]<>app]])/.{basis->StringTake[ToString[Gauge[[i,3]]],3],app->appendIndex[[j]]}}];
@@ -1175,8 +1120,7 @@ i++;];
 
  InitParameters := Block[{i,k,max},
 
-PrintDebug["Generate Parameter Dependences"];
-DynamicInitMisc="Generate parameter dependences";
+Print["Generate Parameter Dependences"];
 
 MayBeParameters={};
 
@@ -1217,8 +1161,7 @@ k++;];
 i++;];
 
 
-PrintDebug["Set Information for Rotations"];
-DynamicInitMisc="Set information for rotations";
+ Print["Set Information for Rotations"];
 
 For[i=1,i<=Length[FieldRotations],
 If[FreeQ[parameters,FieldRotations[[i,2]]]==True,
@@ -1226,7 +1169,7 @@ parameters = Join[parameters,{{FieldRotations[[i,2]],{generation,generation},{ge
 ];
 i++;];
 
-DynamicInitMisc="All Done";
+
 ];
 
 (*-------------------------------------------*)
@@ -1237,7 +1180,7 @@ GenerateVEVs[type_] := Block[{i,j,i2,vev,pos,form,scalarform,alignment},
 
 title=ToString[type];
 
-PrintAll["Parametrize Higgs Sector"];
+Print["Parametrize Higgs Sector"];
 
 tempVEVparameters={};
 ScalarHiggsFields={};
@@ -1409,7 +1352,7 @@ SA`ScalarHF[type] = ScalarHiggsFields;
 SA`PseudoScalarHF[type] = PseudoScalarHiggsFields;
 
 If[IgnoreGaugeFixing=!=True,
-UpdateGaugeTransformations[vevSub,vevSubInverse,UGTvev[rotNr]];
+UpdateGaugeTransformations[vevSub,vevSubInverse];
 ];
 
 
@@ -1488,18 +1431,16 @@ Switch[Description /. ParticleDefinitions[Eigenstates][[i,2]],
 	ChargedHiggs = ParticleDefinitions[Eigenstates][[i,1]];,
 "Sneutrinos",
 	Sneutrino = ParticleDefinitions[Eigenstates][[i,1]];
-   ];
+];
 
 i++;];
 
-If[FreeQ[Global,RParity],
 If[FreeQ[ParticleDefinitions[Eigenstates],"Sneutrinos"],
 Sneutrino = HiggsBoson;
 ];
 
 If[FreeQ[ParticleDefinitions[Eigenstates],"Sleptons"],
 Selectron = ChargedHiggs;
-];
 ];
 
 For[i=1,i<=Length[ParameterDefinitions],

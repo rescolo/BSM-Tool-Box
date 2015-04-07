@@ -167,7 +167,7 @@ void  denominatorStatistic(int nsub,
    den_ =NULL;
    
    fseek(catalog,0,SEEK_SET);
-   while (FREAD1(cr,catalog))if(cr.status==1)
+   while (FREAD1(cr,catalog))
    {
       
       if (cr.nsub_ == nsub)

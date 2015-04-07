@@ -25,18 +25,15 @@
 
 
 
-Options[MakeCHep]={FeynmanGauge->True, CPViolation -> False, ModelNr->1, CompHep->False,NoSplittingWith->{},NoSplittingOnly->{}, UseRunningCoupling->True, SLHAinput->True, WriteMOfile->True, CalculateMasses->True, RunSPhenoViaCalcHep->False, IncludeEffectiveHiggsVertices->False,DMcandidate1->Default,DMcandidate2->None};
+Options[MakeCHep]={FeynmanGauge->True, CPViolation -> False, ModelNr->1, CompHep->False,NoSplittingWith->{},NoSplittingOnly->{}, UseRunningCoupling->True, SLHAinput->True, WriteMOfile->True, CalculateMasses->True, RunSPhenoViaCalcHep->False, IncludeEffectiveHiggsVertices->False};
 
-MakeCHep[opt___ ]:=MakeCalcHepOutput[FeynmanGauge/.{opt}/.Options[MakeCHep],CPViolation/.{opt}/.Options[MakeCHep],ModelNr/.{opt}/.Options[MakeCHep],CompHep/.{opt}/.Options[MakeCHep],NoSplittingWith/.{opt}/.Options[MakeCHep],NoSplittingOnly/.{opt}/.Options[MakeCHep],UseRunningCoupling/.{opt}/.Options[MakeCHep], SLHAinput/.{opt}/.Options[MakeCHep], WriteMOfile/.{opt}/.Options[MakeCHep], CalculateMasses/.{opt}/.Options[MakeCHep], RunSPhenoViaCalcHep/.{opt}/.Options[MakeCHep],IncludeEffectiveHiggsVertices/.{opt}/.Options[MakeCHep],DMcandidate1/.{opt}/.Options[MakeCHep],DMcandidate2/.{opt}/.Options[MakeCHep]];
+MakeCHep[opt___ ]:=MakeCalcHepOutput[FeynmanGauge/.{opt}/.Options[MakeCHep],CPViolation/.{opt}/.Options[MakeCHep],ModelNr/.{opt}/.Options[MakeCHep],CompHep/.{opt}/.Options[MakeCHep],NoSplittingWith/.{opt}/.Options[MakeCHep],NoSplittingOnly/.{opt}/.Options[MakeCHep],UseRunningCoupling/.{opt}/.Options[MakeCHep], SLHAinput/.{opt}/.Options[MakeCHep], WriteMOfile/.{opt}/.Options[MakeCHep], CalculateMasses/.{opt}/.Options[MakeCHep], RunSPhenoViaCalcHep/.{opt}/.Options[MakeCHep],IncludeEffectiveHiggsVertices/.{opt}/.Options[MakeCHep]];
 
 
-MakeCalcHepOutput[FeynmanGauge_,CPViolation_,ModelNr_, CompHep_,NoSplitWith_,NoSplitOnly_, RunningCoup_, SLHA_, WriteMO_, CalcMM_,RunSPhenoCH_,effHiggsV_,DMc1_,DMc2_]:=Block[{startedtime},
-startedtime=TimeUsed[];
+MakeCalcHepOutput[FeynmanGauge_,CPViolation_,ModelNr_, CompHep_,NoSplitWith_,NoSplitOnly_, RunningCoup_, SLHA_, WriteMO_, CalcMM_,RunSPhenoCH_,effHiggsV_]:=Block[{},
 (*If[FreeQ[NameOfStates,InitalizedVertexCalculaton]==True,
 Message[ModelFile::NoVertices];,
 *)
-
-Print[StyleForm["Generate CalcHep model files","Section"]];
 
 If[FreeQ[NameOfStates,InitalizedVertexCalculaton]==True,
 Print["Have to calculate the vertices first..."];
@@ -48,11 +45,9 @@ CH`NotWriteMassMatrices={};
 StringReplaceExtra={};
 WritingCalcHep=True;
 
-(*
 Print["--------------------------------------"];
 Print[" Creating CalcHep/CompHep Model File  "];
 Print["--------------------------------------"];
-*)
 
 saveWriteErrorNum=WriteErrorNum;
 WriteErrorNum=False;
@@ -109,7 +104,7 @@ If[RunSPhenoCH==True,
 GetSPhenoParameters["SPheno.m"];
 ];
 
-CalcHepParticles[CPViolation,ModelNr, CompHep,RunningCoup,SLHA,CalcMM,RunSPhenoCH,effHiggsV,DMc1,DMc2];
+CalcHepParticles[CPViolation,ModelNr, CompHep,RunningCoup,SLHA,CalcMM,RunSPhenoCH,effHiggsV];
 CalcHepVertices[FeynmanGauge,CPViolation,ModelNr, CompHep,NoSplitWith,NoSplitOnly,RunningCoup,SLHA,CalcMM,RunSPhenoCH,effHiggsV];
 
 
@@ -124,8 +119,7 @@ WriteCalcOmegaMO;
 
 
 Print[""];
-Print["Done. Model files generated in ",TimeUsed[]-startedtime, "s"];
-Print["Output is saved in ", StyleForm[$sarahCurrentCalcHepDir,"Section",FontSize->10]];
+Print["Done. Output is in ", $sarahCurrentCalcHepDir];
 
 If[WriteModelDirectories==True,
 WriteString[DirectoryNamesFile,"CHepDir="<>ToString[$sarahCurrentCalcHepDir] <>"\n"];
@@ -141,11 +135,11 @@ WritingCalcHep=False;
 
 
 
-CalcHepParticles[CPViolation_,ModelNr_, CompHep_,RunningCoup_,SLHA_,CalcMM_,RunSPhenoCH_,effHiggsV_,DMc1_,DMc2_]:=Block[{i,name,nameC,Minutes},
+CalcHepParticles[CPViolation_,ModelNr_, CompHep_,RunningCoup_,SLHA_,CalcMM_,RunSPhenoCH_,effHiggsV_]:=Block[{i,name,nameC,Minutes},
 StringReCH[CPViolation];
 CreateCForm[CPViolation,CalcMM,SLHA];
 CalcHepSubs;
-CreateParticleList[CompHep,DMc1,DMc2];
+CreateParticleList[CompHep];
 AddGoldstone[CompHep];
 
 
@@ -446,44 +440,44 @@ fNr=0;
 goldfak=0;
 StringReplaceExtra={};
 
-Print["Writing all vertices"];
-(* Print["  Three Scalar Interaction"]; *)
+Print["  Three Scalar Interaction"];
 WriteVerticesCHep[SA`VertexList[SSS],CPViolation,FeynmanGauge, SSS,NoSplitWith,NoSplitOnly,False];
 
-(* Print["  Two Scalar - One Vector Boson - Interaction"]; *)
+Print["  Two Scalar - One Vector Boson - Interaction"];
 WriteVerticesCHep[SA`VertexList[SSV],CPViolation,FeynmanGauge, SSV,NoSplitWith,NoSplitOnly,False];
 
-(* Print["  One Scalar - Two Vector Boson - Interaction"]; *)
+Print["  One Scalar - Two Vector Boson - Interaction"];
 WriteVerticesCHep[SA`VertexList[SVV],CPViolation,FeynmanGauge, SVV,NoSplitWith,NoSplitOnly,False];
 
-(* Print["  Two Ghost - One Vector Boson - Interaction"]; *)
+Print["  Two Ghost - One Vector Boson - Interaction"];
 WriteVerticesCHep[SA`VertexList[GGV],CPViolation,FeynmanGauge, GGV,NoSplitWith,NoSplitOnly,False];
 
-(* Print["  Two Ghost - One Scalar - Interaction"]; *)
+Print["  Two Ghost - One Scalar - Interaction"];
 WriteVerticesCHep[SA`VertexList[GGS],CPViolation,FeynmanGauge, GGS,NoSplitWith,NoSplitOnly,False];
 
-(* Print["  Two Fermion - One Scalar - Interaction"]; *)
+Print["  Two Fermion - One Scalar - Interaction"];
 WriteVerticesCHep[SA`VertexList[FFS],CPViolation,FeynmanGauge, FFS,NoSplitWith,NoSplitOnly,False];
 
-(* Print["  Two Fermion - One Vector Boson - Interaction"]; *)
+Print["  Two Fermion - One Vector Boson - Interaction"];
 WriteVerticesCHep[SA`VertexList[FFV],CPViolation,FeynmanGauge, FFV,NoSplitWith,NoSplitOnly,False];
 
-(* Print["  Four Scalar - Interaction"]; *)
+Print["  Four Scalar - Interaction"];
 WriteVerticesCHep4[SA`VertexList[SSSS],CPViolation,FeynmanGauge, SSSS,NoSplitWith,NoSplitOnly,True];
 
 
 StringReplaceExtra={"Sig(1,1,2)"->"1","Sig(1,2,1)"->"1","Sig(3,1,1)"->"1","Sig(3,2,2)"->"(-1)","Sig(2,1,2)"->"(-1)","Sig(2,2,1)"->"1"};
-(* Print["  Two Scalar - One Auxiliary Field - Interaction"]; *)
+Print["  Two Scalar - One Auxiliary Field - Interaction"];
 (* WriteVerticesCHep[SA`VertexList[SSA],CPViolation,FeynmanGauge, SSA, NoSplitWith,NoSplitOnly,True]; *)
-WriteVerticesCHep[Expand[SA`VertexList[ASS]],CPViolation,FeynmanGauge, SSA, NoSplitWith,NoSplitOnly,True];
+WriteVerticesCHep[SA`VertexList[ASS],CPViolation,FeynmanGauge, SSA, NoSplitWith,NoSplitOnly,True];
 
 StringReplaceExtra={};
-(* Print["  Three Vector Boson - Interaction"]; *)
+Print["  Three Vector Boson - Interaction"];
 WriteVerticesCHep[SA`VertexList[VVV],CPViolation,FeynmanGauge, VVV,NoSplitWith,NoSplitOnly,False];
 
 (* SSVV *)
 
-(* Print["  Two Scalar - Two Vector Boson - Interaction"]; *)
+
+Print["  Two Scalar - Two Vector Boson - Interaction"];
 WriteVerticesCHep4[SA`VertexList[SSVV],CPViolation,FeynmanGauge, SSVV,NoSplitWith,NoSplitOnly,False];
 
 
@@ -498,14 +492,9 @@ WriteString[lagrangeFile,"|m1.M3*m2.m3-m1.m3*m2.M3 \n"];
 
 (* V V V V*)
 
-(* Print["  Four Vector Boson - Interaction"]; *)
-
-startedtimeVVVV=TimeUsed[];
-Print["   ... Generic class: ",StyleForm[VVVV,"Section",FontSize->10],". Expanding and writing: ",Dynamic[progressNrCH[VVVV]] ,"/",Length[SA`VertexList[VVVV]]". (",Dynamic[progressCoupCH[VVVV]],")"];
+Print["  Four Vector Boson - Interaction"];
 
 For[i=1,i<=Length[SA`VertexList[VVVV]],
-progressNrCH[VVVV]=i;
-progressCoupCH[VVVV]=SA`VertexList[VVVV][[i,1]];
 value=CalcHepVertex[SA`VertexList[VVVV][[i,2,1]]];
 c1=1;
 
@@ -558,23 +547,17 @@ WriteString[lagrangeFile,"|"<>c1<>"m1.m2*m3.m4"<>c2<>"m1.m3*m2.m4"<>c3<>"m1.m4*m
 ];
 
 i++;];
-progressCoupCH[VVVV]="All done in "<>ToString[TimeUsed[]-startedtimeVVVV]<>"s";
 
 
 
 
-(* Print["  One Scalar - One Vector Boson - One Auxiliary Field - Interaction"]; *)
+
+Print["  One Scalar - One Vector Boson - One Auxiliary Field - Interaction"];
 
 (* S V A *)
 
-startedtimeSVA=TimeUsed[];
-Print["   ... Generic class: ",StyleForm[SVA,"Section",FontSize->10],". Expanding and writing: ",Dynamic[progressNrCH[SVA]] ,"/",Length[PART[S]]". (",Dynamic[progressCoupCH[SVA]],")"];
-
 For[i=1,i<=Length[PART[S]],
-progressNrCH[SVA]=i;
-progressCoupCH[SVA]={PART[S][[i,1]],VG,conj[partGA[[i,1]]]};
-
-If[FreeQ[getIndizes[PART[S][[i,1]]],color]==False  && (SA`DynL[PART[S][[i,1]],color] ==={1,1} || SA`DynL[PART[S][[i,1]],color] ==={1,0} || SA`DynL[PART[S][[i,1]],color] ==={0,1} ),
+If[FreeQ[getIndizes[PART[S][[i,1]]],color]==False,
 For[iter1=1,iter1<=getGen[PART[S][[i,1]]],
 For[fiter1=1,fiter1<=getFla[PART[S][[i,1]]],
 WriteString[lagrangeFile," "];
@@ -594,7 +577,7 @@ fiter1++;];
 iter1++;];
 ];
 i++;];
-progressCoupCH[SVA]="All done in "<>ToString[TimeUsed[]-startedtimeSVA]<>"s";
+
 
 If[effHiggsV==True,
 Print["  Loop induced Scalar - Two Vector Boson - Interaction"];
@@ -1108,7 +1091,7 @@ name=StringReplace[CalcHepName[x,gen,fla],{"~"->""}];
 Return["W"<>name];
 ];
 
-InsString[string_,length_]:=Block[{i,p},
+InsString[string_,length_]:=Block[{i},
 p=string;
 For[i=1,i<=(length-StringLength[string]),
 p=p<>" ";
@@ -1119,7 +1102,7 @@ Return[p];
 
 automatizedNumber=12345;
 
- CalcHepNumber[x_,gen_,fla___]:=Block[{pos,i,p},
+ CalcHepNumber[x_,gen_,fla___]:=Block[{pos,i},
 If[FreeQ[CHParticleList ,x]==False,
 If[getGen[x]>1,
 If[getFla[x]>1,
@@ -1156,7 +1139,7 @@ Return[AddExp[texname,"","{"<>ToString[gen]<>ToString[fla]<>"}"]];
 
 CalcHepSubs:=Block[{i},
 CHsub={};
-CHsub = Join[CHsub,{RXi[x_]->1, fSU3[a__]->1,epsTensor[ct1,ct2,ct3]->1,Delta[a__]->1,ThetaStep[a__]->1,Lam[a__]->2,CG[SU[3],{___,{1,1},___}][a__]->2}];
+CHsub = Join[CHsub,{RXi[x_]->1, fSU3[a__]->1,epsTensor[ct1,ct2,ct3]->1,Delta[a__]->1,ThetaStep[a__]->1,Lam[a__]->2}];
 ];
 
 AddGoldstone[CompHep_]:=Block[{i,j,k},
@@ -1243,7 +1226,7 @@ i++;];
 ];
 
 
-CreateParticleList[CompHep_,DMc1_,DMc2_] :=Block[{i,j, name,k,l,temp={}},
+CreateParticleList[CompHep_] :=Block[{i,j, name,k,l,temp={}},
 If[CompHep==True,
 maxStringLengthName=3;,
 maxStringLengthName=4;
@@ -1284,14 +1267,7 @@ LettersToAdd=0;
 If[(RParity /. pList[[i,2]])==-1, LettersToAdd++;];
 *)
 
-If[DMc1===Default,
-If[getRParity[ pList[[i,1]],ToExpression[modelName]]==-1, LettersToAdd++;];,
-If[getSecondParity[ pList[[i,1]],ToExpression[modelName],DMc1[[1]]]==DMc1[[2]], LettersToAdd++;];
-];
-
-If[DMc2=!=None,
-If[getSecondParity[ pList[[i,1]],ToExpression[modelName],DMc2[[1]]]==DMc2[[2]],LettersToAdd++;LettersToAdd++;];
-];
+If[getRParity[ pList[[i,1]],ToExpression[modelName]]==-1, LettersToAdd++;];
 
 If[StringLength[nameString]+LettersToAdd > maxStringLengthName,
 Message[CHep::ParticleNameLength,pList[[i,1]]];
@@ -1303,13 +1279,8 @@ If[AntiFieldGiven=!=True,
 nameAdj = If[SelfAdjQ[name]==True,nameStringAdj=nameString;,nameStringAdj =SwitchCase[nameString];];
 ];
 (*If[(RParity /. pList[[i,2]])==-1,nameStringAdj=StringJoin["~",nameStringAdj]; nameString=StringJoin["~",nameString];]; *)
-If[DMc1===Default,
-If[getRParity[ pList[[i,1]],ToExpression[modelName]]==-1,nameStringAdj=StringJoin["~",nameStringAdj]; nameString=StringJoin["~",nameString];];,
-If[getSecondParity[ pList[[i,1]],ToExpression[modelName],DMc1[[1]]]==DMc1[[2]],nameStringAdj=StringJoin["~",nameStringAdj]; nameString=StringJoin["~",nameString];];
-];
-If[DMc2=!=None,
-If[getSecondParity[ pList[[i,1]],ToExpression[modelName],DMc2[[1]]]==DMc2[[2]],nameStringAdj=StringJoin["~~",nameStringAdj]; nameString=StringJoin["~~",nameString];];
-];
+If[getRParity[ pList[[i,1]],ToExpression[modelName]]==-1,nameStringAdj=StringJoin["~",nameStringAdj]; nameString=StringJoin["~",nameString];];
+
 If[UsePDGIX===True,
 pdg = PDG.IX /. pList[[i,2]];,
 pdg = PDG /. pList[[i,2]];
@@ -1413,14 +1384,9 @@ If[MemberQ[realVar,getBlank[x]]==True, Return[True];,Return[False];];
 
 
 
-WriteVerticesCHep[vlist_,CPViolation_,FeynmanGauge_,type_, NoSplitWith_,NoSplitOnly_,TestAux_]:=Block[{i,j,iter1,iter2,iter3,iter4,fiter1,fiter2,fiter3,fiter4,gf1,gf2,gf3,particle1,particle2,particle3, entry,WriteCompleteVertex,colorflow,cfsupported,startedtime},
-
-startedtime=TimeUsed[];
-Print["   ... Generic class: ",StyleForm[type,"Section",FontSize->10],". Expanding and writing: ",Dynamic[progressNrCH[type]] ,"/",Length[vlist]". (",Dynamic[progressCoupCH[type]],")"];
+WriteVerticesCHep[vlist_,CPViolation_,FeynmanGauge_,type_, NoSplitWith_,NoSplitOnly_,TestAux_]:=Block[{i,j,iter1,iter2,iter3,iter4,fiter1,fiter2,fiter3,fiter4,gf1,gf2,gf3,particle1,particle2,particle3, entry,WriteCompleteVertex,colorflow,cfsupported},
 
 For[i=1,i<=Length[vlist],
-progressNrCH[type]=i;
-progressCoupCH[type]=vlist[[i,1]];
 
 cfsupported=CheckCHsupportedColor[vlist[[i,1]]];
 
@@ -1657,7 +1623,6 @@ iter1++;];
 ];
 ];
 i++;];
-progressCoupCH[type]="All done in "<>ToString[TimeUsed[]-startedtime]<>"s";
 ];
 
 MakeThreeVBLF[LS_]:=Block[{p1,p2,p3,m1,m2,m3,lor},
@@ -1840,20 +1805,14 @@ i++;];
 ];
 
 
-WriteVerticesCHep4[vlist_,CPViolation_,FeynmanGauge_,type_, NoSplitWith_,NoSplitOnly_,TestAux_]:=Block[{i,j,iter1,iter2,iter3,iter4,gf1,gf2,gf3,gf4,fiter1,fiter2,fiter3,fiter4,particle1,particle2,particle3,particle4, entry,WriteCompleteVertex,startedtime},
+WriteVerticesCHep4[vlist_,CPViolation_,FeynmanGauge_,type_, NoSplitWith_,NoSplitOnly_,TestAux_]:=Block[{i,j,iter1,iter2,iter3,iter4,gf1,gf2,gf3,gf4,fiter1,fiter2,fiter3,fiter4,particle1,particle2,particle3,particle4, entry,WriteCompleteVertex},
 
-startedtime=TimeUsed[];
-Print["   ... Generic class: ",StyleForm[type,"Section",FontSize->10],". Expanding and writing: ",Dynamic[progressNrCH[type]] ,"/",Length[vlist]". (",Dynamic[progressCoupCH[type]],")"];
 
 For[i=1,i<=Length[vlist],
-progressNrCH[type]=i;
-progressCoupCH[type]=vlist[[i,1]];
-
 If[D[D[vlist[[i,2,1]],g3],g3]===0,
 cfsupported=CheckCHsupportedColor[vlist[[i,1]]];,
 cfsupported=True;
 ];
-
 If[cfsupported==True,
 If[TestAux==True,
 If[Length[NoSplitOnly]>0,
@@ -2050,7 +2009,7 @@ iter1++;];
 ];
 ];
 i++;];
-progressCoupCH[type]="All done in "<>ToString[TimeUsed[]-startedtime]<>"s";
+
 ];
 
 
@@ -2148,19 +2107,15 @@ parDepNeeded = Intersection[parDepNeeded] /. subMassTempRe;
 
 
 
-WriteCalcOmegaMO:=Block[{MOfile},
+WriteCalcOmegaMO:=Block[{},
 Print["Write main file for MicrOmegas"];
-MOfile= OpenWrite[ToFileName[$sarahCurrentCalcHepDir,"CalcOmega.cpp"]];
-AppendSourceCode["CalcOmega.cpp",MOfile];
-Close[MOfile];
+MO= OpenWrite[ToFileName[$sarahCurrentCalcHepDir,"CalcOmega.cpp"]];
+AppendSourceCode["CalcOmega.cpp",MO];
+Close[MO];
 
-MOfile= OpenWrite[ToFileName[$sarahCurrentCalcHepDir,"CalcOmega_with_DDetection_old.cpp"]];
-AppendSourceCode["CalcOmega_with_DDetection.cpp",MOfile];
-Close[MOfile];
-
-MOfile= OpenWrite[ToFileName[$sarahCurrentCalcHepDir,"CalcOmega_with_DDetection.cpp"]];
-AppendSourceCode["CalcOmega_with_DDetection_MO4.cpp",MOfile];
-Close[MOfile];
+MO= OpenWrite[ToFileName[$sarahCurrentCalcHepDir,"CalcOmega_with_DDetection.cpp"]];
+AppendSourceCode["CalcOmega_with_DDetection.cpp",MO];
+Close[MO];
 ];
 
 GenerateMicrOmegasLesHouches[Eigenstates_,CPViolation_]:=Block[{i,j,k},
@@ -2402,7 +2357,7 @@ If[Max[colorflow]==0,Return[True];];
 Switch[type,
 SSSS,
 	colorflow=DeleteCases[colorflow,0];
-	If[colorflow==={4/3,-4/3} || colorflow==={-4/3,4/3} || colorflow==={-4/3,-4/3,4/3,4/3}|| colorflow==={4/3,4/3,-4/3,-4/3},
+	If[colorflow==={4/3,-4/3} || colorflow==={-4/3,4/3},
 	Return[True];
 	];,
 SSVV,

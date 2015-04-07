@@ -114,6 +114,7 @@ Use InputOutput
  BR_Z_mu_tau = 0._dp
  rho_parameter = 0._dp
  mf_nu = 0
+
  !--------------------------------------------------------------------------
  ! This routine call routines to
  !   - initializ the error system
@@ -210,6 +211,7 @@ Use InputOutput
  ! correctly (kont.eq.0) 
  !-------------------------------------------------------------------
   If ((L_BR).And.(kont.Eq.0)) Then
+
    Call CalculateBR(n_nu, id_nu, n_l, id_l, n_d, id_d, n_u, id_u, n_Z, id_Z     &
      & , n_W, id_W, n_snu, n_sle, n_Sd, n_su, n_n, n_c, n_g, n_s0, n_p0, n_Spm  &
      & , id_grav, id_gl, id_ph, gauge, Glu, PhaseGlu, ChiPM, U, V, Chi0, N      &
@@ -337,7 +339,6 @@ Contains
     & , M2U_s
   Integer :: i1, i2, i3, ierr
   Logical :: Converge, UseFixedScale
-
   !------------------------------------------------------------------
   ! Performing a first, very rough calculation of the parameters
   ! using 1-loop RGEs and tree-level boundary conditions for gauge and
@@ -510,12 +511,7 @@ Contains
 
    converge = .False.
    If (.Not.UseFixedScale) Then
-    If (UseNewScale) Then ! note, that is actually the scale squared
-     Scale_Q = CalcScale_from_Stops(Real(M2_U(3,3),dp), Real(M2_Q(3,3),dp)   &
-               & , Y_u(3,3), A_u(3,3), vevSM, mu, gauge(2), gauge(1) )
-    Else
-     Scale_Q = product_stop_masses(mSup, RSup, GenerationMixing)
-    End If
+    Scale_Q = product_stop_masses(mSup, RSup, GenerationMixing)
     tz = SetRenormalizationScale(scale_Q)
     Scale_Q = Sqrt(Scale_Q)
    End If
@@ -547,8 +543,12 @@ Contains
      If (.Not.l_Ad) A_d = AoY_d * Y_d
      If (.Not.l_Au) A_u = AoY_u * Y_u
 
+    
+!     Call QuarkMasses_and_PhaseShifts(Y_d, Y_u, vevSM, mf_t, uD_L, uD_R &
+!                                     & , mf_ta, uU_L, uU_R)
      Call FermionMass(Y_u, sqrt2, mf3, uU_L, uU_R, ierr)
      Call FermionMass(Y_d, sqrt2, mf3, uD_L, uD_R, ierr)
+!     CKM_Q =  Matmul(uU_L, Transpose(Conjg(ud_L)) )
 
      M2_D = Matmul( Matmul( Transpose(Conjg(uD_R)), M2D_sckm), uD_R)
      M2_U = Matmul( Matmul( Transpose(Conjg(uU_R)), M2U_sckm), uU_R)
@@ -570,8 +570,8 @@ Contains
      End Do
     End If
 
-    Call LoopMassesMSSM_3(tanb_mZ, tanb_Q, gauge, Y_l, Y_d, Y_u, Mi, A_l  &
-       & , A_d, A_u, M2_E, M2_L, M2_D, M2_Q, M2_U, mu, B, 0.1_dp*delta    &
+    Call LoopMassesMSSM_3(tanb_Q, gauge, Y_l, Y_d, Y_u, Mi, A_l, A_d, A_u &
+       & , M2_E, M2_L, M2_D, M2_Q, M2_U, mu, B, 0.1_dp*delta              &
        & , mC, mC2, U, V, mN, mN2, N, mS0, mS02, RS0, mP0, mP02, RP0      &
        & , mSpm, mSpm2, RSpm, mSdown, mSdown2, RSdown, mSup, mSup2        &
        & , RSup, mSlepton, mSlepton2, RSlepton, mSneut, mSneut2           &
@@ -604,12 +604,7 @@ Contains
     End If
 
     If (.Not.UseFixedScale) Then
-     If (UseNewScale) Then ! note, that is actually the scale squared
-      Scale_Q = CalcScale_from_Stops(Real(M2_U(3,3),dp), Real(M2_Q(3,3),dp)   &
-                & , Y_u(3,3), A_u(3,3), vevSM, mu, gauge(2), gauge(1) )
-     Else
-      Scale_Q = product_stop_masses(mSup, RSup, GenerationMixing)
-     End If
+     Scale_Q = product_stop_masses(mSup, RSup, GenerationMixing)
      tz = SetRenormalizationScale(scale_Q)
      Scale_Q = Sqrt(Scale_Q)
     End If
@@ -729,29 +724,18 @@ Contains
 
     kont = 0
     If (UseNewBoundaryEW) Then
-     If (GenerationMixing) then
-      Call Switch_to_superCKM(Y_d_mZ, Y_u_mZ, A_d_mZ, A_u_mZ, M2_D_mZ, M2_Q_mZ &
-       & , M2_U_mZ, Ad_s, Au_s, M2D_s, M2Q_s, M2U_s, .False.,ckm_out=uU_L )
-      If (Maxval(Abs(MatNu)).Gt.0._dp) Then
-       Call Switch_from_superPMNS(Y_l_mZ, A_l_mZ, M2_E_mZ, M2_L_mZ, MatNu &
-                 & , Al_s, M2E_s, M2L_s, .False. )
-      Else
-       Call Switch_from_superPMNS(Y_l_mZ, id3C, A_l_mZ, M2_E_mZ, M2_L_mZ &
+     Call Switch_to_superCKM(Y_d_mZ, Y_u_mZ, A_d_mZ, A_u_mZ, M2_D_mZ, M2_Q_mZ &
+      & , M2_U_mZ, Ad_s, Au_s, M2D_s, M2Q_s, M2U_s, .False.,ckm_out=uU_L )
+     If (Maxval(Abs(MatNu)).Gt.0._dp) Then
+      Call Switch_from_superPMNS(Y_l_mZ, A_l_mZ, M2_E_mZ, M2_L_mZ, MatNu &
                 & , Al_s, M2E_s, M2L_s, .False. )
-      End If
      Else
-      Ad_s = A_d_mZ
-      Au_s = A_u_mZ
-      Al_s = A_l_mZ
-      M2D_s = M2_D_mZ
-      M2Q_s = M2_Q_mZ
-      M2U_s = M2_U_mZ
-      M2E_s = M2_E_mZ
-      M2L_s = M2_L_mZ
+      Call Switch_from_superPMNS(Y_l_mZ, id3C, A_l_mZ, M2_E_mZ, M2_L_mZ &
+                & , Al_s, M2E_s, M2L_s, .False. )
      End If
 
-     Call BoundaryEW(i1+1, mZ, tanb_mZ, Mi_mZ, Al_s, Ad_s, Au_s &
-      & , M2E_s, M2L_s, M2D_s, M2Q_s, M2U_s, mu_mZ, mP0_T(2)    &
+     Call BoundaryEW(i1+1, mZ, tanb_mZ, Mi, Al_s, Ad_s, Au_s   &
+      & , M2E_s, M2L_s, M2D_s, M2Q_s, M2U_s, mu_mZ, mP0_T(2)   &
       & , 0.1_dp*delta, GenerationMixing, .True., mZ2_t, mW2_t, g1, kont)
 
      uU_R = id3C
@@ -806,12 +790,7 @@ Contains
    tanb_mZ = tanb ! first gues, justified because tanb runs weakly
 
    If (.Not.UseFixedScale) Then
-    If (UseNewScale) Then ! note, that is actually the scale squared
-     Scale_Q = CalcScale_from_Stops(Real(M2_U(3,3),dp), Real(M2_Q(3,3),dp)   &
-               & , Y_u(3,3), A_u(3,3), vevSM, mu, gauge(2), gauge(1) )
-    Else
-     Scale_Q = product_stop_masses(mSup, RSup, GenerationMixing)
-    End If
+    Scale_Q = product_stop_masses(mSup, RSup, GenerationMixing)
     tz = SetRenormalizationScale(scale_Q)
     Scale_Q = Sqrt(Scale_Q)
    End If
@@ -867,12 +846,12 @@ Contains
      End Do
     End If
 
-    Call LoopMassesMSSM(delta, tanb_mZ, tanb_Q, gauge, Y_l, Y_d, Y_u, Mi   &
-       & , A_l, A_d, A_u, M2_E, M2_L, M2_D, M2_Q, M2_U, M2_H, phase_mu, mu &
-       & , B, i1, uU_L, uU_R, uD_L, uD_R, uL_L, uL_R                       &
-       & , mC, mC2, U, V, mN, mN2, N, mS0, mS02, RS0, mP0, mP02, RP0       &
-       & , mSpm, mSpm2, RSpm, mSdown, mSdown2, RSdown, mSup, mSup2         &
-       & , RSup, mSlepton, mSlepton2, RSlepton, mSneut, mSneut2            &
+    Call LoopMassesMSSM(delta, tanb_Q, gauge, Y_l, Y_d, Y_u, Mi, A_l, A_d &
+       & , A_u, M2_E, M2_L, M2_D, M2_Q, M2_U, M2_H, phase_mu, mu, B, i1   &
+       & , uU_L, uU_R, uD_L, uD_R, uL_L, uL_R                             &
+       & , mC, mC2, U, V, mN, mN2, N, mS0, mS02, RS0, mP0, mP02, RP0      &
+       & , mSpm, mSpm2, RSpm, mSdown, mSdown2, RSdown, mSup, mSup2        &
+       & , RSup, mSlepton, mSlepton2, RSlepton, mSneut, mSneut2           &
        & , RSneut, mGlu, PhaseGlu, kont)
 
     If (kont.Ne.0) Then
@@ -951,12 +930,7 @@ Contains
     vevSM(2) = tanb_mZ * vevSM(1)
     
     If (.Not.UseFixedScale) Then
-     If (UseNewScale) Then ! note, that is actually the scale squared
-      Scale_Q = CalcScale_from_Stops(Real(M2_U(3,3),dp), Real(M2_Q(3,3),dp)   &
-                & , Y_u(3,3), A_u(3,3), vevSM, mu, gauge(2), gauge(1) )
-     Else
-      Scale_Q = product_stop_masses(mSup, RSup, GenerationMixing)
-     End If
+     Scale_Q = product_stop_masses(mSup, RSup, GenerationMixing)
      tz = SetRenormalizationScale(scale_Q)
      Scale_Q = Sqrt(Scale_Q)
     End If
@@ -1027,29 +1001,18 @@ Contains
 
     kont = 0
     If (UseNewBoundaryEW) Then
-     If (GenerationMixing) then
-      Call Switch_to_superCKM(Y_d_mZ, Y_u_mZ, A_d_mZ, A_u_mZ, M2_D_mZ, M2_Q_mZ &
-       & , M2_U_mZ, Ad_s, Au_s, M2D_s, M2Q_s, M2U_s, .False.,ckm_out=uU_L )
-      If (Maxval(Abs(MatNu)).Gt.0._dp) Then
-       Call Switch_from_superPMNS(Y_l_mZ, A_l_mZ, M2_E_mZ, M2_L_mZ, MatNu &
-                 & , Al_s, M2E_s, M2L_s, .False. )
-      Else
-       Call Switch_from_superPMNS(Y_l_mZ, id3C, A_l_mZ, M2_E_mZ, M2_L_mZ &
-                 & , Al_s, M2E_s, M2L_s, .False. )
-      End If
+     Call Switch_to_superCKM(Y_d_mZ, Y_u_mZ, A_d_mZ, A_u_mZ, M2_D_mZ, M2_Q_mZ &
+      & , M2_U_mZ, Ad_s, Au_s, M2D_s, M2Q_s, M2U_s, .False.,ckm_out=uU_L )
+     If (Maxval(Abs(MatNu)).Gt.0._dp) Then
+      Call Switch_from_superPMNS(Y_l_mZ, A_l_mZ, M2_E_mZ, M2_L_mZ, MatNu &
+                & , Al_s, M2E_s, M2L_s, .False. )
      Else
-      Ad_s = A_d_mZ
-      Au_s = A_u_mZ
-      Al_s = A_l_mZ
-      M2D_s = M2_D_mZ
-      M2Q_s = M2_Q_mZ
-      M2U_s = M2_U_mZ
-      M2E_s = M2_E_mZ
-      M2L_s = M2_L_mZ
+      Call Switch_from_superPMNS(Y_l_mZ, id3C, A_l_mZ, M2_E_mZ, M2_L_mZ &
+                & , Al_s, M2E_s, M2L_s, .False. )
      End If
 
-     Call BoundaryEW(i1+1, mZ, tanb_mZ, Mi_mZ, Al_s, Ad_s, Au_s &
-      & , M2E_s, M2L_s, M2D_s, M2Q_s, M2U_s, mu_mZ, mP0_T(2)    &
+     Call BoundaryEW(i1+1, mZ, tanb_mZ, Mi, Al_s, Ad_s, Au_s &
+      & , M2E_s, M2L_s, M2D_s, M2Q_s, M2U_s, mu_mZ, mP0_T(2) &
       & , 0.1_dp*delta, GenerationMixing, .True., mZ2_t, mW2_t, g1, kont)
 
      uU_R = id3C
@@ -1079,7 +1042,9 @@ Contains
    End If
 
   Else If (HighScaleModel.Eq."pMSSM") Then
+
    ! calculate first gauge and Yukawa in DR-scheme at m_Z
+!   If (
 
    If (UseNewBoundaryEW) Then
     Call BoundaryEW(1, mZ, tanb, Mi, Al_pmns, Ad_sckm, Au_sckm, M2E_pmns &
@@ -1102,12 +1067,7 @@ Contains
    mP0(1) = mZ
    mP02(1) = mZ2
    If (.Not.UseFixedScale) Then
-    If (UseNewScale) Then ! note, that is actually the scale squared
-     Scale_Q = CalcScale_from_Stops(Real(M2_U(3,3),dp), Real(M2_Q(3,3),dp)   &
-               & , Y_u(3,3), A_u(3,3), vevSM, mu, gauge(2), gauge(1) )
-    Else
-     Scale_Q = product_stop_masses(mSup, RSup, GenerationMixing)
-    End If
+    Scale_Q = product_stop_masses(mSup, RSup, GenerationMixing)
     tz = SetRenormalizationScale(scale_Q)
     Scale_Q = Sqrt(Scale_Q)
    End If
@@ -1147,22 +1107,27 @@ Contains
                 & , A_l, M2_E, M2_L, .False. )
      End If
     Else ! .not. GenerationMixing
-     A_l = ZeroC
-     A_d = ZeroC
-     A_u = ZeroC
      Do i2=1,3
       If (.Not.l_Al) A_l(i2,i2) = AoY_l(i2,i2) * Y_l(i2,i2)
       If (.Not.l_Ad) A_d(i2,i2) = AoY_d(i2,i2) * Y_d(i2,i2)
       If (.Not.l_Au) A_u(i2,i2) = AoY_u(i2,i2) * Y_u(i2,i2)
+      Do i3=1,3
+       If (i3.Ne.i2) Then
+        A_l(i3,i2) = ZeroC
+        A_d(i3,i2) = ZeroC
+        A_u(i3,i2) = ZeroC
+       End If
+      End Do
      End Do
     End If
 
     kont = 0
-    Call LoopMassesMSSM_2(delta, tanb_mZ, tanb_Q, gauge, Y_l, Y_d, Y_u &
-       & , Mi, A_l, A_d, A_u, M2_E, M2_L, M2_D, M2_Q, M2_U, mu         &
-       & , mC, mC2, U, V, mN, mN2, N, mS0, mS02, RS0, mP02, RP0        &
-       & , mSpm, mSpm2, RSpm, mSdown, mSdown2, RSdown, mSup, mSup2     &
-       & , RSup, mSlepton, mSlepton2, RSlepton, mSneut, mSneut2        &
+
+    Call LoopMassesMSSM_2(delta, tanb_Q, gauge, Y_l, Y_d, Y_u, Mi  &
+       & , A_l, A_d, A_u, M2_E, M2_L, M2_D, M2_Q, M2_U, mu         &
+       & , mC, mC2, U, V, mN, mN2, N, mS0, mS02, RS0, mP02, RP0    &
+       & , mSpm, mSpm2, RSpm, mSdown, mSdown2, RSdown, mSup, mSup2 &
+       & , RSup, mSlepton, mSlepton2, RSlepton, mSneut, mSneut2    &
        & , RSneut, mGlu, PhaseGlu, M2_H, B, kont)
 
     If (kont.Ne.0) Then
@@ -1188,7 +1153,6 @@ Contains
      Exit
     Else
      mass_old = mass_new
-
     End If
 
     If (i1.Eq.101) Then
@@ -1220,6 +1184,7 @@ Contains
 
     Else
      Call odeint(g2, 213, tz, 0._dp, 0.1_dp*delta, dt, 0._dp, rge213, kont)
+
     End If
 
     Call GToParameters(g2, gauge_mZ, Y_l_mZ, Y_d_mZ, Y_u_mZ, Mi_mZ, A_l_mZ &
@@ -1236,26 +1201,20 @@ Contains
     ! use consistently running parameters
     !-----------------------------------------
     g2(1) = Sqrt(3._dp/5._dp) * g2(1)
-    gauge_MZ(1) = Sqrt(3._dp/5._dp) * gauge_MZ(1)
     sinW2 = g2(1)**2 / (g2(1)**2 +g2(2)**2)
     vev =  2._dp * Sqrt(mZ2_t / (g2(1)**2 +g2(2)**2))
     vevSM(1) = vev / Sqrt(1._dp + tanb_mZ**2)
     vevSM(2) = tanb_mZ * vevSM(1)
  
     If (.Not.UseFixedScale) Then
-     If (UseNewScale) Then ! note, that is actually the scale squared
-      Scale_Q = CalcScale_from_Stops(Real(M2_U(3,3),dp), Real(M2_Q(3,3),dp)   &
-                & , Y_u(3,3), A_u(3,3), vevSM, mu, gauge(2), gauge(1) )
-     Else
-      Scale_Q = product_stop_masses(mSup, RSup, GenerationMixing)
-     End If
+     Scale_Q = product_stop_masses(mSup, RSup, GenerationMixing)
      tz = SetRenormalizationScale(scale_Q)
      Scale_Q = Sqrt(Scale_Q)
     End If
     !-----------------------------------
     ! mu and B parameters at tree-level
     !-----------------------------------
-    Abs_Mu2 = (M2_H_mZ(2) * tanb_mZ**2 - M2_H_mZ(1) ) / (1._dp - tanb_mZ**2) &
+    Abs_Mu2 = (M2_H_mZ(2) * tanb_mZ**2 - M2_H(1) ) / (1._dp - tanb_mZ**2) &
           & - 0.5_dp * mZ2_t
     If (Abs_Mu2.Le.0) Then
      kont = -12345
@@ -1272,6 +1231,7 @@ Contains
       & , mSlepton_T, mSlepton2_T, RSlepton_T, mSdown_T, mSdown2_T, RSdown_T  &
       & , mSup_T, mSup2_T, RSup_T, mP0_T, mP02_T, RP0_T, mS0_T, mS02_T, RS0_T &
       & , mSpm_T, mSpm2_T, RSpm_T, GenerationMixing, kont, .False.)
+
     If (kont.Ne.0) Then
      Iname = Iname - 1
      Return
@@ -1316,30 +1276,18 @@ Contains
 
     kont = 0
     If (UseNewBoundaryEW) Then
-     If (GenerationMixing) then
-      Call Switch_to_superCKM(Y_d_mZ, Y_u_mZ, A_d_mZ, A_u_mZ, M2_D_mZ, M2_Q_mZ &
-       & , M2_U_mZ, Ad_s, Au_s, M2D_s, M2Q_s, M2U_s, .False.,ckm_out=uU_L )
-      If (Maxval(Abs(MatNu)).Gt.0._dp) Then
-       Call Switch_from_superPMNS(Y_l_mZ, A_l_mZ, M2_E_mZ, M2_L_mZ, MatNu &
-                 & , Al_s, M2E_s, M2L_s, .False. )
-      Else
-       Call Switch_from_superPMNS(Y_l_mZ, id3C, A_l_mZ, M2_E_mZ, M2_L_mZ &
-                 & , Al_s, M2E_s, M2L_s, .False. )
-      End If
+     Call Switch_to_superCKM(Y_d_mZ, Y_u_mZ, A_d_mZ, A_u_mZ, M2_D_mZ, M2_Q_mZ &
+      & , M2_U_mZ, Ad_s, Au_s, M2D_s, M2Q_s, M2U_s, .False.,ckm_out=uU_L )
+     If (Maxval(Abs(MatNu)).Gt.0._dp) Then
+      Call Switch_from_superPMNS(Y_l_mZ, A_l_mZ, M2_E_mZ, M2_L_mZ, MatNu &
+                & , Al_s, M2E_s, M2L_s, .False. )
      Else
-      Ad_s = A_d_mZ
-      Au_s = A_u_mZ
-      Al_s = A_l_mZ
-      M2D_s = M2_D_mZ
-      M2Q_s = M2_Q_mZ
-      M2U_s = M2_U_mZ
-      M2E_s = M2_E_mZ
-      M2L_s = M2_L_mZ
+      Call Switch_from_superPMNS(Y_l_mZ, id3C, A_l_mZ, M2_E_mZ, M2_L_mZ &
+                & , Al_s, M2E_s, M2L_s, .False. )
      End If
 
-     Call BoundaryEW(i1+1, mZ, tanb_mZ, Mi_mZ, Al_s, Ad_s, Au_s &
-!      & , M2E_s, M2L_s, M2D_s, M2Q_s, M2U_s, mu_T, mP0_T(2)    &
-      & , M2E_s, M2L_s, M2D_s, M2Q_s, M2U_s, mu, mP0(2)    &
+     Call BoundaryEW(i1+1, mZ, tanb_mZ, Mi, Al_s, Ad_s, Au_s &
+      & , M2E_s, M2L_s, M2D_s, M2Q_s, M2U_s, mu_mZ, mP0_T(2) &
       & , 0.1_dp*delta, GenerationMixing, .True., mZ2_t, mW2_t, g1, kont)
 
      uU_R = id3C
@@ -1353,7 +1301,6 @@ Contains
       & , mSlepton, mSlepton2, RSlepton, mSneut2, RSneut, uU_L, uU_R      &
       & , uD_L, uD_R , uL_L, uL_R, id3C, mGlu_T, PhaseGlu, mZ2_t, mW2_t   &
       & , delta, g1, kont)
-
     End If
 
     If (kont.Ne.0) Then
@@ -1412,6 +1359,7 @@ Contains
      & , gauge, uL_L, uL_R, uD_L, uD_R, uU_L, uU_R, Y_l     &
      & , Y_d, Y_u, Mi, A_l, A_d, A_u, M2_E, M2_L, M2_D      &
      & , M2_Q, M2_U, M2_H, mu, B, m_GUT, kont, WriteOut, n_run)
+!     & , M2_Q, M2_U, M2_H, mu, B, m_GUT, kont, .true., n_run)
   End If
 
   !--------------------------------------------------------------

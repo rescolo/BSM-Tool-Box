@@ -4,11 +4,8 @@ Print["Model file for the SM loaded"];
 
 Model`Name = "BLSMIS";
 Model`NameLaTeX ="B-L extended Standard Model with inverse Seesaw";
-Model`Authors = "F.Staub, L.Basso, A. Hammad";
-Model`Date = "2014-11-06";
-
-(* 2014-09-11: changed B-L charges of s1, s2; added dirac spinor for s1 *)
-(* 2014-11-06: Changed sign in Lagrangian *)
+Model`Authors = "F.Staub, L.Basso";
+Model`Date = "2013-10-24";
 
 
 (*-------------------------------------------*)
@@ -34,12 +31,12 @@ FermionFields[[4]] = {u, 3, conj[uR],     -2/3, 1, -3, -1/6};
 FermionFields[[5]] = {e, 3, conj[eR],        1, 1,  1,  1/2};
 FermionFields[[6]] = {vR, 3, conj[vR],       0, 1,  1,  1/2};
 
-FermionFields[[7]] = {s1, 3, S1,              0, 1,  1,    1};
-FermionFields[[8]] = {s2, 3, S2,              0, 1,  1,   -1};
+FermionFields[[7]] = {s1, 3, S1,              0, 1,  1,   -1/2};
+FermionFields[[8]] = {s2, 3, S2,              0, 1,  1,    1/2};
 
 
 ScalarFields[[1]] = {H, 1, {H0, Hm},       -1/2, 2,  1,     0};
-ScalarFields[[2]] = {chi,1, X1,              0, 1,  1,    1/2};
+ScalarFields[[2]] = {chi,1, X1,              0, 1,  1,    -1};
 
 
 (*----------------------------------------------*)
@@ -56,10 +53,10 @@ DEFINITION[GaugeES][Additional]= {
 	{LagNoHC,{Overwrite->True, AddHC->False}}
 };
 
-LagNoHC = -(Mu1 conj[H].H + Mu2 conj[chi].chi + 1/2 L1 conj[H].H.conj[H].H + \
+LagNoHC = -(Mu1 conj[H].H + mu2 conj[chi].chi + 1/2 L1 conj[H].H.conj[H].H + \
               L2 conj[chi].chi.conj[chi].chi  + 1/2 L3 conj[H].H.conj[chi].chi  );
 
-LagHC = - (+ Yd H.d.q + Ye H.e.l + Yu conj[H].u.q + Yv conj[H].l.vR + Ys chi.vR.s2 + MUS s2.s2 + MUS1 s1.s1  );
+LagHC = - (- Yd H.d.q - Ye H.e.l - Yu conj[H].u.q - Yv conj[H].l.vR - Yx chi.vR.vR + Ys chi.vR.s2 + MUS s2.s2   );
 
 	  		  
 
@@ -86,17 +83,14 @@ DEFINITION[EWSB][MatterSector]=
      {{{dL}, {conj[dR]}}, {{FDL,Vd}, {FDR,Ud}}},
      {{{uL}, {conj[uR]}}, {{FUL,Vu}, {FUR,Uu}}},
      {{{eL}, {conj[eR]}}, {{FEL,Ve}, {FER,Ue}}},  
-     {{vL,conj[vR],S2},{Fvm,ZM}} ,
-     {{S1},{Fs1,SS}}
-};
+     {{vL,conj[vR],S2},{Fvm,ZM}} };
 
 
 DEFINITION[EWSB][DiracSpinors]={
  Fd ->{  FDL, conj[FDR]},
  Fe ->{  FEL, conj[FER]},
  Fu ->{  FUL, conj[FUR]},
- Fv ->{  Fvm, conj[Fvm]},
- Fs->{ Fs1, conj[Fs1]}
+ Fv ->{  Fvm, conj[Fvm]}
 };
 
 

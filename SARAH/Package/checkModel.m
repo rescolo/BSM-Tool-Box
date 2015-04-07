@@ -19,19 +19,15 @@
 
 
 
-CheckModel:=Block[{startedtime},
-startedtime=TimeUsed[];
-(*
+CheckModel:=Block[{},
+
 Print["###########################################################"];
 Print["Perform checks of particle content and (super)potential"];
-Print["###########################################################"]; *)
-Print[StyleForm["Perform checks of particle content and (super)potential","Section",FontSize->14]];
+Print["###########################################################"];
 CheckAnomalies;
-(*Print["***********************************************************"];*)
-Print[""];
+Print["***********************************************************"];
 CheckChargeConservation;
-(*Print["***********************************************************"];*)
-Print[""];
+Print["***********************************************************"];
 If[SupersymmetricModel===False,
 CheckPossibleTermsPotential;,
 CheckPossibleTermsSuperPotential;
@@ -39,44 +35,38 @@ CheckPossibleTermsSuperPotential;
 
 Print[""];
 Print[""];
-(*Print["###########################################################"];
+Print["###########################################################"];
 Print["Perform checks of particle mixing and VEVs"];
-Print["###########################################################"];*)
-Print[StyleForm["Perform checks of particle mixing and VEVs","Section",FontSize->14]];
+Print["###########################################################"];
 
 CheckParticleMixingAndVEVs;
 
 Print[""];
 Print[""];
-(*Print["###########################################################"];
+Print["###########################################################"];
 Print["Perform checks of mass matrices and eigenstates"];
-Print["###########################################################"];*)
-Print[StyleForm["Perform checks of mass matrices and eigenstates","Section",FontSize->14]];
+Print["###########################################################"];
 
 CheckMassMatrices;
-(*Print["***********************************************************"];*)
-Print[""];
+Print["***********************************************************"];
 CheckMissingMixing;
 
 
 Print[""];
 Print[""];
-(*Print["###########################################################"];
+Print["###########################################################"];
 Print["Perform checks of definitions for particles and parameters"];
-Print["###########################################################"];*)
-Print[StyleForm["Perform checks of definitions for particles and parameters","Section",FontSize->14]];
+Print["###########################################################"];
 
 CheckDiracSpinors;
-(*Print["***********************************************************"];*)
-Print[""];
+Print["***********************************************************"];
 CheckParameterDefinitionsFinal;
-(*Print["***********************************************************"];*)
-Print[""];
+Print["***********************************************************"];
 CheckParticleDefinitionsFinal;
 
 Print[""];
 Print[""];
-Print["All checks finished in ",TimeUsed[]-startedtime,"s"];
+Print["All checks finished"];
 ];
 
 
@@ -507,12 +497,6 @@ For[i=1,i<=Length[temp],
 Print["            ",temp[[i]]," :",Select[allParameterNames,(getEntryParameter[#,OutputName]===temp[[i]])&]];
 i++;];
 ];
-
-(*
-Print["    checking for OutputNames which are already occupied"];
-SPhenoInternalNames = {RHO, LAMBDA};
-*)
-
 ];
 
 CheckMassMatrices:=Block[{i,mat},

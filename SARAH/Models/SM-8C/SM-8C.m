@@ -3,9 +3,7 @@ Off[General::spell]
 Model`Name = "SM8C";
 Model`NameLaTeX ="Standard Model with color octet";
 Model`Authors = "F.Staub";
-Model`Date = "2014-11-06";
-
-(* 2014-11-06: Changed sign in Lagrangian *)
+Model`Date = "2013-09-13";
 
 
 (*-------------------------------------------*)
@@ -50,7 +48,7 @@ DEFINITION[GaugeES][Additional]= {
 LagNoHC = -(mu2 conj[H].H + 1/2 MS s.s - 1/4 LS s.s.s.s - LHc conj[H].H.conj[oc].oc - 1/2 L conj[H].H.conj[H].H \
     - 1/2 LHs conj[H].H.s.s - 1/2 LCs conj[oc].oc.s.s - eS s.s.s - eC conj[oc].oc.s - eH conj[H].H.s);
 
-LagHC = - ( Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q);
+LagHC = - (- Yd conj[H].d.q - Ye conj[H].e.l - Yu H.u.q);
 			  		  
 
 (* Gauge Sector *)
@@ -68,7 +66,7 @@ DEFINITION[EWSB][GaugeSector] =
 
 DEFINITION[EWSB][VEVs]= 
 {     {H0, {v, 1/Sqrt[2]}, {Ah, \[ImaginaryI]/Sqrt[2]},{phiH, 1/Sqrt[2]}},
-      {Sing, {vS, 1}, {0, 0},{phiS, 1}}    };
+      {Sing, {vS, 1}, {sigmaS, 0},{phiS, 1}}    };
  
 
 DEFINITION[EWSB][MatterSector]=   

@@ -24,7 +24,6 @@ AddBoxContributionsPreSARAH[box_,name_,mb_,file_]:=Block[{start1,start2,start3,s
 
 WriteString[sphenoTeX,"\\subsection{Box contributions} \n\n"];
 For[i=1,i<=Length[box],
-DynamicNumberDiagram[name]++;
 SA`SPhenoTeXSub=SA`SPhenoTeXGlobal;
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,{"MassEx12"->TeXOutput[Mass2[External[1][{gt1}]/.box[[1,2]]]],"MassEx1"->TeXOutput[Mass[External[1][{gt1}]/.box[[1,2]]]],"MassEx22"->TeXOutput[Mass2[External[2][{gt2}]/.box[[1,2]]]],"MassEx2"->TeXOutput[Mass[External[2][{gt2}]/.box[[1,2]]]],"MassEx32"->TeXOutput[Mass2[External[3][{gt3}]/.box[[1,2]]]],"MassEx3"->TeXOutput[Mass[External[3][{gt3}]/.box[[1,2]]]],"MassEx42"->TeXOutput[Mass2[External[4][{gt4}]/.box[[1,2]]]],"MassEx4"->TeXOutput[Mass[External[4][{gt4}]/.box[[1,2]]]]}];
 (* get more handy names for the particles in the loop *)
@@ -109,11 +108,7 @@ Switch[InsertionOrder /. box[[i,2]],
 	c2=CheckFermionFlipPS[{Internal[1],AntiField[Internal[2]],External[2]}/.box[[i,2]],c2, ind2]; (* NEW Flip *)
 	c3=CheckFermionFlipPS[{ External[3],Internal[2],AntiField[Internal[3]]}/.box[[i,2]],c3, ind3]; (* NEW Flip *)
 	c4=CheckFermionFlipPS[{External[4],AntiField[Internal[4]],Internal[3]}/.box[[i,2]],c4, ind4]; (* NEW Flip *)
-           c2temp=c2;c4temp=c4; 
-          c2=c4temp; c4=c2temp; 
-          c3temp=c3;c4temp=c4; 
-          c3=c4temp; c4=c3temp; 
-       ];
+];
 
 ind1=c1[[2]];c1=c1[[1]];
 ind2=c2[[2]];c2=c2[[1]];
@@ -124,7 +119,7 @@ ind4=c4[[2]];c4=c4[[1]];
 (* start the loop with the first generation of each particles; might change if we go to another gauge *)
 start1=1; start2=1; start3=1; start4=1;
 
-WriteString[file,"! Generic diagram: ",StringReplace[ToString[{getType[p1],getType[p4],getType[p2],getType[p3]}],{"{"->"","}"->"",","->"", " " ->""}]<>",  InsertionOrder: "<> ToString[InsertionOrder/.box[[i,2]]]<>"\n"]; 
+WriteString[file,"! Generic diagram: ",StringReplace[ToString[{getType[p1],getType[p2],getType[p3],getType[p4]}],{"{"->"","}"->"",","->"", " " ->""}]<>",  InsertionOrder: "<> ToString[InsertionOrder/.box[[i,2]]]<>"\n"]; 
 
 (* Create a flag to switch off loops including specific particles *) 
 If[FlagLoopContributions===True,
@@ -181,7 +176,6 @@ SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,{"m"<>ToString[getType[p1]]<>"12" -> TeXOut
 DrawBoxDiagram[(External[1][{Index[1]}] /.box[[i,2]]),(External[2][{Index[2]}] /.box[[i,2]]),(External[3][{Index[3]}] /.box[[i,2]]),(External[4][{Index[4]}] /.box[[i,2]]),p1[{j1}],p2[{j2}],p3[{j3}],p4[{j4}],(InsertionOrder /.box[[i,2]]),i,NumberOfConsideredExternalStates,name,sphenoTeX];
 
 WriteString[sphenoTeX,"\\begin{align} \n"];
-clines=1;
 (*
 AddBoxResultPreSARAH[name][InsertionOrder/.box[[i,2]],ToExpression[StringReplace[ToString[{getType[p1],getType[p2],getType[p4],getType[p3]}],{"{"->"","}"->"",","->"", " "->""}]],file];
 *)
@@ -209,7 +203,6 @@ AddPenguinContributionsPreSARAHgeneric[diagrams_,name_,mb_,file_,nf_]:=Block[{st
 (* This routine takes a list of penguin diagrams and writes the expressions for the amplitude to the SPheno code *)
 WriteString[sphenoTeX,"\\subsection{Penguin contributions, Propagator: $"<>TeXOutput[(Propagator /. diagrams[[1,2]])]<>"$} \n\n"];
 For[i=1,i<=Length[diagrams],
-DynamicNumberDiagram[name]++;
 SA`SPhenoTeXSub=SA`SPhenoTeXGlobal;
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,{"MassEx12"->TeXOutput[Mass2[External[1][{gt1}]/.diagrams[[1,2]]]],"MassEx1"->TeXOutput[Mass[External[1][{gt1}]/.diagrams[[1,2]]]],"MassEx22"->TeXOutput[Mass2[External[2][{gt2}]/.diagrams[[1,2]]]],"MassEx2"->TeXOutput[Mass[External[2][{gt2}]/.diagrams[[1,2]]]],"MassEx32"->TeXOutput[Mass2[External[3][{gt3}]/.diagrams[[1,2]]]],"MassEx3"->TeXOutput[Mass[External[3][{gt3}]/.diagrams[[1,2]]]],"MassEx42"->TeXOutput[Mass2[External[4][{gt4}]/.diagrams[[1,2]]]],"MassEx4"->TeXOutput[Mass[External[4][{gt4}]/.diagrams[[1,2]]]]}];
 (* particles in the loop *)
@@ -372,7 +365,6 @@ DrawPenguinDiagram[(External[1][{Index[1]}] /.diagrams[[i,2]]),(External[2][{Ind
 DrawPenguinDiagram[(External[1][{Index[1]}] /.diagrams[[i,2]]),(External[2][{Index[2]}] /.diagrams[[i,2]]),(External[3][{Index[3]}] /.diagrams[[i,2]]),p1[{j1}],p2[{j2}],p3[{j3}],(InsertionOrder /.diagrams[[i,2]]),i,NumberOfConsideredExternalStates,name,sphenoTeX];
 ];
 WriteString[sphenoTeX,"\\begin{align} \n"];
-clines=1;
 WriteString[file,"! Amplitude \n"];
 If[nf===4,
 AddPenguinResultPreSARAH[name][If[FreeQ[massless,p4],getType[p4],P],InsertionOrder/.diagrams[[i,2]],ToExpression[StringReplace[ToString[{getType[p1],getType[p2],getType[p3]}],{"{"->"","}"->"",","->"", " " ->""}]],file];,
@@ -402,7 +394,6 @@ AddWaveContributionsPreSARAHgeneric[diagrams_,name_,mb_,file_,nf_]:=Block[{start
 (* This routine takes a list of wave diagrams and writes the expressions for the amplitude to the SPheno code *)
 WriteString[sphenoTeX,"\\subsection{Wave contributions, Propagator: $"<>TeXOutput[(Propagator /. diagrams[[1,2]])]<>"$} \n\n"];
 For[i=1,i<=Length[diagrams],
-DynamicNumberDiagram[name]++;
 SA`SPhenoTeXSub=SA`SPhenoTeXGlobal;
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,{"MassEx12"->TeXOutput[Mass2[External[1][{gt1}]/.diagrams[[1,2]]]],"MassEx1"->TeXOutput[Mass[External[1][{gt1}]/.diagrams[[1,2]]]],"MassEx22"->TeXOutput[Mass2[External[2][{gt2}]/.diagrams[[1,2]]]],"MassEx2"->TeXOutput[Mass[External[2][{gt2}]/.diagrams[[1,2]]]],"MassEx32"->TeXOutput[Mass2[External[3][{gt3}]/.diagrams[[1,2]]]],"MassEx3"->TeXOutput[Mass[External[3][{gt3}]/.diagrams[[1,2]]]],"MassEx42"->TeXOutput[Mass2[External[4][{gt4}]/.diagrams[[1,2]]]],"MassEx4"->TeXOutput[Mass[External[4][{gt4}]/.diagrams[[1,2]]]]}];
 (* particles in the loop *)
@@ -632,7 +623,6 @@ DrawWaveDiagram[(External[1][{Index[1]}] /.diagrams[[i,2]]),(External[2][{Index[
 ];
 
 WriteString[sphenoTeX,"\\begin{align} \n"];
-clines=1;
 If[nf===4,
 AddWaveResultPreSARAH[name][If[FreeQ[massless,p4],getType[p4],P],InsertionOrder/.diagrams[[i,2]],ToExpression[StringReplace[ToString[{getType[p1],getType[p2]}],{"{"->"","}"->"",","->"", " " ->""}]],file];,
 AddWaveResultPreSARAH[name][InsertionOrder/.diagrams[[i,2]],ToExpression[StringReplace[ToString[{getType[p1],getType[p2]}],{"{"->"","}"->"",","->"", " " ->""}]],file];
@@ -659,7 +649,6 @@ AddTreeContributionsPreSARAHgeneric[diagrams_,name_,mb_,file_,nf_]:=Block[{start
 (* This routine takes a list of penguin diagrams and writes the expressions for the amplitude to the SPheno code *)
 WriteString[sphenoTeX,"\\subsection{Tree contributions, Propagator: $"<>TeXOutput[(Propagator /. diagrams[[1,2]])]<>"$} \n\n"];
 For[i=1,i<=Length[diagrams],
-DynamicNumberDiagram[name]++;
 SA`SPhenoTeXSub=SA`SPhenoTeXGlobal;
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,{"MassA2"->TeXOutput[Mass2[External[1][{gt1}]/.diagrams[[1,2]]]],"MassA"->TeXOutput[Mass[External[1][{gt1}]/.diagrams[[1,2]]]],"MassB2"->TeXOutput[Mass2[External[2][{gt2}]/.diagrams[[1,2]]]],"MassB"->TeXOutput[Mass[External[2][{gt2}]/.diagrams[[1,2]]]]}];
 (*Propagator *)
@@ -751,7 +740,6 @@ DrawTreeDiagram[(External[1][{Index[1]}] /.diagrams[[i,2]]),(External[2][{Index[
 ];
 
 WriteString[sphenoTeX,"\\begin{align} \n"];
-clines=1;
 WriteString[file,"! Amplitude \n"];
 If[nf===4,
 AddTreeResultPreSARAH[name][getType[p1],InsertionOrder/.diagrams[[i,2]],empty,file];,
@@ -776,7 +764,6 @@ AddTriangleContributionsPreSARAH[diagrams_,name_,uGauge_,mb_,file_]:=Block[{star
 (* This routine takes a list of penguin diagrams and writes the expressions for the amplitude to the SPheno code *)
 (* WriteString[sphenoTeX,"\\subsection{Penguin contributions, Propagator: $"<>TeXOutput[(Propagator /. diagrams[[1,2]])]<>"$} \n\n"]; *)
 For[i=1,i<=Length[diagrams],
-DynamicNumberDiagram[name]++;
 (* SA`SPhenoTeXSub=SA`SPhenoTeXGlobal;
 SA`SPhenoTeXSub=Join[SA`SPhenoTeXSub,{"MassA2"->TeXOutput[Mass2[External[1][{gt1}]/.diagrams[[1,2]]]],"MassA"->TeXOutput[Mass[External[1][{gt1}]/.diagrams[[1,2]]]],"MassB2"->TeXOutput[Mass2[External[2][{gt2}]/.diagrams[[1,2]]]],"MassB"->TeXOutput[Mass[External[2][{gt2}]/.diagrams[[1,2]]]]}]; *)
 (* particles in the loop *)
@@ -1354,9 +1341,6 @@ Return[temp];
 ];
 
 WriteDiagramsObservable[name_,triangle_, file_]:=Block[{i,jj,threshold="mf_l2(3)"},
-DynamicNumberTotalDiagram[name]=Length[triangle];
-DynamicNumberDiagram[name]=0;
-
 WriteString[file, "!---------------------------------------- \n"];
 WriteString[file, "! Triangle Contributions                  \n"]; 
 WriteString[file, "!---------------------------------------- \n"];
@@ -1364,9 +1348,6 @@ AddTriangleContributionsPreSARAH[triangle,name,UnitaryGauge[name],threshold,file
 ];
 
 WriteDiagramsObservable[name_,tree_,wave_,penguin_, file_]:=Block[{i,jj,threshold="mf_l2(3)"},
-DynamicNumberTotalDiagram[name]=Length[tree]+Sum[Length[penguin[[i]]],{i,1,Length[penguin]}]+Sum[Length[wave[[i]]],{i,1,Length[wave]}];
-DynamicNumberDiagram[name]=0;
-
 If[Length[tree]>0,
 WriteString[file, "!---------------------------------------- \n"];
 WriteString[file, "! Tree Contributions                      \n"]; 
@@ -1388,8 +1369,6 @@ AddPenguin2FContributionsPreSARAH[penguin,name,threshold,file];
 ];
 
 WriteDiagramsObservable[name_,treeS_,treeV_,waveScalar_,waveVector_,pengS_,pengV_,box_, file_]:=Block[{i,jj,threshold="mf_l2(3)"},
-DynamicNumberTotalDiagram[name]=Length[treeS]+Length[treeV]+Sum[Length[pengS[[i]]],{i,1,Length[pengS]}]+Sum[Length[pengV[[i]]],{i,1,Length[pengV]}]+Length[box]+Sum[Length[waveScalar[[i]]],{i,1,Length[waveScalar]}]+Sum[Length[waveVector[[i]]],{i,1,Length[waveVector]}];
-DynamicNumberDiagram[name]=0;
 If[Length[treeS]>0,
 WriteString[file, "!---------------------------------------- \n"];
 WriteString[file, "! Scalar Tree Contributions            \n"]; 
@@ -1496,13 +1475,8 @@ AddBoxContributionsPreSARAH[box,name,threshold,file];
 CheckForPreSARAH:=Block[{i,j,k,l,list,type},
 (* check for the files in SARAH/Package/SPheno/PreSARAH/ *)
 
-(*
 Print["# Checking for FlavorKit input files # "];
 Print["# Reference: 1405.1434               # "];
-*)
-
-PrintAll[StyleForm["Checking for FlavorKit input files","Section",FontSize->10]];
-PrintAll[StyleForm["Reference: 'A Flavor Kit for BSM models' by W. Porod, F. Staub, A.Vicente; 1405.1434","Section",FontSize->10]];
 
 PreSARAHnamesLFV={};
 PreSARAHnamesQFV={};
@@ -1515,7 +1489,6 @@ PreSARAHoperatorsLFV={};
 PreSARAHobservablesQFV={};
 PreSARAHoperatorsQFV={};
 
-If[SkipFlavorKit===True,Return[];];
 
 For[l=1,l<=2,
 If[l==1,type="LFV";,type="QFV";];
@@ -1529,14 +1502,11 @@ listfilesOperators=FileNames["*.m",ToFileName[{$sarahDir,"FlavorKit",type,"Opera
 listfilesProcesses=FileNames["*.m",ToFileName[{$sarahDir,"FlavorKit",type,"Observables"}],1];
 
 If[IncludeFlavorKit=!=True,listfilesOperators={}; listfilesProcesses={};];
-Print["Reading files for FlavorKit ",type," operators: ",Dynamic[DynamicListOperators[TYPE]]  /. TYPE->type];
-DynamicListOperators[type]={};
 For[i=1,i<=Length[listfilesOperators],
- If[i===1,PrintDebug["Reading files for FlavorKit ",type," operators: "];]; 
+If[i===1,Print["Reading files for FlavorKit ",type,"  operators: "];];
 (* read the files *)
 ProcessWrapper=False;
 Get[listfilesOperators[[i]]];
-DynamicListOperators[type]=Join[DynamicListOperators[type],{NameProcess}];
 If[ProcessWrapper==True, 
 NamesParticles=ExternalFields;
 Clear[ExternalFields];
@@ -1593,14 +1563,12 @@ SPhenoParameters=Join[SPhenoParameters,{{ToExpression[ToString[WrappersQFV[[i,3,
 j++;];
 i++;];
 
-Print["Reading files for definition of FlavorKit ",type," observables: ",Dynamic[DynamicListObservables[TYPE]] /. TYPE->type];
-DynamicListObservables[type]={};
+
 For[i=1,i<=Length[listfilesProcesses],
 (* read the files *)
-If[i===1,PrintDebug["Reading files for definition of FlavorKit ",type," observables: "];];
+If[i===1,Print["Reading files for definition of FlavorKit ",type," observables: "];];
 Get[listfilesProcesses[[i]]];
-PrintDebug["   ... ",Transpose[NameObservables][[1]]];
-DynamicListObservables[type]= Join[DynamicListObservables[type],{Transpose[NameObservables][[1]]}];
+Print["   ... ",Transpose[NameObservables][[1]]];
 
 (* store the names and information about these observables *)
 If[l==1,
@@ -1628,7 +1596,6 @@ realVar = Join[realVar,{ToExpression[ToString[NameObservables[[j,1]]]<>"SM"]}];
 j++;];
 i++;];
 l++;];
-
 ];
 
 GeneratePreSARAHObservables[type_,file_]:=Block[{i},
@@ -1641,15 +1608,8 @@ Format[j4,TeXForm]=Format["d",OutputForm];
 If[type==="LFV",PreSARAHnames=PreSARAHoperatorsLFV;];
 If[type==="QFV",PreSARAHnames=PreSARAHoperatorsQFV;];
 
-Print["Generating code for FlavorKit ",type," observables: "];
-Print["  ... processing: ",Dynamic[DynamicNrPS[TYPE]] /. TYPE->type ,"/",Length[PreSARAHnames]," (",Dynamic[DynamicNamePS[TYPE]] /. TYPE->type," [Diagrams: ",Dynamic[DynamicNumberDiagram[currentNameOp]]," of ",Dynamic[DynamicNumberTotalDiagram[currentNameOp]],"])"]; 
-
+Print["Generating code for FlavorKit ",type," observables"];
 For[i=1,i<=Length[PreSARAHnames],
-DynamicNrPS[type]=i;
-DynamicNamePS[type]=PreSARAHnames[[i,1]];
-currentNameOp=PreSARAHnames[[i,1]];
-DynamicNumberDiagram[currentNameOp]=0;
-DynamicNumberTotalDiagram[currentNameOp]="(Generating Diagrams)";
 $sarahCurrentTeXDir=ToFileName[{$sarahCurrentOutputDir,"TeX"}];
 If[FileExistsQ[$sarahCurrentTeXDir]=!=True,CreateDirectory[$sarahCurrentTeXDir];];
 $sarahCurrentTeXFlavorKitDir=ToFileName[{$sarahCurrentTeXDir,"FlavorKit"}];
@@ -1695,22 +1655,16 @@ WriteString[sphenoTeX,"\\end{document}\n"];
 Close[sphenoTeX];
 i++;];
 
-DynamicNamePS[type] = "All Done";
-
 If[type==="LFV",PreSARAHnames=PreSARAHobservablesLFV;];
 If[type==="QFV",PreSARAHnames=PreSARAHobservablesQFV;];
 
-Print["Write Routines to calculate observables: ",Dynamic[DynamicObsNr[type]],"/",Length[PreSARAHnames]," (",Dynamic[DynamicObsName[type]],")"];
 For[i=1,i<=Length[PreSARAHnames],
-DynamicObsNr[type]=i;
-DynamicObsName[type]=PreSARAHnames[[i,2]];
 GenerateRoutineObservables[type,PreSARAHnames[[i]],sphenoFlavorKitObs];
 i++;];
-DynamicObsName[type]="All Done";
 ];
 
 GenerateRoutineObservables[type_,{process_,observables_,states_,Ops_,body_},file_]:=Block[{i,j,k,temp},
-PrintDebug["Write Routine to calculate: ",observables];
+Print["Write Routine to calculate: ",observables];
 MakeSubroutineTitle["Calculate_"<>process,{},ToString/@Ops,ToString/@observables,file];
 WriteString[file, "Implicit None \n"];
 (*
@@ -1814,8 +1768,5 @@ i++;];
 Return[res];
 
 ];
-
-
-
 
 

@@ -147,7 +147,7 @@ extern double printchannels_(double *Xf,double*cut,double* Beps,int *prcnt,int*N
 /*===============================================
     Annihilation spectra
 =================================================*/
-extern double calcspectrum_(int *key,double *Sg, double *Se, double *Sp, double *Sne, double*Snu, double*Snl,int * err, int len);
+extern double calcspectrum_(int *key,double *Sg, double *Se, double *Sp, double *Sne, double*Snu, double*Snl,int * err);
 /* 
    real*8 function calcSpectrum(key,Sg, Se, Sp, Sne, Snu, Snl,err)
    interger err
@@ -160,11 +160,12 @@ extern void spectrinfo_(double*Xmin,double*tab,double*Ntot,double*Etot);
     real*8 Xmin,tab(250),Ntot,Etot
 */
 
-extern int displayspectrum_(double*tab, char*fmess,double *Emin,double *Emax,int len);
-/*  integer function displaySpectrum( tab, mess, Emin)
+extern int displayspectrum_(double*tab, char*fmess,double *Emin,double *Emax,int *EU,int len);
+/*  integer function displaySpectrum( tab, mess, Emin,EU)
     real*8 tab(250)
     character*(*) mess
     real*8 Emin
+    integer EU
 */
 extern double halofactor_(double *fi,double *dfi);
 /*
@@ -216,8 +217,8 @@ extern double noloop_(double*,double*,double*,double*);
     real*8 sgn, mq,msq,mne
 */     
 
-extern int nucleonamplitudes_(char*cdm,double (*LF)(double*,double*,double*,double*),
-                         double*pA0,double*pA5,double*nA0,double*nA5,int len);
+extern int nucleonamplitudes_(double (*LF)(double*,double*,double*,double*),
+                         double*pA0,double*pA5,double*nA0,double*nA5);
 /*
     integer function  nucleonAmplitudes(LF,pA0,pA5,nA0,nA5)
     real*8 LF,pA0(2),pA5(2),nA0(2),nA5(2) 

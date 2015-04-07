@@ -286,13 +286,9 @@ i++;];
 ];
 
 GenerateSPhenoTadpoleInformation:=Block[{},
-(*
 Print["--------------------------------------"];
 Print["Writing Routines for Tadpole Equations "];
 Print["--------------------------------------"];
-*)
-
-Print[StyleForm["Write routine for tadpole equations","Section",FontSize->12]];
 
 sphenoTad=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"TadpoleEquations_"<>ModelName<>".f90"]];
 
@@ -346,16 +342,11 @@ Close[sphenoTad];
 ];
 
 WriteCalculateTadpoles :=Block[{i},
-Print["  Writing tadpole equations "];
+Print["Writing tadpole equations "];
 MakeSubroutineTitle["CalculateTadpoles"<>SuffixRegime,listAllParametersAndVEVs,{},{"Tad1Loop","TadpoleValues"},sphenoTad];
 MakeVariableList[listAllParametersAndVEVs,",Intent(in)",sphenoTad];
-(*
 WriteString[sphenoTad, "Complex(dp), Intent(in) :: Tad1Loop("<>ToString[SA`NrTadpoleEquations]<>")\n\n"];
 WriteString[sphenoTad, "Real(dp), Intent(out) :: TadpoleValues("<>ToString[SA`NrTadpoleEquations]<>")\n\n"];
-*)
-
-WriteString[sphenoTad, "Complex(dp), Intent(in) :: Tad1Loop("<>ToString[Length[ParametersToSolveTadpoles]]<>")\n\n"];
-WriteString[sphenoTad, "Real(dp), Intent(out) :: TadpoleValues("<>ToString[Length[ParametersToSolveTadpoles]]<>")\n\n"];
 
 For[i=1,i<=Length[EquLoop],
 WriteString[sphenoTad,FortranLineBreak["TadpoleValues("<>ToString[i]<>") = Real("<>SPhenoForm[EquLoop[[i,1]]]<>",dp) \n"]];
@@ -364,11 +355,10 @@ WriteString[sphenoTad,"End Subroutine CalculateTadpoles"<>SuffixRegime<>" \n\n"]
 ];
 
 WriteCalculateTadpolesVEVsSM :=Block[{i},
-Print["  Writing tadpole equations for SM VEVs"];
+Print["Writing tadpole equations for SM VEVs"];
 MakeSubroutineTitle["CalculateTadpolesVEVsSM",listAllParametersAndVEVs,{},{"Tad1Loop","TadpoleValues"},sphenoTad];
 MakeVariableList[listAllParametersAndVEVs,",Intent(in)",sphenoTad];
-(* WriteString[sphenoTad, "Complex(dp), Intent(in) :: Tad1Loop("<>ToString[SA`NrTadpoleEquations]<>")\n\n"]; *)
-WriteString[sphenoTad, "Complex(dp), Intent(in) :: Tad1Loop("<>ToString[Length[ParametersToSolveTadpoles]]<>")\n\n"];
+WriteString[sphenoTad, "Complex(dp), Intent(in) :: Tad1Loop("<>ToString[SA`NrTadpoleEquations]<>")\n\n"];
 WriteString[sphenoTad, "Real(dp), Intent(out) :: TadpoleValues(2)\n\n"];
 
 For[i=1,i<=2,
@@ -416,7 +406,7 @@ WriteString[sphenoTad,"END FUNCTION FuncTad_"<>ModelName<>SuffixRegime<>" \n\n"]
 ];
 
 WriteSolveTadpoleEquations:=Block[{},
-Print["  Writing solver for tadpole equations "];
+Print["Writing solver for tadpole equations "];
 
 MakeSubroutineTitle["SolveTadpoleEquations"<>SuffixRegime,listAllParametersAndVEVs,{},{"Tad1Loop"},sphenoTad];
 WriteString[sphenoTad, "Implicit None\n"];
@@ -426,8 +416,7 @@ WriteString[sphenoTad, "Complex(dp), Intent(in) :: Tad1Loop("<>ToString[SA`NrTad
 WriteString[sphenoTad,"! For numerical routines \n"];
 WriteString[sphenoTad,"Real(dp) :: gC("<>ToString[numberAllwithVEVs]<>")\n"];
 WriteString[sphenoTad,"logical :: broycheck \n"];
-(* WriteString[sphenoTad, "Real(dp) :: broyx("<>ToString[SA`NrTadpoleEquations]<>")\n\n"]; *)
-WriteString[sphenoTad, "Real(dp) :: broyx("<>ToString[Length[ParametersToSolveTadpoles]]<>")\n\n"];
+WriteString[sphenoTad, "Real(dp) :: broyx("<>ToString[SA`NrTadpoleEquations]<>")\n\n"];
 
 If[NumericalSolutionTadpoleEquations=!=True,
 For[i=1,i<=Length[NewParametersFromTadpoles],WriteString[sphenoTad,SPhenoForm[NewParametersFromTadpoles[[i]]] <>" =  0._dp \n"];i++];
@@ -457,7 +446,7 @@ i++;];
 WriteString[sphenoTad,"End if \n \n \n"];
 WriteString[sphenoTad,"! Save parameters and 1-loop tadpoles in global variables to have access to them in the numerical routines \n"];
 MakeCall["ParametersToG"<>ToString[ numberAllwithVEVs]<>SuffixRegime,listAllParametersAndVEVs,{},{"gForTadpoles"<>SuffixRegime},sphenoTad];
-WriteString[sphenoTad,"tForTadpoles"<>SuffixRegime<> " = Tad1Loop(1:"<>ToString[Length[ParametersToSolveTadpoles]]<>") \n\n"];
+WriteString[sphenoTad,"tForTadpoles"<>SuffixRegime<> " = Tad1Loop \n\n"];
 WriteString[sphenoTad,"Call broydn(broyx,broycheck,FuncTad_"<>ModelName<>SuffixRegime<>") \n \n"];
  WriteString[sphenoTad,"! Write(*,*) \"Result broydn \",broyx \n"]; 
 
@@ -483,7 +472,7 @@ WriteString[sphenoTad,"End Subroutine SolveTadpoleEquations"<>SuffixRegime<>"\n\
 
 
 WriteSolveTadpoleEquationsForVEVsSM:=Block[{i},
-Print["  Writing solver for tadpole equations to get SM VEVs"];
+Print["Writing solver for tadpole equations to get SM VEVs"];
 
 MakeSubroutineTitle["SolveTadpoleEquationsVEVsSM",listAllParametersAndVEVs,{},{"Tad1Loop"},sphenoTad];
 WriteString[sphenoTad, "Implicit None\n"];
@@ -511,7 +500,7 @@ i++;];
 
 WriteString[sphenoTad,"! Save parameters and 1-loop tadpoles in global variables to have access to them in the numerical routines \n"];
 MakeCall["ParametersToG"<>ToString[ numberAllwithVEVs]<>SuffixRegime,listAllParametersAndVEVs,{},{"gForTadpoles"<>SuffixRegime},sphenoTad];
-WriteString[sphenoTad,"tForTadpoles"<>SuffixRegime<> " = Tad1Loop(1:"<>ToString[Length[ParametersToSolveTadpoles]]<>") \n\n"];
+WriteString[sphenoTad,"tForTadpoles"<>SuffixRegime<> " = Tad1Loop \n\n"];
 WriteString[sphenoTad,"Call broydn(broyx,broycheck,FuncTad_VEVsSM_"<>ModelName<>") \n \n"];
  WriteString[sphenoTad,"! Write(*,*) \"Result broydn \",broyx \n"]; 
 
@@ -528,7 +517,7 @@ WriteString[sphenoTad,"End Subroutine SolveTadpoleEquationsVEVsSM \n\n"];
 ];
 
 WriteSolveTadpoleEquationsForVEVs:=Block[{i},
-Print["  Writing solver for tadpole equations to get all VEVs"];
+Print["Writing solver for tadpole equations to get all VEVs"];
 
 MakeSubroutineTitle["SolveTadpoleEquationsVEVs",listAllParametersAndVEVs,{},{"Tad1Loop"},sphenoTad];
 WriteString[sphenoTad, "Implicit None\n"];
@@ -539,8 +528,7 @@ WriteString[sphenoTad, "Complex(dp), Intent(in) :: Tad1Loop("<>ToString[SA`NrTad
 WriteString[sphenoTad,"! For numerical routines \n"];
 WriteString[sphenoTad,"Real(dp) :: gC("<>ToString[numberAllwithVEVs]<>")\n"];
 WriteString[sphenoTad,"logical :: broycheck \n"];
-(*WriteString[sphenoTad, "Real(dp) :: broyx("<>ToString[SA`NrTadpoleEquations]<>")\n\n"];*)
-WriteString[sphenoTad, "Real(dp) :: broyx("<>ToString[Length[ParametersToSolveTadpoles]]<>")\n\n"];
+WriteString[sphenoTad, "Real(dp) :: broyx("<>ToString[SA`NrTadpoleEquations]<>")\n\n"];
 
 
 
@@ -552,7 +540,7 @@ i++;];
 
 WriteString[sphenoTad,"! Save parameters and 1-loop tadpoles in global variables to have access to them in the numerical routines \n"];
 MakeCall["ParametersToG"<>ToString[ numberAllwithVEVs]<>SuffixRegime,listAllParametersAndVEVs,{},{"gForTadpoles"<>SuffixRegime},sphenoTad];
-WriteString[sphenoTad,"tForTadpoles"<>SuffixRegime<> " = Tad1Loop(1:"<>ToString[Length[ParametersToSolveTadpoles]]<>") \n\n"];
+WriteString[sphenoTad,"tForTadpoles"<>SuffixRegime<> " = Tad1Loop \n\n"];
 WriteString[sphenoTad,"Call broydn(broyx,broycheck,FuncTad_VEVs_"<>ModelName<>") \n \n"];
  WriteString[sphenoTad,"! Write(*,*) \"Result broydn \",broyx \n"]; 
 

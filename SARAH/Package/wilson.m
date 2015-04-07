@@ -94,7 +94,6 @@ For[i=1,i<=Length[possFieldsSub],
 newProcess= process /. possFieldsSub[[i]];
 Switch[CheckVertex[newProcess],
 Finished,
-   
 		If[FreeQ[ListInsertedVertices,newProcess[[1]]] || SA`CheckSameVertices===False,
 		DiagramList = Join[DiagramList,{newProcess}];
 		ListInsertedVertices=Join[ListInsertedVertices,{newProcess[[1]]}];
@@ -110,6 +109,7 @@ i++];
 
 CheckVertex[process_]:=Block[{goOn,i},
 finishedVertices =Cases[process[[1]],x_?FieldToInsertQ,1];
+
 If[Length[finishedVertices]==0,
 Return[GoOn];,
 goOn = True;

@@ -22,6 +22,6 @@ all_CTparameters = CT_parameters.all_CTparameters
 all_functions = function_library.all_functions
 all_orders = coupling_orders.all_orders
 
-__author__ = "V. Hirschi"
+__author__ = "N. Christensen, C. Duhr"
 __version__ = "1.2"
-__email__ = "valentin.hirschi@gmail.com"
+__email__ = "neil@pa.msu.edu, claude.duhr@uclouvain.be"

@@ -8,8 +8,7 @@ EXTPAR = {
 	   {62,KappaInput},
 	   {63,ALambdaInput},
 	   {64,AKappaInput},
-           (* {65,vSInput} *)
-           {65,MuEffinput}
+           {65,vSInput}
 	 };
 
 RealParameters = {TanBeta,m0};
@@ -39,18 +38,18 @@ BoundaryHighScale = Table[{},{3}];
 
 
 BoundarySUSYScale[[1]] = {
-{vS, Sqrt[2]*MuEffinput/LambdaInput},  
+{vS, vSInput},  
 {\[Kappa], KappaInput},
 {\[Lambda], LambdaInput}
 };
 
 
 BoundarySUSYScale[[2]] = {
-{vS, Sqrt[2]*MuEffinput/LambdaInput}
+{vS, vSInput}
 };
 
 BoundarySUSYScale[[3]] = {
-{vS, Sqrt[2]*MuEffinput/LambdaInput},  
+{vS, vSInput},  
 {\[Kappa], KappaInput},
 {\[Lambda], LambdaInput},
 {T[\[Kappa]], AKappaInput*KappaInput},
@@ -108,13 +107,8 @@ BoundaryHighScale[[3]]={
 
 
 BoundaryLowScaleInput={
- {\[Kappa], KappaInput},
- {\[Lambda], LambdaInput},
- {T[\[Kappa]], AKappaInput*KappaInput},
- {T[\[Lambda]], ALambdaInput*LambdaInput},
  {vd,Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]},
- {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]},
- {vS, Sqrt[2]*MuEffinput/LambdaInput}
+ {vu,Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
 };
 
 
@@ -123,18 +117,27 @@ ListDecayParticles = Automatic;
 ListDecayParticles3B = Automatic;
 
 
+(* For kappa = 0 two massles pseudo scalar appear. 
+The Goldstone is the one which is not singlet-like! *)
+
 UseHiggs2LoopMSSM = False;
 
-(*
-UseAuxiliaryMu2Loop = True;
-AuxiliaryMu2Loop = vS*\[Lambda]/Sqrt[2];
-*)
-
+ConditionForMassOrdering={
+{Ah,
+"If ((Abs(ZA(1,3)).gt.Abs(ZA(2,3))).And.(MAh2(1).lt.1._dp).And.(MAh2(2).lt.1._dp)) Then \n
+   MAh2temp = MAh2 \n
+   ZAtemp = ZA \n
+   ZA(1,:) = ZAtemp(2,:) \n
+   ZA(2,:) = ZAtemp(1,:) \n
+   MAh2(1) = MAh2temp(2) \n
+   MAh2(2) = MAh2temp(1) \n
+End If \n \n"}
+};
 
 (* --------- Examples for input values ---------- *)
 
 (* Boundary condition type 1 *)
-DefaultInputValues[1] = {m0 -> 500, m12 -> 500, TanBeta -> 10, Azero ->-1500, LambdaInput -> 0.1, KappaInput -> 0.11,  ALambdaInput -> -1500,  AKappaInput -> -36,  MuEffinput -> 965};
+DefaultInputValues[1] = {m0 -> 500, m12 -> 500, TanBeta -> 10, Azero ->-1500, LambdaInput -> 0.1, KappaInput -> 0.11,  ALambdaInput -> -1500,  AKappaInput -> -36,  vSInput -> 13689};
 
 (* Boundary condition type 2 *)
 DefaultInputValues[2] = {};

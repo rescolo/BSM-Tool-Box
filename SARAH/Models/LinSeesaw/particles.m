@@ -13,7 +13,7 @@ ParticleDefinitions[GaugeES] = {
       {SHup, { Description -> "Charged Up-Higgs"}},
       {VB,   { Description -> "B-Boson"}},                         
       {VG,   { Description -> "Gluon"}},          
-      {VWB,  { Description -> "W-Bosons"}},          
+      {VWB,  { Description -> "W-Boson"}},          
       {gB,   { Description -> "B-Boson Ghost"}},    
       {gG,   { Description -> "Gluon Ghost" }},          
       {gWB,  { Description -> "W-Boson Ghost"}},    
@@ -67,9 +67,9 @@ ParticleDefinitions[GaugeES] = {
 
       {SvsRe,  { Description -> "CP-even Sneutrino",
 		PDG->{1000012,1000014,1000016,2000012,2000014,2000016,3000012,3000014,3000016},
-                PDG.IX ->{101000001,101000002,101000003,101000004,101000005,101000006,101000007,101000008,101000009} }},
+                PDG.IX ->{201000001,201000002,201000003,201000004,201000005,201000006,201000007,201000008,201000009} }},
       {SvsI ,  {Description -> "CP-odd Sneutrino",
-		 PDG->{4000012,4000014,4000016,5000012,5000014,5000016,6000012,6000014,6000016},
+		 PDG->{4000012,4000014,4000016,5000012,5000014,5000016,3000012,3000014,3000016},
                 PDG.IX ->{202000001,202000002,202000003,202000004,202000005,202000006,202000007,202000008,202000009} }}
 
 
@@ -103,7 +103,7 @@ ParticleDefinitions[GaugeES] = {
        {phis, { Description -> "Scalar Singlet"}},
        {sigmaL, { Description -> "Pseudo Scalar Sneutrino"}},
        {sigmaR, { Description -> "Right Pseudo Scalar Sneutrino"}},
-       {sigmaS, { Description -> "Pseudo Scalar Singlet"}},
+       {sigmas, { Description -> "Pseudo Scalar Singlet"}},
 
        {SHd,  { Description -> "Down-Higgs"}},
        {SHu,  { Description -> "Up-Higgs"}},

@@ -27,7 +27,7 @@
 
 GetSuperpotential:=Block[{i,i1,i2,n,m},
 
-PrintDebug["Calc Superpotential"];
+Print["Calc Superpotential"];
 
 (*------------------------------------------------------*)
 (* Superpotential *)
@@ -56,7 +56,7 @@ listSMadd = {};
 
 CalcSuperpotential:=Block[{i,j,listNew,tempList,pos,parts,finished,i1,i2,i3,i4,i5,term,tempSym,res},
 
-Print["Calculate superpotential: ",Dynamic[DynamicTermSuperpotentialNr],"/",Length[SuperPotential],"(",Dynamic[DynamicTermSuperpotential],")"];
+
 sumUnex=0;
 WSup=0;
 WCouplings={};
@@ -67,9 +67,6 @@ WCouplingsQuad={};
 ShowSuperpotentialContractions={};
 
 For[i=1,i<=Length[SuperPotential],
-DynamicTermSuperpotentialNr=i;
-DynamicTermSuperpotential=SuperPotential[[i,2]];
-PrintDebug[SuperPotential[[i,2]]];
 fields=1;
 parts={};
 For[j=1, j<=Length[SuperPotential[[i,2]]],
@@ -132,7 +129,6 @@ listWbi = Join[listWbi,res[[2]]];,
 If[FreeQ[listWone,(SuperPotential[[i,1,2]] /. subAlways /. conj[x_]->x)],listWone=Join[listWone,{res[[1]]}];];
 ];
 i++;];
-DynamicTermSuperpotential = "All Done";
 
 Superpotential = WSup;
 
@@ -144,6 +140,7 @@ CheckChargeConservation;
 
 
 CalcFTerms:=Block[{s,j,i,c},
+Print["Calc F-Terms"];
 
 
 (*F-Terms*)
@@ -151,16 +148,9 @@ CalcFTerms:=Block[{s,j,i,c},
 FTerms=0;
 
 If[NoFTerms =!=True,
-PrintDebug["Calculate F-Terms"];
-Print["Calculate F-Terms: ",Dynamic[DynamicFTermNr],"/",Length[SFieldList]," (",Dynamic[DynamicFTermName],")"];
-
 For[i=1,i<=Length[SFieldList],
-DynamicFTermNr=i;
-DynamicFTermName=SFieldList[[i]];
-PrintDebug[SFieldList[[i]]];
 FTerms  += DFTerms[Superpotential,SFieldList[[i]]];
 i++;];
-DynamicFTermName="All Done";
 ];
 
 
@@ -168,23 +158,19 @@ DynamicFTermName="All Done";
 
 
 CalcMatter := Block[{s,t,g,c2,i,c1,h,j,k,l,m,Dim5Lag, Dim5FieldsFermion,Dim5FieldsScalar,posls},
-PrintDebug["Calculate Fermion-Scalar"];
-Print["Calculate Matter interactions: ",Dynamic[DynamicMatterNr],"/",Length[SFieldList]^2," (",Dynamic[DynamicMatterName],")"];
+Print["Calc Fermion-Scalar"];
 
 
 (*Wij*)
 
 Wij=0;
-DynamicMatterNr=1;
+
 For[i=1,i<=Length[SFieldList],
 For[k=1,k<=Length[SFieldList],
-DynamicMatterName={SFieldList[[i]],SFieldList[[k]]};
-PrintDebgu[{SFieldList[[i]],SFieldList[[k]]}];
 Wij += DPF[DPF[Superpotential,SFieldList[[i]],FFieldList[[i]],1],SFieldList[[k]],FFieldList[[k]],2];
-DynamicMatterNr++;
 k++;];
 i++;];
-DynamicMatterName="All Done";
+
 
 WSijkl=0;
 
@@ -200,8 +186,7 @@ Matter = FTerms + (Wij +conj[Wij /. {Ferm_[1]->Ferm[2],Ferm_[2]->Ferm[1]} ])+ (W
 
 CalcSoftBreaking:=Block[{c,j,i,gen1,gen2,gen3,c1,c2,c3,m},
 
-PrintDebug["Calc Soft Breaking"];
-Print["Calculate soft-breaking terms: ", Dynamic[DynamicSoftTermsCurrent]];
+Print["Calc Soft Breaking"];
 
 listSM= {};
 listSMoff= {};
@@ -209,7 +194,7 @@ listSMaddoff={};
 listGM= {};
 listGMall= {};
 
-DynamicSoftTermsCurrent= "Scalar soft masses";
+
 (*----------- Soft Breaking Masses ---------------*)
 
 ListSoftBreakingScalarMasses={};
@@ -313,8 +298,7 @@ Tp[MassScalar[Fields[[i,3]],Fields[[j,3]]]]=MassScalar[Fields[[i,3]],Fields[[j,3
 listSMoff=Join[listSMoff,{{{SFields[[i]] /. conj[x_]->x,SFields[[j]]  /. conj[x_]->x},genTest[MassScalar[Fields[[i,3]],Fields[[j,3]]],{conj[Fields[[i,3]]],Fields[[j,3]]},False]*makeDelta[i,1,2,{generation}]}}];
 SA`ListM2ijOFF=Join[SA`ListM2ijOFF,{{{SFields[[i]] /. conj[x_]->x,SFields[[j]]  /. conj[x_]->x},{1,genTest[MassScalar[Fields[[i,3]],Fields[[j,3]]],{conj[Fields[[i,3]]],Fields[[j,3]]},False]*makeDelta[i,1,2,{generation}]}}}];
 
-(* listSMaddoff = Join[listSMaddoff,{{0,1,TrueQ[Head[SFields[[i]]]===conj]}}]; *)
-listSMaddoff = Join[listSMaddoff,{{0,1,TrueQ[(Head[SFields[[i]]]===conj) && Fields[[i,2]]==Fields[[j,2]]]}}];
+listSMaddoff = Join[listSMaddoff,{{0,1,TrueQ[Head[SFields[[i]]]===conj]}}];
 (* ]; *)
 ];
 j++;];
@@ -326,7 +310,6 @@ SA`ListM2ij=Join[SA`ListM2ij,SA`ListM2ijOFF];
 listSMadd = Join[listSMadd,listSMaddoff];
 ];
 
-DynamicSoftTermsCurrent= "Gaugino soft masses";
 SoftGauginoMass=0;
 If[AddSoftGauginoMasses=!=False,
 
@@ -378,7 +361,6 @@ i++;];
 
 (* ------- Soft Breaking Superpotential Parameters ------ *)
 
-DynamicSoftTermsCurrent= "scalar interactions";
 
 SoftW = Superpotential;
 
@@ -406,8 +388,6 @@ parameters = Select[parameters, (FreeQ[#,L[a_]])&];
 ];
 
 (* ---------- Dirac mass terms --------- *)
-
-DynamicSoftTermsCurrent="Dirac gaugino terms";
 
 If[AddDiracGauginos===True,SoftDG=GetDiracGauginos;,SoftDG=0;];
 
@@ -446,8 +426,7 @@ SoftScalarMass=0;
 SoftGauginoMass=0;
 SoftDG=0;
 ];
- 
-DynamicSoftTermsCurrent="All Done";
+
 
 
 ];
@@ -458,12 +437,8 @@ DynamicSoftTermsCurrent="All Done";
 
 
 GetDiracGauginos:=Block[{i,j,k,l,res=0,fields,dim,add,indexB,mName,currentDirac},
-PrintDebug["Adding dirac gaugino soft terms"];
-Print["Calculate Dirac Gaugino masses: ", Dynamic[DynamicDGnr],"/",Length[Gauge]," (",Dynamic[DynamicDGname],")"];
+Print["Adding dirac gaugino soft terms"];
 For[i=1,i<=Length[Gauge],
-DynamicDGnr=i;
-DynamicDGname=Gauge[[i,1]];
-PrintDebug[Gauge[[i,1]]];
 currentDirac={};
 dim=Gauge[[i,2]];
 If[dim===U[1],dim=0;,dim=dim[[1]]^2-1;];
@@ -478,10 +453,6 @@ add=False;
 ];
 ];
 k++;];
- If[((SA`ChargeGlobal[FGauge[[i]] //. A_[{b__}]->A,RSymmetry]+SA`ChargeGlobal[FFields[[j]] //. A_[{b__}]->A,RSymmetry])//. SA`ChargeGlobal[a__]->0)=!=0,
-add=False; 
-Print["out"];Print[FFields[[j]],FGauge[[i]]];
-];
 If[add==True,fields=Join[fields,{j}]];
 ];
 j++;];
@@ -509,7 +480,6 @@ res += ((mName /. gen1->gen2) part[FGauge[[i]],1] part[FFields[[fields[[j]]]],2]
 ];
 j++;];
 i++;];
-DynamicDGname="All Done";
 Return[res+conj[res]];
 ];
 
@@ -521,10 +491,8 @@ Return[res+conj[res]];
 
 CalcKinetic:=Block[{i,Bg12,gen1,gen2,Bg22,Bg23,a,g, gauge},
 
-PrintAll["Calculate kinetic Terms"];
+Print["Calc Kinetic Terms"];
 
-Print["  ... for scalars: ", Dynamic[DynamicKineticScalarNr],"/",AnzahlChiral," (",Dynamic[DynamicKineticScalarName],")"];
-PrintDebug["  ... for scalars:"];
 
 (* ----------- Kinetic Scalars ------------*)
 
@@ -552,30 +520,21 @@ Return[temp];
 KinScalar = 0;
 
 For[i=1,i<=AnzahlChiral,
-DynamicKineticScalarNr=i;
-DynamicKineticScalarName=SFields[[i]];
-PrintDebug["   ",SFields[[i]]];
 temp= - g[lor4,lor3]*((conj[part[SFields[[i]],2]]  I KovariantDerivative[i,2,1,3]Deri[part[SFields[[i]],1],lor4])  + part[SFields[[i]],1]  (- I KovariantDerivative[i,2,1,4]) Deri[conj[part[SFields[[i]],2]],lor3]);
 KinScalar+=SumOverExpandedIndizes[temp,{Fields[[i,3]],Fields[[i,3]]}] /.subFieldsOne; 
 SumFactor=getSumFields[i,5];
 temp= g[lor4,lor3] SumFactor KovariantDerivative[i,5,1,4]*part[SFields[[i]],1] KovariantDerivative[i,2,5,3]*conj[part[SFields[[i]],2]];
-KinScalar+=SumOverExpandedIndizes[temp,{Fields[[i,3]],Fields[[i,3]],None,None,Fields[[i,3]]}] /.subFieldsOne; 
+KinScalar+=SumOverExpandedIndizes[temp,{Fields[[i,3]],Fields[[i,3]],None,None,Fields[[i,3]]}] /.subFieldsOne;
 
 i++;];
-DynamicKineticScalarName="All Done";
 
 
 (* ------------- Kinetic Fermions -----------*)
 
-Print["  ... for fermions: ", Dynamic[DynamicKineticFermionNr],"/",AnzahlChiral," (",Dynamic[DynamicKineticFermionName],")"];
-PrintDebug["  ... for fermions:"];
+
 KinFerm = 0;
 
 For[i=1,i<=AnzahlChiral,
-DynamicKineticFermionNr=i;
-DynamicKineticFermionName=FFields[[i]];
-PrintDebug["   ",FFields[[i]]];
-
 temp=- (conj[part[FFields[[i]],1]]*
 (pmue[part[FFields[[i]],2]]+ I gamma[lor3]KovariantDerivative[i,1,2,3])*part[FFields[[i]],2] );
 KinFerm+= SumOverExpandedIndizes[temp,{Fields[[i,3]],Fields[[i,3]]}] /.subFieldsOne;
@@ -584,95 +543,8 @@ temp=- part[FFields[[i]],1]*
 (pmue[part[FFields[[i]],2]]- I gamma[lor3]conj[KovariantDerivative[i,1,2,3]])*conj[part[FFields[[i]],2]];
 KinFerm+= SumOverExpandedIndizes[temp,{Fields[[i,3]],Fields[[i,3]]}] /.subFieldsOne;
 i++;];
-DynamicKineticFermionName="All Done";
 
-];
 
-(*-----------------------------------------*)
-(* Gravitino Part *)
-(*-----------------------------------------*)
-
-CalcGravitino:=Block[{i,j,k,c,w,tempC,tempV,temp,temp1,insGen1,gNr},
-PrintAll["Calculate gravitino interactions"];
-
-tempC=0;
-For[i=1,i<=AnzahlChiral,
-temp=-1/(Sqrt[2] MP) LP[gamma[lor2],gamma[lor4]](Deri[conj[part[SFields[[i]],3]],lor4])  part[FFields[[i]],1] part[TFields[[1]],2];
-temp=SumOverExpandedIndizes[temp,{Fields[[i,3]],None,Fields[[i,3]]}] /.subFieldsOne;
-tempC+=temp+(temp /. {A_[1]->A[2],A_[2]->A[1]});
-i++;];
-tempC=tempC+m32 part[TFields[[1]],1] part[TFields[[1]],2];
-LgravFFS=tempC+conj[tempC] /. conj[LP[gamma[a_],gamma[b_]]]->LP[gamma[b],gamma[a]] ;
-
-tempC=0;
-For[i=1,i<=AnzahlChiral,
-temp=I/(Sqrt[3] MP m32) (Deri[Deri[conj[part[SFields[[i]],3]],lor4],lor4])  part[FFields[[i]],1] part[TFields[[2]],2] makeDelta[i,1,3,{}];
-temp=SumOverExpandedIndizes[temp,{Fields[[i,3]],None,Fields[[i,3]]}] /.subFieldsOne;
-tempC+=temp+(temp /. {A_[1]->A[2],A_[2]->A[1]});
-i++;];
-tempC=tempC+m32 part[TFields[[2]],1] part[TFields[[2]],2];
-LgolFFS=tempC+conj[tempC] /. conj[LP[gamma[a_],gamma[b_]]]->LP[gamma[b],gamma[a]];
-
-tempC=0;
-For[i=1,i<=AnzahlChiral,
-temp=-I/(Sqrt[3] MP m32) (Deri[Deri[part[FFields[[i]],1],lor4],lor4])  conj[part[SFields[[i]],3]] part[TFields[[2]],2] makeDelta[i,1,3,{}];
-temp=SumOverExpandedIndizes[temp,{Fields[[i,3]],None,Fields[[i,3]]}] /.subFieldsOne;
-tempC+=temp+(temp /. {A_[1]->A[2],A_[2]->A[1]});
-i++;];
-LgolFFS+=tempC+conj[tempC] /. conj[LP[gamma[a_],gamma[b_]]]->LP[gamma[b],gamma[a]];
-
-tempC=0;
-For[i=1,i<=AnzahlChiral,
-temp=-1/(Sqrt[2] MP) LP[gamma[lor2],gamma[lor4]](-I KovariantDerivative[i,3,1,4] conj[part[SFields[[i]],3]])  part[FFields[[i]],1] part[TFields[[1]],2];
-temp=SumOverExpandedIndizes[temp,{Fields[[i,3]],None,Fields[[i,3]]}] /.subFieldsOne;
-tempC+=temp+(temp /. {A_[1]->A[2],A_[2]->A[1]});
-i++;];
-LgravFFSV=tempC+conj[tempC]/. conj[LP[gamma[a_],gamma[b_]]]->LP[gamma[b],gamma[a]];
-
-tempV=0;
-For[i=1,i<= AnzahlGauge,
-temp=-I/(2 MP) part[TFields[[1]],1] (LP[gamma[lor3],gamma[lor4],gamma[lor1]]-LP[gamma[lor4],gamma[lor3],gamma[lor1]]) /2conj[part[FGauge[[i]],2]](Deri[part[SGauge[[i]],3],lor4] -Deri[part[SGauge[[i]],4],lor3]);
-tempV+=temp+(temp /. {A_[1]->A[2],A_[2]->A[1]});
-i++;];
-LgravFFV=tempV+conj[tempV]/. conj[LP[gamma[a_],gamma[b_]]]->LP[gamma[b],gamma[a]];
-
-tempV=0;
-For[i=1,i<= AnzahlGauge,
-If[Gauge[[1,5]]===True,
-temp=+1/(4  Sqrt[6] MP m32) conj[part[TFields[[2]],1]](LP[gamma[lor3],gamma[lor4],gamma[lor5]]-LP[gamma[lor4],gamma[lor3],gamma[lor5]]) /2Deri[part[FGauge[[i]],2],lor5]( Deri[part[SGauge[[i]],3],lor4] If[Gauge[[i,2]]=!=U[1],Delta[Gauge[[i,3]]/. subGC[2], Gauge[[i,3]]/. subGC[3]]] - Deri[part[SGauge[[i]],4],lor3]If[Gauge[[i,2]]=!=U[1],Delta[Gauge[[i,3]]/. subGC[2], Gauge[[i,3]]/. subGC[4]]]) ;,
-temp=+1/(4  Sqrt[6] MP m32) conj[part[TFields[[2]],1]](LP[gamma[lor3],gamma[lor4],gamma[lor5]]-LP[gamma[lor4],gamma[lor3],gamma[lor5]]) /2Deri[part[FGauge[[i]],2],lor5]( Deri[part[SGauge[[i]],3],lor4] If[Gauge[[i,2]]=!=U[1],Delta[gen2,gen3]] - Deri[part[SGauge[[i]],4],lor3]If[Gauge[[i,2]]=!=U[1],Delta[gen2,gen4]]) ;
-];
-tempV+=temp+(temp /. {A_[1]->A[2],A_[2]->A[1]});
-i++;];
-LgolFFV=tempV+conj[tempV]/. conj[LP[gamma[a_],gamma[b_]]]->LP[gamma[b],gamma[a]];
-
-tempV=0;
-For[i=1,i<= AnzahlGauge,
-ai=ADI[i];
-temp=-I/(2 MP) part[TFields[[1]],1] (LP[gamma[lor3],gamma[lor4],gamma[lor1]]-LP[gamma[lor4],gamma[lor3],gamma[lor1]]) /2conj[part[FGauge[[i]],2]]part[SGauge[[i]],3]*part[SGauge[[i]],4] getStructureConstant[i,ai /. subGC[2],ai /. subGC[3],ai /. subGC[4]] Gauge[[i,4]] ;
-tempV+=temp+(temp /. {A_[1]->A[2],A_[2]->A[1]});
-i++;];
-LgravFFVV=tempV+conj[tempV]/. conj[LP[gamma[a_],gamma[b_]]]->LP[gamma[b],gamma[a]];
-
-tempV=0;
-For[i=1,i<= AnzahlGauge,
-ai=ADI[i];
-temp= 1/(4 Sqrt[6] MP m32) conj[part[TFields[[2]],1]] (LP[gamma[lor3],gamma[lor4],gamma[lor5]]-LP[gamma[lor4],gamma[lor3],gamma[lor5]]) /2 Deri[part[FGauge[[i]],2],lor5] part[SGauge[[i]],3]*part[SGauge[[i]],4] getStructureConstant[i,ai /. subGC[2],ai /. subGC[3],ai /. subGC[4]] Gauge[[i,4]] ;
-tempV+=temp+(temp /. {A_[1]->A[2],A_[2]->A[1]});
-i++;];
-LgolFFVV=tempV+conj[tempV]/. conj[LP[gamma[a_],gamma[b_]]]->LP[gamma[b],gamma[a]];
-
-tempC=0;
-For[i=1,i<=AnzahlChiral,
-For[gNr=1,gNr<=AnzahlGauge,
-insGen1=getGenerator[gNr,Fields[[i,3+gNr]],1,3,4];
-temp1= insGen1 Gauge[[gNr,4]] conj[part[SFields[[i]],3]]*part[SFields[[i]],4]makeDelta[i,3,4,{Gauge[[gNr,3]]}];
-temp=-1/(Sqrt[6] MP m32)   Deri[part[FGauge[[gNr]],1],lor5] gamma[lor5] part[TFields[[2]],2] temp1;
-temp=SumOverExpandedIndizes[temp,{None,None,Fields[[i,3]],Fields[[i,3]]}] /.subFieldsOne;
-tempC+=temp+(temp /. {A_[1]->A[2],A_[2]->A[1]});
-gNr++;];
-i++;];
-LgolFFSV=tempC+conj[tempC] /. conj[gamma[a_]]->gamma[a];
 ];
 
 
@@ -687,9 +559,7 @@ LgolFFSV=tempC+conj[tempC] /. conj[gamma[a_]]->gamma[a];
 
 CalcDTerms:=Block[{i,j,ig,c,w, gNr, structure,tempU1,insGenU1,tempD},
 
-PrintDebug["Calc D-Terms"];
-DynamicDTermsNr=0;
-Print["Calculate D-Terms: ",Dynamic[DynamicDTermsNr],"/",AnzahlGauge*AnzahlChiral," (",Dynamic[DynamicDTermsName],")"];
+Print["Calc D-Terms"];
 
 If[NoDTerms ===True,
 DTerms = 0;,
@@ -698,9 +568,6 @@ DTermsDirac=0;
 DTerms=Table[{},{AnzahlGauge}];
 For[gNr=1,gNr<=AnzahlGauge,
 For[i=1,i<=AnzahlChiral,
-DynamicDTermsNr++;
-DynamicDTermsName={Gauge[[gNr,1]],SFields[[i]]};
-PrintDebug["   ",{Gauge[[gNr,1]],SFields[[i]]}];
 insGen1=getGenerator[gNr,Fields[[i,3+gNr]],3,1,2] /. Lam[a__]->2;
 temp1= insGen1 Gauge[[gNr,4]] part[aGauge[[gNr]],3] conj[part[SFields[[i]],1]]*part[SFields[[i]],2]makeDelta[i,1,2,{Gauge[[gNr,3]]}];
  If[AddDiracGauginos,
@@ -769,14 +636,6 @@ temp2= SumOverExpandedIndizes[temp2,{None, None,Fields[[j,3]],Fields[[j,3]]}];
 If[Gauge[[gNr,5]]===False,
 If[Gauge[[gNr,2]]=!=U[1],
 term1=DTermIndizes[gNr,i,j] temp1 *temp2;,
-If[AddFIU1===True && i==j,
-If[FreeQ[parameters,Xi[Gauge[[gNr,1]]]],
-parameters=Join[parameters,{{Xi[Gauge[[gNr,1]]],{},{}}}];
-SA`listFIU1=Join[SA`listFIU1,{{gNr,{gNr,Xi[Gauge[[gNr,1]]]}}}];
-];
-temp1+=Xi[Gauge[[gNr,1]]];
-(* temp2+=Xi[Gauge[[gNr,1]]]; *)
-];
 term1=temp1 *temp2;
 ];
 term2=term1 /. Flatten[{subGCRE[1,5],subGCRE[2,6], subGCRE[3,7],subGCRE[4,8]}] /. Flatten[{subGCRE[8,2],subGCRE[7,1],subGCRE[6,4], subGCRE[5,3]}];,
@@ -802,7 +661,7 @@ DTermsDirac +=SumOverExpandedIndizes[-mName  conj[part[SFields[[SA`DiracGauginos
 ig++;];
 ];
 gNr++;];
-DynamicDTermsName="All Done";
+
 DTerms = 1/2 Plus@@Flatten[DTerms] - DTermsDirac;
 
 ];
@@ -827,20 +686,14 @@ Return[temp];
 (* ---------- Gaugino Interaction ---------- *)
 
 
-
 CalcGaugino:=Block[{i,j,k,g,c,a,ai},
 
-PrintDebug["Calc Gaugino Interactions"];
-DynamicGauginoMatter=0;
-Print["Calculate gaugino interactions: ",Dynamic[DynamicGauginoMatter],"/",AnzahlChiral*AnzahlGauge," (",Dynamic[DynamicGauginoMatterName],")"];
+Print["Calc Gaugino Interactions"];
 
 FSG=0;
 
 For[i=1,i<=AnzahlChiral,
 For[j=1,j<=AnzahlGauge,
-DynamicGauginoMatter++;
-DynamicGauginoMatterName={Gauge[[j,1]],Fields[[i,1]]};
-PrintDebug["   ",{Gauge[[j,1]],Fields[[i,1]]}];
 temp =makeDelta[i,1,3,{Gauge[[j,3]]}] Gauge[[j,4]]conj[part[SFields[[i]],3]]*getGenerator[j,FieldDim[i,j],2,3,1]*part[FFields[[i]],1]  part[FGauge[[j]],2];
 FSG += SumOverExpandedIndizes[temp,{Fields[[i,3]],None,Fields[[i,3]]}];
 
@@ -861,20 +714,16 @@ k++;];
 ];
 j++;];
 i++;];
-DynamicGauginoMatterName= "All Done";
+
 FSGaugino = Sqrt[2] (FSG + (FSG /. {A_[1]->A[2],A_[2]->A[1]}));
 
 (* ----------- Boson-Gaugino-Interaction ----------*)
 
-PrintDebug["Calculate Vector Boson - Gaugino - Interactions"];
-Print["Calculate vector-gaugino interactions: ",Dynamic[DynamicGauginoVector],"/",AnzahlGauge," (",Dynamic[DynamicGauginoVectorName],")"];
+Print["Calculate Vector Boson - Gaugino - Interactions"];
 
 BosonGaugino =0;
 
 For[gNr=1,gNr<=Length[Gauge],
-DynamicGauginoVector=gNr;
-DynamicGauginoVectorName=Gauge[[gNr,1]];
-PrintDebug["   ",Gauge[[gNr,1]]];
 If[Gauge[[gNr,2,1]]>1,
 ai=ADI[gNr];
 BosonGaugino += conj[part[FGauge[[gNr]],1]] (Gauge[[gNr,4]] getStructureConstant[gNr,ai /. subGC[2],ai /. subGC[1],ai /. subGC[3]] part[SGauge[[gNr]],3] gamma[lor3] part[FGauge[[gNr]],2]);
@@ -882,23 +731,18 @@ BosonGaugino -= part[FGauge[[gNr]],1] (Gauge[[gNr,4]] getStructureConstant[gNr,a
 ];
 gNr++;
 ];
-DynamicGauginoVectorName= "All Done";
 ];
 
 (* ---------- Gauge Interaction ---------- *)
 
 CalcVectorBoson:=Block[{},
-PrintDebug["Calculate Vector Boson Self Interactions"];
-Print["Calculate vector self-interactions: ",Dynamic[DynamicVectorNr],"/",AnzahlGauge," (",Dynamic[DynamicVectorName],")"];
+Print["Calculate Vector Boson Self Interactions"];
 
 GaugeTri=0;
 GaugeQuad=0;
 GaugeBi=0;
 
 For[i=1,i<=Length[Gauge],
-DynamicVectorNr=i;
-DynamicVectorName=SGauge[[i]];
-PrintDebug["  ",SGauge[[i]]];
 GaugeBi+=Gauge[[i,4]] g[lor1,lor3] g[lor2,lor4](Deri[part[SGauge[[i]],1],lor2] -Deri[part[SGauge[[i]],2],lor1])(Deri[part[SGauge[[i]],3],lor4] -Deri[part[SGauge[[i]],4],lor3]);
 If[Gauge[[i,2,1]]==1,
 For[j=i+1,j<=Length[Gauge],
@@ -913,7 +757,7 @@ GaugeTri += - Gauge[[i,4]] getStructureConstant[i,ai /. subGC[1],ai /. subGC[2],
 GaugeQuad += 1/4 Gauge[[i,4]]^2 (getStructureConstant[i,ai /. subGC[5],ai /. subGC[1],ai /. subGC[2]] getStructureConstant[i,ai /. subGC[5],ai /. subGC[3],ai /. subGC[4]] sum[ai /. subGC[5],1,Gauge[[i,2,1]]^2-1](g[lor2,lor4] g[lor3,lor1])) part[SGauge[[i]],1]*part[SGauge[[i]],2] part[SGauge[[i]],3]*part[SGauge[[i]],4];
 ];
 i++;];
-DynamicVectorName= "All Done";
+
 GaugeTri=-GaugeTri-GaugeBi;
 GaugeQuad=-GaugeQuad;
 
@@ -1018,15 +862,11 @@ Return[{LagRe,LagAddVVV,LagAddVVVV,AddPot,AddKin}];
 
 CalcLagrangian:=Block[{},
 
-If[AddGravitino=!=True,
-LgolFFV=0;LgolFFVV=0;LgolFFS=0;LgolFFSV=0;
-];
-
 Print["Calc Complete Lagrangian"];
-Kinetic =  +  KinFerm + KinScalar + BosonGaugino +(* LgravFFV+LgravFFVV+*) LgolFFV+LgolFFVV; 
+Kinetic =  +  KinFerm + KinScalar + BosonGaugino; 
 LagrangianVVV=GaugeTri;
 LagrangianVVVV=GaugeQuad;
-Potential = Matter + Soft + DTerms + FSGaugino (*- LgravFFS-LgravFFSV*)- LgolFFS-LgolFFSV;
+Potential = Matter + Soft + DTerms + FSGaugino ;
 Lagrangian = Kinetic+LagrangianVVV+LagrangianVVVV - Potential;
 
 LGhost=0;

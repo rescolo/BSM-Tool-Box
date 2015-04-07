@@ -16,41 +16,39 @@ ParticleDefinitions[GaugeES] = {
 
      {hh   ,  {  Description -> "Higgs",
                  PDG -> {25},
-                 FeynArtsNr -> 1,
                  PDG.IX -> {101000001} }}, 
                  
      {G0   ,  {  Description -> "Pseudo-Scalar Higgs",
                  PDG -> {0},
                  PDG.IX ->{0},
                  Mass -> {0},
-                 FeynArtsNr -> 4,
                  Width -> {0} }},  
 
      {H0   ,  {  OutputName ->"H0",
                  PDG -> {35},
                  PDG.IX -> {101000001},
-                 FeynArtsNr -> 2,
                  LaTeX -> "H" }}, 
                  
      {A0   ,  {  OutputName ->"A0",
                  PDG -> {36},
-                 FeynArtsNr -> 3,
                  LaTeX -> "A^0" }},             
             
       
-
+(*
+      {hh   ,  {  Description -> "Higgs"                  }}, 
+                 
+      {Ah   ,  {  Description -> "Pseudo-Scalar Higgs" }},                       
+  *)    
       
-      {Hp,  { Description -> "Charged Higgs",
-                 FeynArtsNr -> 5}},                                                   
+      {Hpm,  { Description -> "Charged Higgs"}},                                                   
       {VP,   { Description -> "Photon"}}, 
       {VZ,   { Description -> "Z-Boson",
-      			 Goldstone -> G0 }}, 
+      			 Goldstone -> G0}}, 
       {VG,   { Description -> "Gluon" }},          
-      {VWp,  { Description -> "W+ - Boson",
-      			Goldstone -> Hp[{1}] }},         
+      {VWm,  { Description -> "W-Boson" }},         
       {gP,   { Description -> "Photon Ghost"}},                                                   
-      {gWp,  { Description -> "Positive W+ - Boson Ghost"}}, 
-      {gWpC, { Description -> "Negative W+ - Boson Ghost" }}, 
+      {gWm,  { Description -> "Negative W-Boson Ghost"}}, 
+      {gWmC, { Description -> "Positive W-Boson Ghost" }}, 
       {gZ,   { Description -> "Z-Boson Ghost" }},
       {gG,   { Description -> "Gluon Ghost" }}, 
                                

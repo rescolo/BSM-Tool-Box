@@ -65,7 +65,7 @@ ParticleDefinitions[GaugeES] = {
                                              
       
       {Sd ,  {  Description->"Down Squark",
-                PDG ->  {1000001,2000001},
+                PDG ->  {1000001,20000015},
                 Mass -> LesHouches,
                 FeynArtsNr -> 141,   
                 ElectricCharge -> -1/3,

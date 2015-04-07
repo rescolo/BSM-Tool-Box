@@ -377,7 +377,8 @@ class MadWeightCmd(CmdExtended, HelpToCmd, CompleteForCmd, common_run.CommonRunC
                 raise self.InvalidCmd('Please specify a valid LHCO File')
             
             if input_file.endswith('.gz'):
-                misc.gunzip(input_file, keep=True, stdout=evt_file)
+                fsock = open(evt_file, 'w') 
+                subprocess.call(['gunzip', '-c', input_file], stdout=fsock)
             else:
                 files.cp(input_file, evt_file)
             

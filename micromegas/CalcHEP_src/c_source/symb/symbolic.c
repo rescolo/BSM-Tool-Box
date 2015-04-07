@@ -603,11 +603,11 @@ static void  transformfactor(rmptr* t_fact,poly mon,long del)
 
 
 /* ----------- end of numeric factors collecting--------------- */
-   sprintf(factortxt,"%ld",factnum);
+   sprintf(factortxt,"%d",factnum);
 
    tf_add = (rmptr)read_rmonom(factortxt);
    mult_rptr(t_fact,&tf_add);
-   sprintf(factortxt,"1/(%ld",factdenum);
+   sprintf(factortxt,"1/(%d",factdenum);
 
    for(v=0; v<vcs.sizet; v++) for(l=0; l<vcs.valence[v]; l++)
    {  edgeinvert *L = &(vcs.vertlist[v][l]);

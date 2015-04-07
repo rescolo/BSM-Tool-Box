@@ -26,12 +26,9 @@ Block[{$Path={ToFileName[{$sarahPackageDir,"RGEs"}]}},
 
 CalcRGEsNonSUSY[TwoLoop_,ReadLists_,VarGens_, NoMatMul_,Simp_, Force_,IgnoreAt2L_,WriteRunning_]:=Block[{i,j,t,pos},
 
-(*
 Print["------------------------------------"];
 Print["Calculate non-supersymmetric RGEs   "];
-Print["------------------------------------"];*)
-
-Print[StyleForm["Calculate non-supersymmetric RGEs","Section",FontSize->12]];
+Print["------------------------------------"];
 
 $sarahCurrentRGEDir=ToFileName[{$sarahCurrentOutputMainDir,"RGEs"}];
 If[FileExistsQ[$sarahCurrentOutputMainDir]=!=True,    CreateDirectory[$sarahCurrentOutputMainDir];];
@@ -100,7 +97,6 @@ If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaYijk.m"]],BetaYijk=Get[ToFile
 If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaTijk.m"]],BetaTijk=Get[ToFileName[$sarahCurrentRGEDir,"BetaTijk.m"]];];
 If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaBij.m"]],BetaBij=Get[ToFileName[$sarahCurrentRGEDir,"BetaBij.m"]];];
 If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaMuij.m"]],BetaMuij=Get[ToFileName[$sarahCurrentRGEDir,"BetaMuij.m"]];];
-If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaMuij.m"]],BetaMFij=Get[ToFileName[$sarahCurrentRGEDir,"BetaMuij.m"]];];
 If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaLi.m"]],BetaLi=Get[ToFileName[$sarahCurrentRGEDir,"BetaLi.m"]];];
 If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaGauge.m"]],BetaGauge=Get[ToFileName[$sarahCurrentRGEDir,"BetaGauge.m"]];];
 If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaVEV.m"]],BetaVEV=Get[ToFileName[$sarahCurrentRGEDir,"BetaVEV.m"]];];
@@ -112,7 +108,6 @@ If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaYijk3I.m"]],BetaYijk3I=Get[To
 If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaTijk3I.m"]],BetaTijk3I=Get[ToFileName[$sarahCurrentRGEDir,"BetaTijk3I.m"]];];
 If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaBij3I.m"]],BetaBij3I=Get[ToFileName[$sarahCurrentRGEDir,"BetaBij3I.m"]];];
 If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaMuij3I.m"]],BetaMuij3I=Get[ToFileName[$sarahCurrentRGEDir,"BetaMuij3I.m"]];];
-If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaMuij3I.m"]],BetaMFij3I=Get[ToFileName[$sarahCurrentRGEDir,"BetaMuij3I.m"]];];
 If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaLi3I.m"]],BetaLi3I=Get[ToFileName[$sarahCurrentRGEDir,"BetaLi3I.m"]];];
 If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaGauge3I.m"]],BetaGauge3I=Get[ToFileName[$sarahCurrentRGEDir,"BetaGauge3I.m"]];];
 If[FileExistsQ[ToFileName[$sarahCurrentRGEDir,"BetaVEV3I.m"]],BetaVEV3I=Get[ToFileName[$sarahCurrentRGEDir,"BetaVEV3I.m"]];];
@@ -228,7 +223,7 @@ CalcBetaFunctionsNonSUSY[VEVI,SA`ListVEVi  /.subGC[1]/.subindnames,"BetaVEV","Be
 ];
 
 
-GenerateCouplingVariables[NoMatMul_,Force_]:=Block[{i,j,k,subrule,per,free,added={},res,temp,tempS,indNr,indices,deltaInd},
+GenerateCouplingVariables[NoMatMul_,Force_]:=Block[{i,j,k,subrule,per,free,added={},res,temp},
 If[NoMatMul,MakeMatrixMul=False;,MakeMatrixMul=True;];
 
 res=SplitScalarCouplings[SA`SSlist]; lA2=res[[1]];lA2one=res[[2]];
@@ -378,54 +373,17 @@ If[Length[lA2]==0,Bij[a___]=0];
 NeededAnaDimsForVEVs={};
 listVEVi={};
 SA`ListVEVi={};
-Clear[VEVi];
 
-(*
 For[j=1,j<=Length[NameOfStates],
 If[Head[DEFINITION[NameOfStates[[j]]][VEVs]]===List,
 For[i=1,i<=Length[DEFINITION[NameOfStates[[j]]][VEVs]],
 If[FreeQ[listVEVi,DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]] && DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]=!=0 && DEFINITION[NameOfStates[[j]]][VEVs][[i,2,2]]=!=0,
 pos=Position[SFieldsMultiplets,DEFINITION[NameOfStates[[j]]][VEVs][[i,1]]];
-tempS=(getBlankSF[Extract[SFields,pos[[1,1]]]]/. subComplexScalarsList);
-If[Head[tempS]===List,
-NeededAnaDimsForVEVs=Join[NeededAnaDimsForVEVs,{{tempS[[1]],DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]}}];,
-NeededAnaDimsForVEVs=Join[NeededAnaDimsForVEVs,{{tempS,DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]}}];
-];
-sf=(RE[getFullSF[Extract[SFields,pos[[1,1]]]]]/. subComplexScalarsList);
-If[Head[sf]===List,sf=sf[[1]];];
+NeededAnaDimsForVEVs=Join[NeededAnaDimsForVEVs,{{(getBlankSF[Extract[SFields,pos[[1,1]]]]/. subComplexScalarsList)[[1]],DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]}}];
+sf=(RE[getFullSF[Extract[SFields,pos[[1,1]]]]]/. subComplexScalarsList)[[1]];
 listVEVi = Join[listVEVi,{{sf  makeDelta[pos[[1,1]],1,2,{generation}],DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]}}];
 SA`ListVEVi = Join[SA`ListVEVi,{{{sf}, {makeDelta[pos[[1,1]],1,2,{generation}] DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]],-1}}}];
 VEVi[sf /. Delta[a__]->1 /. RM[a__][b__]->1 /. subGCRule[1]]=getFull[DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]] /. subGC[1];
-];
-i++;];
-];
-j++;];
-*)
-
-For[j=1,j<=Length[NameOfStates],
-If[Head[DEFINITION[NameOfStates[[j]]][VEVs]]===List,
-For[i=1,i<=Length[DEFINITION[NameOfStates[[j]]][VEVs]],
-If[FreeQ[listVEVi,DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]] && DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]=!=0 && DEFINITION[NameOfStates[[j]]][VEVs][[i,2,2]]=!=0,
-pos=Position[SFieldsMultiplets,DEFINITION[NameOfStates[[j]]][VEVs][[i,1]]];
-If[Head[SFieldsMultiplets[[pos[[1,1]]]]]===List,
-indNr=Position[SFieldsMultiplets[[pos[[1,1]]]],DEFINITION[NameOfStates[[j]]][VEVs][[i,1]]];
-];
-tempS=(getBlankSF[Extract[SFields,pos[[1,1]]]]/. subComplexScalarsList);
-If[Head[tempS]===List,
-NeededAnaDimsForVEVs=Join[NeededAnaDimsForVEVs,{{tempS[[1]],DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]}}];,
-NeededAnaDimsForVEVs=Join[NeededAnaDimsForVEVs,{{tempS,DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]}}];
-];
-sf=(RE[getFullSF[Extract[SFields,pos[[1,1]]]]]/. subComplexScalarsList);
-If[Head[sf]===List,sf=sf[[1]];];
-indices=ListFields[[pos[[1,1]],2,1]];
-deltaInd=1;
-For[k=1,k<=Length[indices],
-deltaInd=deltaInd*Delta[indices[[k]]/.subGC[1],indNr[[k,1]]];
-k++;
-];
-listVEVi = Join[listVEVi,{{sf  deltaInd makeDelta[pos[[1,1]],1,2,{generation}],DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]}}];
-SA`ListVEVi = Join[SA`ListVEVi,{{{sf}, {deltaInd makeDelta[pos[[1,1]],1,2,{generation}] DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]],-1}}}];
-VEVi[sf /. Delta[a__]->1 /. RM[a__][b__]->1 /. subGCRule[1]]=deltaInd getFull[DEFINITION[NameOfStates[[j]]][VEVs][[i,2,1]]] /. subGC[1];
 ];
 i++;];
 ];
@@ -738,69 +696,16 @@ If[i==k, (* Has to be improved to get the full kinetic mixing at 2-loop! *)
 SA`DynkinS[rep,i]=SA`DynkinS[rep,i,k];
 SA`DynkinF[rep,i]=SA`DynkinF[rep,i,k];
 ];
-(*
-For[j=1,j<=AnzahlGauge,
-SA`CasimirDynkinS[rep,i,j,k]=
-Sum[SA`MulFactor[getBlankSF[PART[S][[n1]]],i]Sum[SA`gCoup[i,gNr2]GUTren[gNr2]If[SA`CheckU1[gNr2]==1,SA`DynL[getBlankSF[PART[S][[n1]]],gNr2],0],{gNr2,1,AnzahlGauge}] Sum[SA`gCoup[gNr2,k]GUTren[k]If[SA`CheckU1[gNr2]==1,SA`DynL[getBlankSF[PART[S][[n1]]],gNr2],0],{gNr2,1,AnzahlGauge}] SA`CasimirRGE[getBlankSF[PART[S][[n1]]],j],{n1,1,Length[PART[S]]}];
-SA`CasimirDynkinF[rep,i,j,k]=
-Sum[SA`MulFactor[getBlankSF[PART[F][[n1]]],i]Sum[SA`gCoup[i,gNr2]GUTren[gNr2]If[SA`CheckU1[gNr2]==1,SA`DynL[getBlankSF[PART[F][[n1]]],gNr2],0],{gNr2,1,AnzahlGauge}] Sum[SA`gCoup[gNr2,k]GUTren[k]If[SA`CheckU1[gNr2]==1,SA`DynL[getBlankSF[PART[F][[n1]]],gNr2],0],{gNr2,1,AnzahlGauge}] SA`CasimirRGE[getBlankSF[PART[F][[n1]]],j],{n1,1,Length[PART[F]]}];
-j++;];
-*)
 For[j=1,j<=AnzahlGauge,
 SA`CasimirDynkinS[rep,i,j,k]=
 Sum[SA`MulFactor[getBlankSF[PART[S][[n1]]],i]Sum[SA`gCoup[gNr2,i]GUTren[gNr2]If[SA`CheckU1[gNr2]==1,SA`DynL[getBlankSF[PART[S][[n1]]],gNr2],0],{gNr2,1,AnzahlGauge}] Sum[SA`gCoup[gNr2,k]GUTren[gNr2]If[SA`CheckU1[gNr2]==1,SA`DynL[getBlankSF[PART[S][[n1]]],gNr2],0],{gNr2,1,AnzahlGauge}] SA`CasimirRGE[getBlankSF[PART[S][[n1]]],j],{n1,1,Length[PART[S]]}];
 SA`CasimirDynkinF[rep,i,j,k]=
-Sum[SA`MulFactor[getBlankSF[PART[F][[n1]]],i]Sum[SA`gCoup[gNr2,i]GUTren[gNr2]If[SA`CheckU1[gNr2]==1,SA`DynL[getBlankSF[PART[F][[n1]]],gNr2],0],{gNr2,1,AnzahlGauge}] Sum[SA`gCoup[gNr2,k]GUTren[gNr2]If[SA`CheckU1[gNr2]==1,SA`DynL[getBlankSF[PART[F][[n1]]],gNr2],0],{gNr2,1,AnzahlGauge}] SA`CasimirRGE[getBlankSF[PART[F][[n1]]],j],{n1,1,Length[PART[F]]}];
+Sum[SA`MulFactor[getBlankSF[PART[F][[n1]]],i]Sum[SA`gCoup[i,gNr2]GUTren[gNr2]If[SA`CheckU1[gNr2]==1,SA`DynL[getBlankSF[PART[F][[n1]]],gNr2],0],{gNr2,1,AnzahlGauge}] Sum[SA`gCoup[k,gNr2]GUTren[gNr2]If[SA`CheckU1[gNr2]==1,SA`DynL[getBlankSF[PART[F][[n1]]],gNr2],0],{gNr2,1,AnzahlGauge}] SA`CasimirRGE[getBlankSF[PART[F][[n1]]],j],{n1,1,Length[PART[F]]}];
 j++;];
 ];
 k++;];
 
 ];
-i++;];
-
-For[i=1,i<=Length[PART[S]],
-For[gNr1=1,gNr1<= AnzahlGauge,
-For[gNr2=1,gNr2<=AnzahlGauge,
-If[Gauge[[gNr1,2]]===U[1] && Gauge[[gNr2,2]]===U[1],
-sum=0;
-For[j=1,j<=Length[PART[F]],
-sum+=SA`MulFactor[getBlankSF[PART[F][[j]]],gNr1]*Sum[If[Gauge[[n1,2]]===U[1],GUTren[n1]SA`gCoup[n1,gNr1]SA`DynL[getBlankSF[PART[S][[i]]],n1],0],{n1,1,AnzahlGauge}]*Sum[If[Gauge[[n1,2]]===U[1],GUTren[n1]SA`gCoup[n1,gNr1]SA`DynL[getBlankSF[PART[F][[j]]],n1],0],{n1,1,AnzahlGauge}]*Sum[If[Gauge[[n1,2]]===U[1],GUTren[n1]SA`gCoup[n1,gNr2]SA`DynL[getBlankSF[PART[S][[i]]],n1],0],{n1,1,AnzahlGauge}]*Sum[If[Gauge[[n1,2]]===U[1],GUTren[n1]SA`gCoup[n1,gNr2]*SA`DynL[getBlankSF[PART[F][[j]]],n1],0],{n1,1,AnzahlGauge}];
-j++;];
-SA`CasimirSDynkinF[rep,getBlank[PART[S][[i]]],gNr1,gNr2]=sum /. SA`gCoup->0;
-
-sum=0;
-For[j=1,j<=Length[PART[S]],
-sum+=SA`MulFactor[getBlankSF[PART[S][[j]]],gNr1]*
-Sum[If[Gauge[[n1,2]]===U[1],GUTren[n1]SA`gCoup[n1,gNr1]SA`DynL[getBlankSF[PART[S][[i]]],n1],0],{n1,1,AnzahlGauge}]*Sum[If[Gauge[[n1,2]]===U[1],GUTren[n1]SA`gCoup[n1,gNr1]SA`DynL[getBlankSF[PART[S][[j]]],n1],0],{n1,1,AnzahlGauge}]*Sum[If[Gauge[[n1,2]]===U[1],GUTren[n1]SA`gCoup[n1,gNr2]SA`DynL[getBlankSF[PART[S][[i]]],n1],0],{n1,1,AnzahlGauge}]*Sum[If[Gauge[[n1,2]]===U[1],GUTren[n1]SA`gCoup[n1,gNr2]*SA`DynL[getBlankSF[PART[S][[j]]],n1],0],{n1,1,AnzahlGauge}];
-j++;];
-SA`CasimirSDynkinS[rep,getBlank[PART[S][[i]]],gNr1,gNr2]=sum;,
-SA`CasimirSDynkinF[rep,_,gNr1,gNr2]=0;
-SA`CasimirFDynkinF[rep,_,gNr1,gNr2]=0;
-SA`CasimirSDynkinS[rep,_,gNr1,gNr2]=0;
-SA`CasimirFDynkinS[rep,_,gNr1,gNr2]=0;
-];
-gNr2++;];
-gNr1++;];
-i++;];
-
-For[i=1,i<=Length[PART[F]],
-For[gNr1=1,gNr1<= AnzahlGauge,
-For[gNr2=1,gNr2<= AnzahlGauge,
-If[Gauge[[gNr1,2]]===U[1] && Gauge[[gNr2,2]]===U[1],
-sum=0;
-For[j=1,j<=Length[PART[F]],
-sum+=SA`MulFactor[getBlankSF[PART[F][[j]]],gNr1]*Sum[If[Gauge[[n1,2]]===U[1],GUTren[n1]SA`gCoup[n1,gNr1]SA`DynL[getBlankSF[PART[F][[i]]],n1],0],{n1,1,AnzahlGauge}]*Sum[If[Gauge[[n1,2]]===U[1],GUTren[n1]SA`gCoup[n1,gNr1]SA`DynL[getBlankSF[PART[F][[j]]],n1],0],{n1,1,AnzahlGauge}]*Sum[If[Gauge[[n1,2]]===U[1],GUTren[n1]SA`gCoup[n1,gNr2]SA`DynL[getBlankSF[PART[F][[i]]],n1],0],{n1,1,AnzahlGauge}]*Sum[If[Gauge[[n1,2]]===U[1],GUTren[n1]SA`gCoup[n1,gNr2]*SA`DynL[getBlankSF[PART[F][[j]]],n1],0],{n1,1,AnzahlGauge}];
-j++;];
-SA`CasimirFDynkinF[rep,getBlank[PART[F][[i]]],gNr1,gNr2]=sum;
-
-sum=0;
-For[j=1,j<=Length[PART[S]],
-sum+=SA`MulFactor[getBlankSF[PART[S][[j]]],gNr1]*Sum[If[Gauge[[n1,2]]===U[1],GUTren[n1]SA`gCoup[n1,gNr1]SA`DynL[getBlankSF[PART[F][[i]]],n1],0],{n1,1,AnzahlGauge}]*Sum[If[Gauge[[n1,2]]===U[1],GUTren[n1]SA`gCoup[n1,gNr1]SA`DynL[getBlankSF[PART[S][[j]]],n1],0],{n1,1,AnzahlGauge}]*Sum[If[Gauge[[n1,2]]===U[1],GUTren[n1]SA`gCoup[n1,gNr2]SA`DynL[getBlankSF[PART[F][[i]]],n1],0],{n1,1,AnzahlGauge}]*Sum[If[Gauge[[n1,2]]===U[1],GUTren[n1]SA`gCoup[n1,gNr2]*SA`DynL[getBlankSF[PART[S][[j]]],n1],0],{n1,1,AnzahlGauge}];
-j++;];
-SA`CasimirFDynkinS[rep,getBlank[PART[F][[i]]],gNr1,gNr2]=sum;
-];
-gNr2++;];
-gNr1++;];
 i++;];
 
 (* Change to non SU (N) !! *)
@@ -913,7 +818,7 @@ factor=DeleteCases[DeleteCases[fakeFac coup /. subNonZero,_?(MemberQ[{gt1,gt2,gt
 *)
 (* If[(subNonZero[[-1]]=!=PLUS && subNonZero[[-1]]=!=MINUS),*)
 If[SuperpositionNeeded=!=True,
-factor=DeleteCases[DeleteCases[fakeFac coup /. subNonZero,_?(MemberQ[{gen1,gen2,gen3,gen4},#]&),10] /. A_[{}]->1 /. A_[]->1 /. Conj[x_]->x,_?(MemberQ[Transpose[parameters][[1]],#]&),10] /. fakeFac ->1;
+factor=DeleteCases[DeleteCases[fakeFac coup /. subNonZero,_?(MemberQ[{gen1,gen2,gen3,gen4},#]&),10] /. A_[]->1 /. Conj[x_]->x,_?(MemberQ[Transpose[parameters][[1]],#]&),10] /. fakeFac ->1;
 betaFunction =Expand[1/factor* CalcRGEValue[betaFunction /. subNonZero /. SA`gCoup[a__]->0 ,False]];
 betaFunction2L = Expand[1/factor* CalcRGEValue[betaFunction2L /. SA`SubIgnore2L /. 0[a__]->0 /. subNonZero,False]];,
 
@@ -939,12 +844,12 @@ nrInd++;
 j++;]; 
 *)
 torep={};
+
 For[j=1,j<=Length[fields[[i,1]]],
 If[NumericQ[fields[[i,1,j]]]===False,
 If[getGen[fields[[i,1,j]],ALL]>1,
 If[(getGen[fields[[i,1,j]],ALL]<99 ) || (getGenAux[getBlank[fields[[i,1,j]] ]] >1),
- torep=Join[torep,Select[{gen1,gen2,gen3,gen4},(FreeQ[fields[[i,1,j]],#]==False)&][[1]]]; 
-(* torep=Join[torep,Select[{gen1,gen2,gen3,gen4},(FreeQ[fields[[i,1,j]],#]==False)&][[Count[Take[fields[[i,1]],{1,j-1}],fields[[i,1,j]]]+1]]]; *)
+torep=Join[torep,Select[{gen1,gen2,gen3,gen4},(FreeQ[fields[[i,1,j]],#]==False)&][[1]]];
 ];
 ];
 ];
@@ -952,14 +857,13 @@ j++;];
 
 torep=DeleteCases[torep,{}];
 (* torep=Sort[torep]; *)
+
 For[nrInd=1,nrInd<=Length[torep],
-If[Depth[CalcRGEValue[coup /. subNonZero  /. Delta[a__]->1 /.epsTensor[a__]->1/. InvMat[a__][b__]->1]]>=3,
-subGenInd=Join[subGenInd,{torep[[nrInd]]->ToExpression["i"<>ToString[Position[CalcRGEValue[coup /. subNonZero  /. Delta[a__]->1 /.epsTensor[a__]->1/. InvMat[a__][b__]->1] ,torep[[nrInd]]][[1,2]]]]}];,
-subGenInd=Join[subGenInd,{torep[[nrInd]]->ToExpression["i"<>ToString[Position[CalcRGEValue[coup /. subNonZero  /. Delta[a__]->1 /.epsTensor[a__]->1/. InvMat[a__][b__]->1] ,torep[[nrInd]]][[1,1]]]]}];
-];
+subGenInd=Join[subGenInd,{torep[[nrInd]]->ToExpression["i"<>ToString[Position[CalcRGEValue[coup /. subNonZero  /. Delta[a__]->1 /.epsTensor[a__]->1/. InvMat[a__][b__]->1] ,torep[[nrInd]]][[1,2]]]]}];
 (* subGenInd=Join[subGenInd,{torep[[nrInd]]->ToExpression["i"<>ToString[nrInd]]}]; *)
 nrInd++;
 ];
+
 If[type===LIJKL,
 If[subNonZero[[-1]]===PLUS || subNonZero[[-1]]===MINUS,
 subNonZero=subNonZero[[1]]; coup=coup[[1]]*coup[[2]];];
@@ -1026,7 +930,6 @@ GSijHat,
 	coup=1;
  ];
 indtab={};
-
 For[i=1,i<=Length[fields],
 If[Head[fields[[i]]]=!=Symbol,
 indnr=ToExpression[StringTake[ToString[(fields[[i]] /. {A_[{a___}][{b__}]->{a,b},A_[{a___}]->{a}})[[1]]],-1]];
@@ -1038,6 +941,7 @@ j++;];
 i++;];
 If[indtab==={},Return[{{1->1},1}];];
 indtab=Tuples[indtab];
+
 If[type===GSij || type==GSijHat || VEVI,
 Return[{indtab[[1]],1}];
 ];
@@ -1047,7 +951,7 @@ searchedcoup=Select[Transpose[parameters][[1]],(FreeQ[term,#]==False)&];
 
 i=1;
 Found=False;
-While[Found==False && i <= Length[indtab],
+While[Found==False && i <Length[indtab],
 res=(coup/.indtab[[i]]);
 If[res=!=0,
 If[Select[Transpose[parameters][[1]],(FreeQ[res,#]==False)&]===searchedcoup,
@@ -1056,6 +960,7 @@ i++;
 ];,
 i++;];
 ];
+
 If[Found==True,
 Return[{indtab[[i]],(term[[1]]*term[[2]] /. indtab[[i]]  /. Delta[a__]->1  /. searchedcoup[[1]][a__]->1 /. searchedcoup[[1]]->1)}];,
 i=1;j=1;

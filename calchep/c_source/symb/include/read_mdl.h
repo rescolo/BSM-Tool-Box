@@ -12,6 +12,7 @@ extern table modelTab[5];
 
 extern int  readModelFiles(char * path, int l);
 extern int  loadModel(int check, int ugForce);
-extern int  makeVandP(int rd ,char*path,int L, int mode,char*CaLCHEP);
-extern int  ldModelStatus;  // 1- is read; 2-is loaded; 4- ug 
+extern int read2VarsParticles(void);
+extern  int makeVandP(int rd ,char*path,int L, int mode,char*CaLCHEP);
+
 #endif

@@ -3,11 +3,8 @@ Off[General::spell]
 Model`NameLaTeX = "MSSM with trilinear RpV";
 Model`Name ="MSSMTriRpV";
 Model`Authors = "F.Staub";
-Model`Date = "2014-09-05";
+Model`Date = "2012-09-28";
 
-(* 2014-09-05: turned off CalcHep and WHIZARD output for MakeAll[] *)
-
-SetOptions[MakeAll,IncludeCalcHep->False,IncludeWHIZARD->False];
 
 
 
@@ -15,24 +12,29 @@ SetOptions[MakeAll,IncludeCalcHep->False,IncludeWHIZARD->False];
 (*   Particle Content*)
 (*-------------------------------------------*)
 
+(* Global Symmetries *)
+
+Global[[1]] = {Z[2],RParity};
+RpM = {-1,-1,1};
+RpP = {1,1,-1};
 
 (* Vector Superfields *)
 
-Gauge[[1]]={B,   U[1], hypercharge, g1,False};
-Gauge[[2]]={WB, SU[2], left,        g2,True};
-Gauge[[3]]={G,  SU[3], color,       g3,False};
+Gauge[[1]]={B,   U[1], hypercharge, g1,False,RpM};
+Gauge[[2]]={WB, SU[2], left,        g2,True, RpM};
+Gauge[[3]]={G,  SU[3], color,       g3,False,RpM};
 
 
 (* Chiral Superfields *)
 
-SuperFields[[1]] = {q,  3, {uL,  dL},    1/6, 2, 3};  
-SuperFields[[2]] = {l,  3, {vL,  eL},   -1/2, 2, 1};
-SuperFields[[3]] = {Hd, 1, {Hd0, Hdm},  -1/2, 2, 1};
-SuperFields[[4]] = {Hu, 1, {Hup, Hu0},   1/2, 2, 1};
+SuperFields[[1]] = {q,  3, {uL,  dL},    1/6, 2, 3, RpM};  
+SuperFields[[2]] = {l,  3, {vL,  eL},   -1/2, 2, 1, RpM};
+SuperFields[[3]] = {Hd, 1, {Hd0, Hdm},  -1/2, 2, 1, RpP};
+SuperFields[[4]] = {Hu, 1, {Hup, Hu0},   1/2, 2, 1, RpP};
 
-SuperFields[[5]] = {d, 3, conj[dR],  1/3, 1, -3};
-SuperFields[[6]] = {u, 3, conj[uR], -2/3, 1, -3};
-SuperFields[[7]] = {e, 3, conj[eR],    1, 1,  1};
+SuperFields[[5]] = {d, 3, conj[dR],  1/3, 1, -3, RpM};
+SuperFields[[6]] = {u, 3, conj[uR], -2/3, 1, -3, RpM};
+SuperFields[[7]] = {e, 3, conj[eR],    1, 1,  1, RpM};
 
 
 (*------------------------------------------------------*)

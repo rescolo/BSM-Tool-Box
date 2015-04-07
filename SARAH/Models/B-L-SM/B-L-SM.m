@@ -1,12 +1,10 @@
 Off[General::spell]
 
-
 Model`Name = "BLSM";
 Model`NameLaTeX ="B-L extended Standard Model";
 Model`Authors = "F.Staub";
-Model`Date = "2014-11-06";
+Model`Date = "2013-10-24";
 
-(* 2014-11-06: Changed sign in Lagrangian *)
 
 (*-------------------------------------------*)
 (*   Particle Content*)
@@ -50,7 +48,7 @@ DEFINITION[GaugeES][Additional]= {
 
 LagNoHC = -(mu2 conj[H].H - L1 conj[H].H.conj[H].H + MuP conj[bi].bi - L2 conj[bi].bi.conj[bi].bi - L3 conj[bi].bi.conj[H].H);
 
-LagHC = - (+ Yd H.d.q + Ye H.e.l + Yu conj[H].u.q + Yv conj[H].l.v + Yx bi.v.v   );
+LagHC = - (- Yd H.d.q - Ye H.e.l - Yu conj[H].u.q - Yv conj[H].l.v - Yx bi.v.v   );
 
 
 			  		  

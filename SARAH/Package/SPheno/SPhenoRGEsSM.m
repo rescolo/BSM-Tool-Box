@@ -20,13 +20,9 @@
 
 
 WriteRunRGEsSM:=Block[{},
-(*
 Print["--------------------------------------"];
 Print["Writing SM RGEs "];
 Print["--------------------------------------"];
-*)
-
-Print[StyleForm["Write SM RGEs","Section",FontSize->12]];
 
 sphenoSM=OpenWrite[ToFileName[$sarahCurrentSPhenoDir,"RunSM_"<>ModelName<>".f90"]];
 

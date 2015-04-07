@@ -1,4 +1,4 @@
-      SUBROUTINE %(proc_prefix)sMP_BORN_AMPS_AND_WFS(P)
+      SUBROUTINE MP_BORN_AMPS_AND_WFS(P)
 C  
 %(info_lines)s
 C
@@ -44,35 +44,35 @@ C
 	  INTEGER NTRY
 	  LOGICAL CHECKPHASE,HELDOUBLECHECKED
 	  %(real_dp_format)s REF
-      common/%(proc_prefix)sINIT/NTRY,CHECKPHASE,HELDOUBLECHECKED,REF
+      common/INIT/NTRY,CHECKPHASE,HELDOUBLECHECKED,REF
 
 	  LOGICAL GOODHEL(NCOMB)
 	  LOGICAL GOODAMP(NLOOPAMPS,NCOMB)
-	  common/%(proc_prefix)sFilters/GOODAMP,GOODHEL
+	  common/Filters/GOODAMP,GOODHEL
 
 	  INTEGER HELPICKED
-	  common/%(proc_prefix)sHELCHOICE/HELPICKED
+	  common/HELCHOICE/HELPICKED
 
 	  %(mp_born_amps_decl)s
 	  %(dp_born_amps_decl_in_mp)s
 	  %(complex_mp_format)s W(20,NWAVEFUNCS%(ncomb_helas_objs)s)
-	  common/%(proc_prefix)sMP_WFS/W
+	  common/MP_WFS/W
 
       %(complex_mp_format)s AMPL(3,NCTAMPS)
-	  common/%(proc_prefix)sMP_AMPL/AMPL
+	  common/MP_AMPL/AMPL
 
 	  %(complex_dp_format)s DPW(20,NWAVEFUNCS%(ncomb_helas_objs)s)
-	  common/%(proc_prefix)sWFCTS/DPW
+	  common/WFCTS/DPW
 
       %(complex_dp_format)s DPAMPL(3,NLOOPAMPS)
 	  LOGICAL S(NLOOPAMPS)
-	  common/%(proc_prefix)sAMPL/DPAMPL,S
+	  common/AMPL/DPAMPL,S
 
 	  INTEGER HELC(NEXTERNAL,NCOMB)
-	  common/%(proc_prefix)sHELCONFIGS/HELC
+	  common/HELCONFIGS/HELC
 
 	  LOGICAL MP_DONE_ONCE
-	  common/%(proc_prefix)sMP_DONE_ONCE/MP_DONE_ONCE
+	  common/MP_DONE_ONCE/MP_DONE_ONCE
 
 C ----------
 C BEGIN CODE

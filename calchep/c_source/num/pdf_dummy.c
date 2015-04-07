@@ -4,9 +4,6 @@
 
 double  alphaspdf_(double *Q ){ return 0.12;}
 
-double  alphaspdfm_(int*LHA, double *Q ){ return 0.12;}
-
-
 void   getdatapath_(char* dirpath, int len)
 { int i;
   for(i=0;i<len;i++) dirpath[i]=' ';

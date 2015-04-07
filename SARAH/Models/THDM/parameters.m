@@ -41,31 +41,19 @@ ParameterDefinitions = {
                OutputName -> Lam5,
                LesHouches -> {HMIX,35}}},
 
-{Lambda6,    { LaTeX -> "\\lambda_6",
-               OutputName -> Lam6,
-               LesHouches -> {HMIX,36}}},
 
-{Lambda7,    { LaTeX -> "\\lambda_7",
-               OutputName -> Lam7,
-               LesHouches -> {HMIX,37}}},
-
-
-{M112,    {    LaTeX -> "m^2_1",
-               OutputName -> M112,
+{MHD2,    {    LaTeX -> "m^2_d",
+               OutputName -> MHD2,
                LesHouches -> {HMIX,20}}},
 
 
-{M222,    {    LaTeX -> "m^2_2",
-               OutputName -> M222,
+{MHU2,    {    LaTeX -> "m^2_u",
+               OutputName -> MHU2,
                LesHouches -> {HMIX,21}}},
 
-{M12,    {    LaTeX -> "m_{12}",
-               OutputName -> M12,
-               LesHouches -> {HMIX,22}}},
 
-
-{v1,        { Description -> "Down-VEV", LaTeX -> "v_1"}}, 
-{v2,        { Description -> "Up-VEV", LaTeX -> "v_2"}},       
+{vd,        { Description -> "Down-VEV"}}, 
+{vu,        { Description -> "Up-VEV"}},       
 {v,         { Description -> "EW-VEV"}},
              
 {\[Beta],   { Description -> "Pseudo Scalar mixing angle"  }},             

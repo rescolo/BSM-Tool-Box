@@ -3,11 +3,10 @@ Off[General::spell]
 Model`Name = "NMSSMNoFV";
 Model`NameLaTeX ="NMSSM without flavor violation";
 Model`Authors = "F.Staub";
-Model`Date = "2014-09-05";
+Model`Date = "2012-09-01";
 
 
 (* 2013-09-01: changing to new conventions for Superfields, Superpotential and global symmetries *)
-(* 2014-09-05: fixed particle names *)
 
 (*-------------------------------------------*)
 (*   Particle Content*)
@@ -33,14 +32,14 @@ Gauge[[3]]={G,  SU[3], color,       g3,False, RpM, 1};
 
 (* Chiral Superfields *)
 
-SuperFields[[1]] = {q, 3, {uL0,  dL0},    1/6, 2, 3, RpM, Z3t};  
-SuperFields[[2]] = {l, 3, {vL0,  eL0},   -1/2, 2, 1, RpM, Z3t};
+SuperFields[[1]] = {q, 3, {uL,  dL},    1/6, 2, 3, RpM, Z3t};  
+SuperFields[[2]] = {l, 3, {vL,  eL},   -1/2, 2, 1, RpM, Z3t};
 SuperFields[[3]] = {Hd,1, {Hd0, Hdm},  -1/2, 2, 1, RpP, Z3t};
 SuperFields[[4]] = {Hu,1, {Hup, Hu0},   1/2, 2, 1, RpP, Z3t};
 
-SuperFields[[5]] = {d, 3, conj[dR0],   1/3, 1, -3, RpM, Z3t};
-SuperFields[[6]] = {u, 3, conj[uR0],  -2/3, 1, -3, RpM, Z3t};
-SuperFields[[7]] = {e, 3, conj[eR0],     1, 1,  1, RpM, Z3t};
+SuperFields[[5]] = {d, 3, conj[dR],   1/3, 1, -3, RpM, Z3t};
+SuperFields[[6]] = {u, 3, conj[uR],  -2/3, 1, -3, RpM, Z3t};
+SuperFields[[7]] = {e, 3, conj[eR],     1, 1,  1, RpM, Z3t};
 
 SuperFields[[8]] = {s, 1, sR,     0, 1,  1, RpP, Z3t};
 
@@ -94,6 +93,8 @@ DEFINITION[EWSB][VEVs]=
 
 
  
+DEFINITION[EWSB][MatterSector]= 
+
 DEFINITION[EWSB][MatterSector]= 
 {    {{SdL, SdR}, {Sd, ZD}},
      {{SuL, SuR}, {Su, ZU}},

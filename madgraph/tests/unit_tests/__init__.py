@@ -15,7 +15,6 @@
 import unittest
 import math
 TestLoader = unittest.TestLoader
-#main = unittest.main
 #import tests
 #tests.NBTEST = 0
 
@@ -58,7 +57,7 @@ class TestCase(unittest.TestCase):
         magnitude = math.floor(math.log10(abs(magarg))) + 1
         unittest.TestCase.assertAlmostEqual(self, a/10**magnitude,
                                             b/10**magnitude, *opt, **arg)
-      
+        
 #    def assertEqual(self, *arg, **opt):
 #        """ """
 #        tests.NBTEST += 1

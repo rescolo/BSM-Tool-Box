@@ -1,6 +1,7 @@
 #include"pmodel.h"
 #include"../../sources/micromegas_aux.h"
 #include"pmodel_f.h"
+#include"pmodel.h"
 
 int nmhwarn_(int *file)
 { 
@@ -32,20 +33,19 @@ void o1contents_(int *Nch)
   fortreread_(Nch,fname,strlen(fname));
   unlink(fname);
 }
-int nmssmewsb_(void){ return nmssmEWSB();}
 
-int  nmssmsugra_(double*m0, double*mhf, double*a0, double*tb,
-double*sgn, double*Lambda, double*aLambda, double*aKappa, 
-double*xif, double*xis, double*muP, double*MSPQ, double*M3HQ)
+int nmssmewsb_(int *mode ){ return nmssmEWSB(*mode );}
+
+int  nmssmsugra_(double *m0, double* mhf, double* a0, double* tb,
+double*sgn, double*Lambda, double *aLambda, double*aKappa)
 {
-  return  nmssmSUGRA(*m0, *mhf, *a0, *tb, *sgn, *Lambda,*aLambda, *aKappa,
-  *xif,*xis,*muP,*MSPQ,*M3HQ );
+  return  nmssmSUGRA(*m0, *mhf, *a0, *tb, *sgn, *Lambda,*aLambda, *aKappa);
 } 
 
-int readslha_(char * fname, int len)
+int leshinput_(char * fname, int len)
 { char c_name[200];
   fName2c(fname, c_name,len);
-  return readSLHA(c_name);
+  return  lesHinput(c_name);
 }
 
 int  readvarnmssm_(char * f_name,int len)
@@ -61,3 +61,4 @@ int hbblocks_(char*fname, int len)
    fName2c(fname,cname,len);
    return   HBblocks(cname);
 }  
+ 

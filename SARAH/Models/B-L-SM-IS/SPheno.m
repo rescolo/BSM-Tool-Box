@@ -9,7 +9,7 @@ MINPAR={{1,Lambda1INPUT},
         {12, g11pINPUT},
         {20, vXinput} };
 
-ParametersToSolveTadpoles = {Mu1,Mu2};
+ParametersToSolveTadpoles = {Mu1,mu2};
 
 
 BoundaryLowScaleInput={

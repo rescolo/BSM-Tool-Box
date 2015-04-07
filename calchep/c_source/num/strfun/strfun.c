@@ -2,7 +2,6 @@
  Copyright (C) 1997, Alexander Pukhov 
 */
 #include <math.h>
-
 #include"interface.h"
 #include"sf_epa.h"
 #include"sf_isr.h"
@@ -140,13 +139,9 @@ int sf_menu(int i)
     return 1;
 } /* sf_menu__ */
 
-
 double strfun_(int i, double x,double q)
-{ double ff;
-
-   ff=strFun[sf_num[i-1]-1].val(i,x,q);
-
-  if( !isfinite(ff) ) 
+{ double ff=strFun[sf_num[i-1]-1].val(i,x,q);
+  if( !finite(ff) ) 
   {
     if(nnan[i-1]==0) printf("Distribution function of %d^th particle returns NAN   at x=%E Q=%E\n",i,x,q);
     if(nnan[i-1]==100) printf("More than 100 times distribution function of %d^th particle returns NAN\n",i); 

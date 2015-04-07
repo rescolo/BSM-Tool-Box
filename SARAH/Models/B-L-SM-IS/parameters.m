@@ -78,7 +78,7 @@ ParameterDefinitions = {
       LaTeX -> "\\mu_1",
       LesHouches -> {BL,10}}},
 
-{Mu2, {OutputName -> Mu2,
+{mu2, {OutputName -> mu,
       LaTeX -> "\\mu_2",
       LesHouches -> {BL,11}}},
 
@@ -93,12 +93,6 @@ ParameterDefinitions = {
 {MUS, {OutputName -> muS,
       LaTeX -> "\\mu_s",
       LesHouches -> MUS}},
-
-{MUS1, {OutputName -> muS1,
-      LaTeX -> "\\mu_s1",
-      LesHouches -> MUS1}},
-
-
       
 {Vu,        {Description ->"Left-Up-Mixing-Matrix"}},
 {Vd,        {Description ->"Left-Down-Mixing-Matrix"}},
@@ -106,16 +100,6 @@ ParameterDefinitions = {
 {Ud,        {Description ->"Right-Down-Mixing-Matrix"}}, 
 {Ve,        {Description ->"Left-Lepton-Mixing-Matrix"}},
 {Ue,        {Description ->"Right-Lepton-Mixing-Matrix"}},
-
-{SS,        {OutputName -> SS,
-	    Description->"S matrix", 
-            Dependence -> None,
-             DependenceOptional -> None,
-               DependenceNum -> None,
-             LesHouches ->SSMIX
-       }},
-
-
 
 {ZM,	    {Description -> "Neutrino-Mixing-Matrix"}},
 

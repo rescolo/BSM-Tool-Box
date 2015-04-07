@@ -21,7 +21,7 @@
 
 CalcGaugeMixing[type_, def_]:=Block[{i,ll,j,k},
 
-PrintAll["Calc Mixings Gauge Sector"];
+Print["Calc Mixings Gauge Sector"];
 
 title = ToString[type];
 subGauge = {}; subGhost = {};
@@ -100,7 +100,8 @@ realVar = Join[realVar,{getBlank[mixGhostFinal[[i]]]}];
 i++;];
 
 If[IgnoreGaugeFixing=!=True,
-UpdateGaugeTransformations[subGauge,subGaugeInv,UGTgaugeMM[rotNr]];
+UpdateGaugeTransformations[subGauge,subGaugeInv];
+
 GaugeTransformation=replaceGen[ReleaseHold[GaugeTransformation /. subGhost /.subGauge],rgNr];
 ];
 
@@ -140,13 +141,11 @@ title = ToString[NameOfStates[[rotNr]]];
 
 SA`CurrentRotatedNr=rotNr;
 
-PrintAll[""];
-(*
+Print[""];
 Print["-----------------------------------"];
 Print["Evolve States: ",title];
 Print["-----------------------------------"];
-*)
-PrintAll[StyleForm["Evolve States: "<>ToString[title],"Section",FontSize->12]];
+
 rgNr++;
 
 If[Head[Head[DEFINITION[NameOfStates[[rotNr]]][VEVs]]]=!=DEFINITION,
@@ -178,22 +177,13 @@ If[Head[Head[DEFINITION[NameOfStates[[rotNr]]][Phases]]]=!=DEFINITION,
 GeneratePhases[NameOfStates[[rotNr]]];,
 phaseSub={};];
 
-PrintDebug["Rotate Lagrangian"];
-Print["Rotate Lagrangian: ",Dynamic[DynamicRotateLag[ROTNR]]/. ROTNR->rotNr,"/",14];
 
-DynamicRotateLag[rotNr]=1;
 Potential=replaceGen[ReleaseHold[Potential /. SA`subDeleteParticles/.subGauge/.vevSub/.flavorSub /. phaseSub /. DelPart->0],rgNr];
-DynamicRotateLag[rotNr]=2;
 Kinetic=replaceGen[ReleaseHold[Kinetic/. SA`subDeleteParticles/.vevSub/.subGauge/.flavorSub /. phaseSub/. DelPart->0],rgNr];
-DynamicRotateLag[rotNr]=3;
 EffectiveOperators=replaceGen[ReleaseHold[EffectiveOperators/. SA`subDeleteParticles/.vevSub/.subGauge/.flavorSub /. phaseSub/. DelPart->0],rgNr];
-DynamicRotateLag[rotNr]=4;
 LagrangianVVV=replaceGen[ReleaseHold[LagrangianVVV/. SA`subDeleteParticles/.subGauge /. phaseSub/. DelPart->0],rgNr];
-DynamicRotateLag[rotNr]=5;
 LagrangianVVVV=replaceGen[ReleaseHold[LagrangianVVVV/. SA`subDeleteParticles/.subGauge /. phaseSub/. DelPart->0],rgNr];
-DynamicRotateLag[rotNr]=6;
 LagrangianAux=replaceGen[ReleaseHold[LagrangianAux/. SA`subDeleteParticles/.vevSub/.subGauge/.flavorSub /. phaseSub/. DelPart->0],rgNr];
-DynamicRotateLag[rotNr]=7;
 LagReDef=replaceGen[ReleaseHold[LagReDef/. SA`subDeleteParticles/.vevSub/.subGauge/.flavorSub /. phaseSub/. DelPart->0],rgNr];
 
 (* -------------------------------- Effective after Gauge Bososn Mixing ------------------ *)
@@ -202,26 +192,17 @@ If[Length[IntegrateOut]>0,
 Lagrangian = Kinetic - Potential + LagrangianVVV + LagrangianVVVV;
 MakeEffective;
 ];
-DynamicRotateLag[rotNr]=8;
 Potential=Potential /.{GetGenStart->getGenStart,GetGen->getGen};
-DynamicRotateLag[rotNr]=9;
 Kinetic = Kinetic /.{GetGenStart->getGenStart,GetGen->getGen};
-DynamicRotateLag[rotNr]=10;
 LagrangianVVV = LagrangianVVV /.{GetGenStart->getGenStart,GetGen->getGen};
-DynamicRotateLag[rotNr]=11;
 LagrangianVVVV = LagrangianVVVV /.{GetGenStart->getGenStart,GetGen->getGen};
-DynamicRotateLag[rotNr]=12;
 EffectiveOperators  = EffectiveOperators  /.{GetGenStart->getGenStart,GetGen->getGen};
-DynamicRotateLag[rotNr]=13;
 LagrangianAux  = LagrangianAux /.{GetGenStart->getGenStart,GetGen->getGen};
-DynamicRotateLag[rotNr]=14;
 LagReDef  = LagReDef /.{GetGenStart->getGenStart,GetGen->getGen};
 
 (* If[rotNr==2,Interrupt[];]; *)
-Print["Derive ghost terms: "];
 If[IgnoreGaugeFixing=!=True,
 testAutomaticGF=GenerateGaugeFixing[Kinetic,NameOfStates[[rotNr]],rotNr];,
-Print["   ... skipped."];
 testAutomaticGF={};
 ];
 
@@ -231,7 +212,7 @@ LGhostSS=0;
 ];
 Potential = Potential+LGhostSS;
 
-PrintAll["Calc Mixings of Matter Fields"];
+Print["Calc Mixings of Matter Fields"];
 
 If[Head[Head[DEFINITION[NameOfStates[[rotNr]]][MatterSector]]]=!=DEFINITION,
 res=MakeStates[DEFINITION[NameOfStates[[rotNr]]][MatterSector]]; ,
@@ -260,7 +241,7 @@ SA`GaugeFixingTerms =  replaceGen[ReleaseHold[ReleaseHold[SA`GaugeFixingTerms/.r
 
 
 If[(Length[IntegrateOut]>0) || (Length[DeleteParticles]>0),
-PrintAll["Integrate out Particles after Symmetry Breaking: ", title];
+Print["Integrate out Particles after Symmetry Breaking: ", title];
 Lagrangian = Kinetic - Potential + LagrangianVVV + LagrangianVVVV;
 MakeEffective;
 ];
@@ -277,13 +258,9 @@ DEFINITION[NameOfStates[[rotNr]]][Additional]=DEFINITION[NameOfStates[[rotNr]]][
 
 
 If[Head[Head[DEFINITION[NameOfStates[[rotNr]]][Additional]]]=!=DEFINITION,
-PrintAll["Adding terms to the Lagrangian: "];
 add=DEFINITION[NameOfStates[[rotNr]]][Additional];
 sumLagInput=0;
 For[j=1,j<=Length[add],
-Print[" ... adding: ",add[[j,1]], " (",Dynamic[DynamicStatusAddTerms[ADD]]/. ADD->add[[j,1]],")"];
-
-PrintDebug[" ... adding: ",add[[j,1]]];
 newTerms=CreateLagrangian[add[[j,1]],AddHC /. add[[j,2]] /. {AddHC->False},Overwrite /. add[[j,2]] /. {Overwrite->False}];
 sumLagInput+=newTerms[[1]];
 LagReDef+=newTerms[[1]];
@@ -295,6 +272,7 @@ j++;];
 LagInput[NameOfStates[[rotNr]]]=sumLagInput;
 ];
 
+
 SaveModelParameters[NameOfStates[[rotNr]]];
 
 rotNr++;
@@ -302,37 +280,34 @@ rotNr++;
 
 (* ---------------------------- Final Lagrangian ------------------------ *)
 
-PrintAll[""];
-(*
+Print[""];
 Print["-----------------------------------"];
 Print["Finishing"];
 Print["-----------------------------------"];
-*)
 
-PrintAll[StyleForm["Finishing","Section",FontSize->12]];
+Print["Calculate final Lagrangian"];
 
-PrintAll["Calculate final Lagrangian"];
 SetGenerations=True;
 Update[];
 CheckOne;
 SetGenerations=False;
 
-PrintAll["Cleaning up"];
 AddMatrixProducts;
+
 
 MakeParameterDependenceList;
 CheckForMassless;
 CalculateTreeLevelMasses;
+
 SimplifyMatrices;
 CurrentStates = Last[NameOfStates];
 
-PrintAll["Numerical calculations (if necessary)"];
 GetNumericalValues[SpectrumFile];
 
 If[(Length[makeOutput] > 0)   && (FirstRun==False),
-PrintAll[""];
-PrintAll[""];
-PrintAll["Beginning with automatized Output"];
+Print[""];
+Print[""];
+Print["Beginning with automatized Output"];
 
 For[i=1,i<=Length[makeOutput],
 If[FreeQ[makeOutput[[i,2]],TeX]==True,writetex=False;,writetex=True;];
@@ -366,8 +341,7 @@ mixedNamesNoFV={};
 
 For[i=1,i<=Length[mixDef],
 If[FreeQ[mixDef[[i]],NoFlavorMixing]==False,
-(* If[Length[Dimensions[mixDef[[i,1]]]]==1, *)
-If[Depth[mixDef[[i,1]]/. conj[x_]->x]<3,
+If[Length[Dimensions[mixDef[[i,1]]]]==1,
 mixESnoFV = Join[mixESnoFV,{mixDef[[i]]}];
 If[FreeQ[parameters,mixDef[[i,2]]]===False, Message[ModelFile::ParameterNameExists,mixDef[[i,2]]];];
 If[FreeQ[Particles[ALL],mixDef[[i,1]]]==False,Message[ModelFile::ParticleNameExists,mixDef[[i,1]]];];
@@ -386,8 +360,7 @@ mixedNamesNoFV = Join[mixedNamesNoFV,{{mixDef[[i,2,1]],mixDef[[i,2,2]]}}];
 mixBasisNoFV = Join[mixBasisNoFV,{{mixDef[[i,1,1]],mixDef[[i,1,2]]}}];
 ];
 mixMatESnoFV = Join[mixMatESnoFV,{mixDef[[i,2]]}];,
-(* If[Length[Dimensions[mixDef[[i,1]]]]==1, *)
-If[Depth[mixDef[[i,1]]/. conj[x_]->x]<3,
+If[Length[Dimensions[mixDef[[i,1]]]]==1,
 mixES = Join[mixES,{mixDef[[i]]}];
 If[FreeQ[parameters,mixDef[[i,2]]]===False, Message[ModelFile::ParameterNameExists,mixDef[[i,2]]];];
 If[FreeQ[Particles[ALL],mixDef[[i,1]]]==False,Message[ModelFile::ParticleNameExists,mixDef[[i,1]]];];
@@ -425,10 +398,9 @@ SA`DynL[RE[mixES[[i,2,1]]],i2]=SA`DynL[mixES[[i,1,1]],i2];
 ]; 
 MultiplicityFactor[mixES[[i,2,1]],i2]=MultiplicityFactor[mixES[[i,1,1]],i2];
 i2++;];
-
 For[i2=1,i2<=Length[Global],
 If[Length[Intersection[SA`ChargeGlobal[#,Global[[i2,2]]]&/@mixES[[i,1]]]]=!=1,
-PrintAll["Problem with deriving global charges for ",mixES[[i,2,1]]];,
+Print["Problem with deriving global charges for ",mixES[[i,2,1]]];,
 SA`ChargeGlobal[RE[mixES[[i,2,1]]],Global[[i2,2]]] =SA`ChargeGlobal[mixES[[i,1,1]],Global[[i2,2]]];
 ];
 i2++;];
@@ -464,7 +436,7 @@ MultiplicityFactor[mixESnoFV[[i,2,1]],i2]=MultiplicityFactor[mixESnoFV[[i,1,1]],
 i2++;];
 For[i2=1,i2<=Length[Global],
 If[Length[Intersection[SA`ChargeGlobal[#,Global[[i2,2]]]&/@mixES[[i,1]]]]=!=1,
-PrintAll["Problem with deriving global charges for ",mixES[[i,2,1]]];,
+Print["Problem with deriving global charges for ",mixES[[i,2,1]]];,
 SA`ChargeGlobal[RE[mixES[[i,2,1]]],Global[[i2,2]]] =SA`ChargeGlobal[mixES[[i,1,1]],Global[[i2,2]]];
 ];
 i2++;];
@@ -606,7 +578,7 @@ MMatricesNo=CalcMassMatrices[mixBasisNoFV, Potential,Transpose[Transpose[mixESno
 ];
 
 If[IgnoreGaugeFixing=!=True,
-UpdateGaugeTransformations[subDef,subDefInverse,UGTmatterMM[rotNr]];
+UpdateGaugeTransformations[subDef,subDefInverse];
 ];
 
 For[i=1,i<=Length[mixES], For[j=1,j<= Length[mixES[[i,1]]],
@@ -647,7 +619,7 @@ For[i=1,i<= Length[IntegrateOut],
 EffectiveTheory=True;
 genMax = 6;
 If[MemberQ[Particles[Current],getBlank[IntegrateOut[[i]]],2]==True,
-PrintAll["Integrate Out ", IntegrateOut[[i]]];
+Print["Integrate Out ", IntegrateOut[[i]]];
 If[MemberQ[MajoranaPart,getBlank[IntegrateOut[[i]]]/.diracSubBack1[ALL]]===False,
 Masse = DPV[DPV[Potential,getBlank[IntegrateOut[[i]]],1,1],conj[getBlank[IntegrateOut[[i]]]], 2,2] /. Flatten[Map[vacHead,vacuum]] /. zero[a_]->0*a /. subFinal ;,
 Masse = DPV[DPV[Potential,getBlank[IntegrateOut[[i]]],1,1],getBlank[IntegrateOut[[i]]], 2,2] /. Flatten[Map[vacHead,vacuum]] /. zero[a_]->0 *a/. subFinal;
@@ -716,7 +688,7 @@ i++;];
 Particles[Current]=allGenerations;
 
 
-PrintAll[DeleteParticles];
+Print[DeleteParticles];
 
 DeleteParticles = DeleteParticlesNew; 
 ];
@@ -731,8 +703,8 @@ DeleteParticles = DeleteParticlesNew;
 
 CalcMassMatrices[basis_, potential_, names_,FV_]:=Block[{i1,j,i2,off,ll,m,k,n, MassMatrices, MassMatricesFull, subVac},
 
-Print["   Calculate mass matrices ",Dynamic[DynamicNrMass[basis]],"/",Length[basis]," (",Dynamic[DynamicNameMass[basis]],")"];
-PrintDebug["  Calculate mass matrices"];
+Print["Calc Mass Matrices"];
+
 
 pSave=potential;
 bSave=basis;
@@ -741,21 +713,18 @@ subVac=Flatten[Map[vacHead,vacuum]];
 MassMatrices=Table[{},{Length[basis]}];
 
 For[i=1,i<=Length[basis],
-DynamicNrMass[basis]=i;
+
 If[RE[basis[[i,1]]]===RE[basis[[i,2]]],
-DynamicNameMass[basis]=ToString[basis[[i,1]]];
-PrintDebug["    For ",basis[[i,1]]];,
-DynamicNameMass[basis]=ToString[basis[[i,1]]]<>ToString[basis[[i,2]]];
- PrintDebug["    For ",basis[[i,1]],basis[[i,2]]];
+Print["    For ",basis[[i,1]]];,
+Print["    For ",basis[[i,1]],basis[[i,2]]];
 ];
 
 If[getType[basis[[i,1,1]]]===S,
-MassMatrices[[i]]=Table[DMM[DMM[potential,conj[basis[[i,1,m]]],m,"m",1],conj[basis[[i,2,n]]],n,"n",2]/.subVac /. Mom[_]->0 /. zero[a_]->nix /. nix->0,{m,1,Length[basis[[i,1]]]},{n,1,Length[basis[[i,2]]]}];,
-MassMatrices[[i]]=Table[DMM[DMM[potential,basis[[i,1,m]],m,"m",1],basis[[i,2,n]],n,"n",2]/.subVac /. Mom[_]->0 /. zero[a_]->nix /. nix->0,{m,1,Length[basis[[i,1]]]},{n,1,Length[basis[[i,2]]]}];
+MassMatrices[[i]]=Table[DMM[DMM[potential,conj[basis[[i,1,m]]],m,"m",1],conj[basis[[i,2,n]]],n,"n",2]/.subVac /. Mom[_]->0 /. zero[a_]->nix /. nix->0,{m,1,Length[basis[[i,1]]]},{n,1,Length[basis[[i,1]]]}];,
+MassMatrices[[i]]=Table[DMM[DMM[potential,basis[[i,1,m]],m,"m",1],basis[[i,2,n]],n,"n",2]/.subVac /. Mom[_]->0 /. zero[a_]->nix /. nix->0,{m,1,Length[basis[[i,1]]]},{n,1,Length[basis[[i,1]]]}];
 ];
 i++;];
 
-DynamicNameMass[basis]="All Done";
 MassMatricesFull = Table[{},{Length[basis]}];
 
 namecounter=1;
@@ -764,13 +733,9 @@ For[i=1,i<=Length[MassMatrices],
 ltest=MassMatrices[[i]];
 If[FV==True,
 dim=Table[{getGenStart[basis[[i,1,n]]],getGen[basis[[i,1,n]]]},{n,1,Length[basis[[i,1]]]}];
-dimTotal = Table[-getGenStart[basis[[i,1,n]]]+1+getGen[basis[[i,1,n]]],{n,1,Length[basis[[i,1]]]}];
-dim2=Table[{getGenStart[basis[[i,2,n]]],getGen[basis[[i,2,n]]]},{n,1,Length[basis[[i,2]]]}];
-dimTotal2 = Table[-getGenStart[basis[[i,2,n]]]+1+getGen[basis[[i,2,n]]],{n,1,Length[basis[[i,2]]]}];,
+dimTotal = Table[-getGenStart[basis[[i,1,n]]]+1+getGen[basis[[i,1,n]]],{n,1,Length[basis[[i,1]]]}];,
 dim=Table[{1,1},{n,1,Length[basis[[i,1]]]}];
 dimTotal = Table[1,{n,1,Length[basis[[i,1]]]}];
-dim2=Table[{1,1},{n,1,Length[basis[[i,2]]]}];
-dimTotal2 = Table[1,{n,1,Length[basis[[i,2]]]}];
 ];
 
 If[RE[basis[[i,1]]]===RE[basis[[i,2]]],
@@ -789,8 +754,8 @@ zeile=0;
 For[ll=dim[[k,1]],ll<=dim[[k,2]],
 zeile++;
 spalte=0;
-For[m=1,m<=Length[dim2],
-For[n=dim2[[m,1]],n<=dim2[[m,2]],
+For[m=1,m<=Length[dim],
+For[n=dim[[m,1]],n<=dim[[m,2]],
 spalte++;
 If[FreeQ[OffSetFlavorsXXX,basis[[i,1,1]]], (* CHECK *)
 If[FreeQ[ltest[[k,m]],Lam]==False,
@@ -834,25 +799,24 @@ Message[MassMatrix::OnlyZero,basis[[i]]];
 i++;];
 *)
 
+
 Return[{CalcDelta[MassMatrices],CalcDelta[MassMatricesFull]}];
 
 ];
 
 
  CalculateTreeLevelMasses:=Block[{i,j,k,mass,statelist,partList, states,defList,entry,pdgList={},doubleCheck,dc},
-Print["   ... calculating tree level masses (",Dynamic[DynamicCalcTreeMasses],")"];
-PrintDebug["   ...Calculating Tree Level Masses"];
+Print["Calculating Tree Level Masses"];
 LesHouchesListMasses={};
 subNum={};
 subNumDependencesMasses={};
 
 
 For[j=1,j<=Length[NameOfStates],
-DynamicCalcTreeMasses=NameOfStates[[j]];
 listMasses={};
 listWidth={};
 states = NameOfStates[[j]];
-PrintDebug["     For ",states];
+Print["     For ",states];
 pdgList={};
 usedPDG={};
 partList=Particles[NameOfStates[[j]]];
@@ -961,12 +925,11 @@ If[FreeQ[parameters,subNumDependencesMasses[[i,1]]],parameters=Join[parameters,{
 (* realVar=Join[realVar,{subNumDependencesMasses[[i,1]]}]; *)
 addNewSym[subNumDependencesMasses[[i,1]], subNumDependencesMasses[[i,2]]];
 i++;];
-DynamicCalcTreeMasses="All Done";
+
 ]; 
 
 
-GenerateFlavors[type_]:=Block[{i,j,i2},
-PrintAll["Split Flavors"];
+GenerateFlavors[type_]:=Block[{i,j,i2},Print["Split Flavors"];
 OffSetFlavors={};
 flavorSub={};
 flavorInverse={};
@@ -1005,13 +968,13 @@ i++];
 FlavorSub[type]=flavorSub;
 FlavorSubInverse[type]=flavorInverse;
 If[IgnoreGaugeFixing=!=True,
-UpdateGaugeTransformations[flavorSub,flavorInverse,UGTflavorMM[rotNr]];
+UpdateGaugeTransformations[flavorSub,flavorInverse];
 ];
 ];
 
 
 GeneratePhases[type_]:=Block[{i,j},
-PrintAll["Add Phases"];
+Print["Add Phases"];
 phaseSub={};
 phaseInverse={};
 phas=DEFINITION[type][Phases];
@@ -1034,7 +997,7 @@ i++;];
 PhaseSub[type]=phaseSub;
 PhaseSubInverse[type]=phaseInverse;
 If[IgnoreGaugeFixing=!=True,
-UpdateGaugeTransformations[phaseSub,phaseInverse,UGTphasesMM[rotNr]];
+UpdateGaugeTransformations[phaseSub,phaseInverse];
 ];
 ];
 
@@ -1043,10 +1006,8 @@ UpdateGaugeTransformations[phaseSub,phaseInverse,UGTphasesMM[rotNr]];
 
 SaveModelParameters[name_]:=Block[{},
 
-Print["Save information (",Dynamic[DynamicSaveInfo[name]],")"];
-PrintDebug["Save information"];
+Print["Save Model Information: ",name];
 
-DynamicSaveInfo[name]="Mass matrices";
 If[Length[res]==9,
 
 SubMatter[name]=res[[1]];
@@ -1064,14 +1025,12 @@ MassMatricesFullTempND[name]=res[[9]];
 
 ];
 
-PrintDebug["      TadpoleEquations"];
-DynamicSaveInfo[name]="Tadpole equations";
+Print["      TadpoleEquations"];
 If[Head[TEqu]===List,
 TadpoleEquations[name]=CalcDelta[TEqu /. Delta[a_Integer,gt1]->DELTA[a,gt1]] /. DELTA->Delta;
 ];
 
-PrintDebug["      Interactions"];
-DynamicSaveInfo[name]="Lagrangian";
+Print["      Interactions"];
 Potential = Potential /.{GetGenStart ->getGenStart, GetGen->getGen};
 Kinetic = Kinetic /.{GetGenStart ->getGenStart, GetGen->getGen};
 LagrangianVVV = LagrangianVVV /.{GetGenStart ->getGenStart, GetGen->getGen};
@@ -1085,23 +1044,19 @@ CalcImp= True;
 SetGenerations=True;
 Update[];
 
-PrintDebug["      Split Lagrangian"];
-DynamicSaveInfo[name]="Generic parts of Lagrangian";
+Print["      Split Lagrangian"];
 
 Pot[name]= Potential;
 LagSSSS[name]=- (Potential /.vacuumF /. zero[x_] -> 0*x) + ( EffectiveOperators/.vacuumF /.vacuumV /. zero[x_] -> 0*x);
-LagFFS[name]= - Potential /. vacuumV;
-LagFFSV[name]= - Potential;
+LagFFS[name]= - Potential;
 
 LagSV[name]=  Kinetic /.vacuumF /. zero[x_] -> 0*x;
 LagFFV[name]=  Kinetic /.vacuumS /. zero[x_] -> 0*x;
-LagFFVV[name]=  Kinetic /.vacuumS /. zero[x_] -> 0*x;
-
 LagVVV[name]=  LagrangianVVV;
 LagVVVV[name]= LagrangianVVVV;
 
 LagFFSS[name]= -( EffectiveOperators /.vacuumV /. zero[x_] -> 0*x )- Potential;
-LagFFVV[name]+= - EffectiveOperators/.vacuumS /. zero[x_] -> 0*x;
+LagFFVV[name]= - EffectiveOperators/.vacuumS /. zero[x_] -> 0*x;
 LagFFFF[name]=  - (EffectiveOperators/.vacuumS /.vacuumV /. zero[x_] -> 0*x )-(Potential /. vacuumS /.zero[x_]->0 x);
 LagSSSSSS[name]= - EffectiveOperators/.vacuumF /.vacuumV /. zero[x_] -> 0*x;
 LagSSSVVV[name]=  - EffectiveOperators /.vacuumF;
@@ -1115,22 +1070,18 @@ LagSSA[name]=  LagrangianAux;
 SA`GT[name]=GaugeTransformation;
 
 LagrangianComplete[name]=  Kinetic - Potential + EffectiveOperators + LagrangianGhost;
-
-DynamicSaveInfo[name]="Particles";
 ParticlesTemp[name]= Particles[Current];
 
-DynamicSaveInfo[name]="Goldstone bosons";
 CheckGoldstoneGhosts[Current];
 GoldstoneBosons[name]=GoldstoneGhost;
 
 SetGenerations=False; 
 CalcImp = False;
-DynamicSaveInfo[name]="All Done";
+
 ];
 
 
-SimplifyMatrices:=Block[{i,particles,para,temp,sub},
-PrintAll["   ... simplify mass matrices"];
+SimplifyMatrices:=Block[{i,particles,para,temp,sub},Print["Simplify Mass Matrices"];
 states=NameOfStates;
 
 temp=Flatten[Table[{Flatten[listIndizes][[i]]/.subGC[1]/.subIndFinalX[1,j,"m"],Flatten[listIndizes][[i]]/.subGC[1]/.subIndFinalX[1,j,"n"]},{i,1,Length[Flatten[listIndizes]]},{j,1,4}]];
@@ -1160,7 +1111,7 @@ i++;];
 
 AddMatrixProducts:=Block[{i},
 
-PrintAll["   ... add matrix products"];
+Print["Add Matrix Products"];
 
 For[i=1,i<=Length[ParameterDefinitions],
 If[((MatrixProduct/. ParameterDefinitions[[i,2]])=!= MatrixProduct) &&
@@ -1183,7 +1134,7 @@ i++;];
 ];
 
 CheckForMassless:=Block[{i,j,particle,type},
-PrintAll["   ... checking for massless particles"];
+Print["Checking for massless particles"];
 
 For[i=1,i<=Length[NameOfStates],
 SA`CurrentStates=NameOfStates[[i]];
@@ -1209,8 +1160,6 @@ i++;];
 
 
 CalcGaugeMixing2[name_, def_]:=Block[{temp,temp2,i,j,i1,i2,PartLag,subV={},subVI={},subG={},subGI={},todel},
-Print["Calc mass matrices gauge sector: ",Dynamic[DynamicMMgaugeNr[name]],"/",Length[def],"(",Dynamic[DynamicMMgaugeName[name]],")"];
-PrintDebug["Calc mass matrices gauge sector"];
 SA`NewGaugeBosons={};
 If[Head[def[[1,1]]]===Symbol,
 Message[GaugeSector::NewSyntax ];
@@ -1221,9 +1170,6 @@ MassMatricesGauge[name]={};
 subVac=Flatten[Map[vacHead,vacuum]];
 
 For[i=1,i<=Length[def],
-DynamicMMgaugeNr[name]=i;
-DynamicMMgaugeName[name]=def[[i,1]];
-PrintDebug[def[[i,1]]];
 If[getType[getBlank[def[[i,1,1]]]]===V,PartLag=Kinetic;,PartLag=Potential;];
 
 temp =Table[DMM[DMM[PartLag /. vevSub,def[[i,1,i1]] /. a_[b_Integer]->a,1,"t",1],def[[i,1,i2]] /. a_[b_Integer]->a,2,"t",2] /. {gt1-> ExtractGen[def[[i,1,i1]]],gt2-> ExtractGen[def[[i,1,i2]]]} /.subVac /. Mom[_]->0 /. zero[a_]->0 ,{i1,1,Length[def[[i,1]]]},{i2,1,Length[def[[i,1]]]}];
@@ -1240,13 +1186,12 @@ subGI = Join[subGI, GenerateSubGauge[{getGhost /@ def[[i,2]],getGhost /@ def[[i,
 ];
 
 i++;];
-DynamicMMgaugeName[name]="All Done";
 
 subGauge = OrderSubstitutions[subV]; subGaugeInv=OrderSubstitutions[subVI];
 subGhost=OrderSubstitutions[subG];subGhostInv=OrderSubstitutions[subGI];
 
 If[IgnoreGaugeFixing=!=True,
-UpdateGaugeTransformations[subGauge,subGaugeInv,UGTgaugeMM[rotNr]];
+UpdateGaugeTransformations[subGauge,subGaugeInv];
 GaugeTransformation=replaceGen[ReleaseHold[GaugeTransformation /. subGhost /.subGauge],rgNr];
 ];
 
@@ -1332,7 +1277,7 @@ ExtractGen[x_]:=If[ Cases[x,y_?IntegerQ]=={},Return[1],Return[Cases[x,y_?Integer
 
 
 CheckHiggsStates:=Block[{i,j,k,temp},
-PrintAll["Checking for CP even and odd scalars"];
+Print["Checking for CP even and odd scalars"];
 SA`ScalarsCPeven = {};
 SA`ScalarsCPodd={};
 
@@ -1376,4 +1321,4 @@ i++;];
 
 ];
 
- 
+

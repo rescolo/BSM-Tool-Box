@@ -29,14 +29,12 @@ double noloop_(double *sing, double *mq, double *msq, double *mne)
 }
 
 
-int nucleonamplitudes_(char * cmdF,  double (*LF)(double*,double*,double*,double*),double*pA0,double*pA5,double*nA0,double*nA5,int len)
+int nucleonamplitudes_(double (*LF)(double*,double*,double*,double*),double*pA0,double*pA5,double*nA0,double*nA5)
 { double (*LF_)(double,double,double,double);
-  char cdmC[20];
-  fName2c(cmdF,cdmC,len);
   if(LF==&noloop_) LF_=NULL; else
   if(LF== fescloop_) LF_=FeScLoop;else {_XYloop=LF; LF_=&XYloop_;}
 /*printf("OK  LF=%p nullloop=%p &nullloop=%p \n",LF, noloop_,&noloop_);*/
-  return nucleonAmplitudes(cdmC,*LF_, pA0,pA5,nA0,nA5);
+  return nucleonAmplitudes(*LF_, pA0,pA5,nA0,nA5);
 }
 
 double fermiff_(int *A, double * Qfermi)
@@ -56,7 +54,6 @@ static void(*_Sxx)(double*,double*,double*,double*);
 static double fDv_(double v){ return (*_fDv)(&v);}
 static void Sxx_(double p,double*S00,double*S01,double*S11){ (*_Sxx)(&p,S00,S01,S11);}
 
-
 double nucleusrecoil_(
      double(*fDv)(double*),int*A, int*Z, double*J, 
      void(*Sxx)(double*,double*,double*,double*),
@@ -70,7 +67,7 @@ double nucleusrecoil_(
   
   if(fDv  == maxwell_)
     return  nucleusRecoil(Maxwell, *A,*Z,*J,Sxx_,LF_,dNdE);
-  else  if(fDv==fdvdelta_)  
+  else  if(fDv=fdvdelta_)  
     return  nucleusRecoil(fDvDelta, *A,*Z,*J,Sxx_,LF_,dNdE);
   else  
   { _fDv=fDv;
@@ -87,7 +84,7 @@ double nucleusrecoilaux_(
   _Sxx=Sxx;
   
   if(fDv  == maxwell_) c_fDv=Maxwell;
-  else  if(fDv==fdvdelta_) c_fDv=fDvDelta;
+  else  if(fDv=fdvdelta_) c_fDv=fDvDelta;
   else { _fDv=fDv; c_fDv=fDv_;}
    
     return  nucleusRecoilAux(c_fDv, *A,*Z,*J,Sxx_,*LmbdP,*XiP,*LmbdN,*XiN, dNdE);
@@ -122,7 +119,7 @@ double nucleusrecoil0aux_( double (*fDv)(double*),
   double (*c_fDv)(double);
 
   if(fDv  == maxwell_) c_fDv=Maxwell;
-  else  if(fDv==fdvdelta_) c_fDv=fDvDelta;
+  else  if(fDv=fdvdelta_) c_fDv=fDvDelta;
   else { _fDv=fDv; c_fDv=fDv_;}
 
   return nucleusRecoil0Aux(c_fDv,*A,*Z,*J,*Sp,*Sn,*LmbdP,*XiP,*LmbdN,*XiN,dNdE);

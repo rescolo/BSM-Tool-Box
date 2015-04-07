@@ -29,10 +29,12 @@ ParameterDefinitions = {
 {\[Lambda],  { Description -> "SM Higgs Selfcouplings",
                DependenceNum -> Mass[hh]^2/(2 v^2)}},
 
+{MS,         {LaTeX -> "M_S"}},
+{K1,         {LaTeX -> "\\Kappa_1"}},
+{K2,         {LaTeX -> "\\Kappa_2"}},
+{LambdaS,         {LaTeX -> "\\Lambda_S"}},
 
 {ZH,     {Description -> "Scalar-Mixing-Matrix" }},
-
-{\[Alpha],  { Description -> "Scalar mixing angle" }},                          
 
 {v,          { Description -> "EW-VEV",
                DependenceNum -> Sqrt[4*Mass[VWp]^2/(g2^2)],
@@ -46,20 +48,6 @@ ParameterDefinitions = {
        Dependence ->   1/Sqrt[2] {{1, 1},
                   {\[ImaginaryI],-\[ImaginaryI]}} }},
 
-
-{K1,    { LaTeX -> "\\kappa_1",
-               OutputName -> K1,
-               LesHouches -> {HMIX,31}}},
-{K2,    { LaTeX -> "\\kappa_2",
-               OutputName -> K2,
-               LesHouches -> {HMIX,32}}},
-{LambdaS,    { LaTeX -> "\\lambda_S",
-               OutputName -> LS,
-               LesHouches -> {HMIX,33}}},
-
-{MS,    { LaTeX -> "M_S",
-               OutputName -> MuS,
-               LesHouches -> {HMIX,34}}},
 
 {Vu,        {Description ->"Left-Up-Mixing-Matrix"}},
 {Vd,        {Description ->"Left-Down-Mixing-Matrix"}},

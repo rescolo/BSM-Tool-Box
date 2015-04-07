@@ -55,13 +55,16 @@ class TestMECmdShell(unittest.TestCase):
     def setUp(self):
         
         self.tmpdir = tempfile.mkdtemp(prefix='amc')
+        self.tmpdir = "/tmp/"
+        # if we need to keep the directory for testing purpose
         #if os.path.exists(self.tmpdir):
         #    shutil.rmtree(self.tmpdir)
         #os.mkdir(self.tmpdir)
         self.path = pjoin(self.tmpdir,'MGProcess')
-
+        
     def tearDown(self):
-        shutil.rmtree(self.tmpdir)
+        pass
+        #shutil.rmtree(self.tmpdir)
     
     
     def generate(self, process, model, multiparticles=[]):
@@ -126,10 +129,10 @@ class TestMECmdShell(unittest.TestCase):
         os.system('cp  %s/Cards/run_card_default.dat %s/Cards/run_card.dat' % (self.path, self.path))
 
         card = open('%s/Cards/shower_card_default.dat' % self.path).read()
-        self.assertTrue( 'ANALYSE      =' in card)
-        card = card.replace('ANALYSE      =', 'ANALYSE     = mcatnlo_hwan_pp_tj.o myfastjetfortran.o mcatnlo_hbook_gfortran8.o')
-        self.assertTrue( 'EXTRALIBS    = stdhep Fmcfio' in card)
-        card = card.replace('EXTRALIBS    = stdhep Fmcfio', 'EXTRALIBS   = fastjet')
+        self.assertTrue( 'ANALYSE     =' in card)
+        card = card.replace('ANALYSE     =', 'ANALYSE     = mcatnlo_hwan_pp_tj.o myfastjetfortran.o mcatnlo_hbook_gfortran8.o')
+        self.assertTrue( 'EXTRALIBS   = stdhep Fmcfio' in card)
+        card = card.replace('EXTRALIBS   = stdhep Fmcfio', 'EXTRALIBS   = fastjet')
         open('%s/Cards/shower_card_default.dat' % self.path, 'w').write(card)
         os.system('cp  %s/Cards/shower_card_default.dat %s/Cards/shower_card.dat'% (self.path, self.path))
 
@@ -220,58 +223,6 @@ class TestMECmdShell(unittest.TestCase):
 
         self.assertEqual(res_dict['xseca'], res_dict['xsect'])
         self.assertTrue(math.fabs(res_dict['xseca']-3.811e-1) < 0.01)
-
-
-    def test_raise_invalid_path_hwpp(self):
-        """test that an exception is raised when trying to shower with hwpp without
-        having set the corresponding pahts"""
-        cmd = os.getcwd()
-        self.generate(['p p > e+ ve [QCD] '], 'sm')
-        card = open('%s/Cards/run_card_default.dat' % self.path).read()
-        self.assertTrue( 'HERWIG6   = parton_shower' in card)
-        card = card.replace('HERWIG6   = parton_shower', 'HERWIGPP   = parton_shower')
-        open('%s/Cards/run_card.dat' % self.path, 'w').write(card)
-        self.cmd_line.exec_cmd('set  cluster_temp_path /tmp/')
-        self.do('generate_events -pf')
-        # test the lhe event file exists
-        self.assertTrue(os.path.exists('%s/Events/run_01/events.lhe.gz' % self.path))
-        self.assertTrue(os.path.exists('%s/Events/run_01/summary.txt' % self.path))
-        self.assertTrue(os.path.exists('%s/Events/run_01/run_01_tag_1_banner.txt' % self.path))
-        self.assertTrue(os.path.exists('%s/Events/run_01/res_0.txt' % self.path))
-        self.assertTrue(os.path.exists('%s/Events/run_01/res_1.txt' % self.path))
-        self.assertTrue(os.path.exists('%s/Events/run_01/alllogs_0.html' % self.path))
-        self.assertTrue(os.path.exists('%s/Events/run_01/alllogs_1.html' % self.path))
-        self.assertTrue(os.path.exists('%s/Events/run_01/alllogs_2.html' % self.path))
-
-        #no shower the file
-        self.assertRaises(NLOCmd.aMCatNLOError, self.do, 'shower run_01 -f')
-
-
-    def test_raise_invalid_path_py8(self):
-        """test that an exception is raised when trying to shower with py8 without
-        having set the corresponding pahts"""
-        cmd = os.getcwd()
-        self.generate(['p p > e+ ve [QCD] '], 'sm')
-        card = open('%s/Cards/run_card_default.dat' % self.path).read()
-        self.assertTrue( 'HERWIG6   = parton_shower' in card)
-        card = card.replace('HERWIG6   = parton_shower', 'PYTHIA8   = parton_shower')
-        open('%s/Cards/run_card.dat' % self.path, 'w').write(card)
-        self.cmd_line.exec_cmd('set  cluster_temp_path /tmp/')
-        self.do('generate_events -pf')
-        # test the lhe event file exists
-        self.assertTrue(os.path.exists('%s/Events/run_01/events.lhe.gz' % self.path))
-        self.assertTrue(os.path.exists('%s/Events/run_01/summary.txt' % self.path))
-        self.assertTrue(os.path.exists('%s/Events/run_01/run_01_tag_1_banner.txt' % self.path))
-        self.assertTrue(os.path.exists('%s/Events/run_01/res_0.txt' % self.path))
-        self.assertTrue(os.path.exists('%s/Events/run_01/res_1.txt' % self.path))
-        self.assertTrue(os.path.exists('%s/Events/run_01/alllogs_0.html' % self.path))
-        self.assertTrue(os.path.exists('%s/Events/run_01/alllogs_1.html' % self.path))
-        self.assertTrue(os.path.exists('%s/Events/run_01/alllogs_2.html' % self.path))
-
-        #no shower the file
-        self.assertRaises(NLOCmd.aMCatNLOError, self.do, 'shower run_01 -f')
-
-
 
 
     def test_split_evt_gen(self):
@@ -491,7 +442,7 @@ class TestMECmdShell(unittest.TestCase):
         #splitting of the shower
         # 1) hep output
         shower_card = open('%s/Cards/shower_card.dat' % self.path).read()
-        shower_card = shower_card.replace('nsplit_jobs  = 1', 'nsplit_jobs  = 4')
+        shower_card = shower_card.replace('nsplit_jobs= 1', 'nsplit_jobs= 4')
         open('%s/Cards/shower_card.dat' % self.path, 'w').write(shower_card)
         self.cmd_line.run_cmd('shower run_01 -f')
         self.assertTrue(os.path.exists('%s/Events/run_01/events_HERWIG6_2__1.hep.gz' % self.path))
@@ -500,8 +451,8 @@ class TestMECmdShell(unittest.TestCase):
         self.assertTrue(os.path.exists('%s/Events/run_01/events_HERWIG6_2__4.hep.gz' % self.path))
 
         # 2) top output
-        shower_card = shower_card.replace('EXTRALIBS    = stdhep Fmcfio', 'EXTRALIBS    =')  
-        shower_card = shower_card.replace('ANALYSE      =', 'ANALYSE      = mcatnlo_hwan_pp_lvl.o mcatnlo_hbook_gfortran8.o')  
+        shower_card = shower_card.replace('EXTRALIBS   = stdhep Fmcfio', 'EXTRALIBS   =')  
+        shower_card = shower_card.replace('ANALYSE     =', 'ANALYSE     = mcatnlo_hwan_pp_lvl.o mcatnlo_hbook_gfortran8.o')  
         open('%s/Cards/shower_card.dat' % self.path, 'w').write(shower_card)
         self.cmd_line.run_cmd('shower run_01 -f')
         self.assertTrue(os.path.exists('%s/Events/run_01/plot_HERWIG6_1_0.tar.gz' % self.path))
