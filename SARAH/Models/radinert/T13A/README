@@ -1,0 +1,31 @@
+Repository of inert extensions of the standard model.
+
+Following the conventions of 
+1206.4563
+
+Each branch is self containded inert model which can be merged with another model
+to creates a richer structures.
+
+*SFTM: Singlet fermion toy model
+*SFTM: Singlet fermion toy model
+*IFDTM: Inert fermion doublet toy model
+*SSSFTM: Singlet scalar singlet fermion toy model
+
+   |
+   |
+Master SM+Z2
+   |________________________________________________
+     |         |         |           |              |      
+     |	       |	 |	     |	            | 
+    IDM	       |	 |	     |	          SSDM
+     |	      SFTM	TFTM	   IFDTM            | 
+     |	       |	 |	     |	            | 
+     |____ ____|____ ____|	     | 	            |
+     |	  |    |    |	 |	     |	            | 
+     |	 RSI   |  RSIII	 |	     |	            | 
+     |    |    |____|____|___________|______________|
+     |    |    |    |    |           |      |       |     
+     |    |    |    |    |           |   SSSFTM     |
+     |    |    |    |    |           |______|       |          
+     |    |    |    |    |           |   |  |       |          
+     |    |    |    |    |           | T13A |       |          
