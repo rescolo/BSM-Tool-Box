@@ -3,6 +3,7 @@ PreDef = -DGENERATIONMIXING -DONLYDOUBLE
 # setting various paths  
 InDir = ../include
 Mdir = ${InDir}
+VPATH = 3-Body-Decays:LoopDecays:TwoLoopMasses:Observables
 name = ../lib/libSPhenoSSDM.a
  
 # check if SARAH module and SPheno are compatibel  
@@ -52,12 +53,13 @@ ifeq (${cVersion},1)
 	 rm SPhenoSSDM.o  
 ${name}:  ${name}(Model_Data_SSDM.o)  \
  ${name}(RGEs_SSDM.o)   \
- ${name}(Couplings_SSDM.o) ${name}(SusyMasses_SSDM.o) ${name}(TadpoleEquations_SSDM.o) \
+ ${name}(Couplings_SSDM.o) ${name}(TreeLevelMasses_SSDM.o) ${name}(TadpoleEquations_SSDM.o) \
  ${name}(LoopCouplings_SSDM.o) ${name}(CouplingsForDecays_SSDM.o) \
- ${name}(SusyDecays_SSDM.o) \
+ ${name}(TreeLevel_Decays_SSDM.o) \
  ${name}(Fu.o)  ${name}(Fe.o)  ${name}(Fd.o)  \
- ${name}(BranchingRatios_SSDM.o) ${name}(LoopMasses_SSDM.o) \
- ${name}(HiggsCS_SSDM.o) ${name}(RunSM_SSDM.o) \
+${name}(AddLoopFunctions.o) ${name}(Kinematics.o) \
+ ${name}(LoopMasses_SSDM.o) \
+ ${name}(BranchingRatios_SSDM.o) ${name}(HiggsCS_SSDM.o) ${name}(RunSM_SSDM.o) \
  ${name}(LowEnergy_SSDM.o) \
 ${name}(FlavorKit_LFV_SSDM.o) ${name}(FlavorKit_QFV_SSDM.o) ${name}(FlavorKit_Observables_SSDM.o)\
 ${name}(InputOutput_SSDM.o) 

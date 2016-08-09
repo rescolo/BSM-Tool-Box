@@ -218,9 +218,6 @@ class hep(model):
                             brch=brchm+' unknown'
                             
                         self.Br_names[brch]=self.Br[k][kd]
-        for k in self.Gamma:
-            if k>=min_pdg:
-                self.Br_names['Gamma_%s' %self.pdg.pdg_id[k]]=self.Gamma[k] 
 
         return SPCdecays.keys()
     
@@ -260,7 +257,7 @@ class hep(model):
         idc=grep('^\s+~.*->.*[0-9]$',mo)
         if idc:
             for ch in idc.split('\n'):
-                chnl=re.sub('\s{2,}',':',re.sub('^\s+','',ch)).split(':') #values separated by 2 spaces
+                chnl=re.sub('\s{2}',':',re.sub('^\s+','',ch)).split(':') #values separated by 2 spaces
                 if len(chnl)==2:
                     if re.search(fltchk,chnl[1]):
                         self.micromegas[ 'ID_br:%s' %chnl[0] ]=eval(chnl[1])
@@ -329,8 +326,7 @@ class hep(model):
                 mocmd=ddcmd
             else:
                 sys.exit( 'ERROR: %s not found' %(ddcmd) )
-                
-            
+                            
         oh=commands.getoutput( '%s/%s/%s SPheno.spc.%s' %(path,self.MODEL,ddcmd,self.MODEL) )
         mo=self.micromegas_output(oh)
         self.to_series() #Fill to_Series pandas Series

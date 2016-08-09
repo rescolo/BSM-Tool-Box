@@ -1,9 +1,9 @@
 ! -----------------------------------------------------------------------------  
-! This file was automatically created by SARAH version 4.8.1 
+! This file was automatically created by SARAH version 4.9.1 
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 17:59 on 4.3.2016   
+! File created at 13:24 on 9.8.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -14,7 +14,7 @@ Use Model_Data_SSDM
 Use Couplings_SSDM 
 Use LoopCouplings_SSDM 
 Use Tadpoles_SSDM 
- Use SusyMasses_SSDM 
+ Use TreeLevelMasses_SSDM 
 Use Mathematics, Only: CompareMatrices, Adjungate 
  
 Use StandardModel 
@@ -94,6 +94,27 @@ Call TreeMasses(MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,MHp2,Mss,      
 ! --- Use the 1-loop mixing matrices calculated at M_SUSY in the vertices --- 
 ZW = ZWinput 
 ZZ = ZZinput 
+If (PoleMassesInLoops) Then 
+! --- Use the pole masses --- 
+MAh = MAhinput 
+MAh2 = MAh2input 
+MFd = MFdinput 
+MFd2 = MFd2input 
+MFe = MFeinput 
+MFe2 = MFe2input 
+MFu = MFuinput 
+MFu2 = MFu2input 
+Mhh = Mhhinput 
+Mhh2 = Mhh2input 
+MHp = MHpinput 
+MHp2 = MHp2input 
+Mss = Mssinput 
+Mss2 = Mss2input 
+MVWp = MVWpinput 
+MVWp2 = MVWp2input 
+MVZ = MVZinput 
+MVZ2 = MVZ2input 
+End if 
 cplcFuFuhhL = 0._dp 
 cplcFuFuhhR = 0._dp 
 Do gt1 = 1, 3
@@ -133,7 +154,8 @@ Subroutine CouplingsFor_Fe_decays_2B(m_in,i1,MAhinput,MAh2input,MFdinput,       
 & MHp2input,Mssinput,Mss2input,MVWpinput,MVWp2input,MVZinput,MVZ2input,TWinput,          & 
 & ZDRinput,ZERinput,ZURinput,ZDLinput,ZELinput,ZULinput,ZWinput,ZZinput,g1input,         & 
 & g2input,g3input,LSinput,LSHinput,Laminput,Yuinput,Ydinput,Yeinput,MS2input,            & 
-& mu2input,vinput,cplcFeFehhL,cplcFeFehhR,cplcFeFeVZL,cplcFeFeVZR,deltaM)
+& mu2input,vinput,cplcFeFehhL,cplcFeFehhR,cplcFeFeVZL,cplcFeFeVZR,cplcFeFvcVWpL,         & 
+& cplcFeFvcVWpR,deltaM)
 
 Implicit None 
 
@@ -155,7 +177,8 @@ Real(dp) :: g1,g2,g3,MS2,v
 
 Complex(dp) :: LS,LSH,Lam,Yu(3,3),Yd(3,3),Ye(3,3),mu2
 
-Complex(dp),Intent(out) :: cplcFeFehhL(3,3),cplcFeFehhR(3,3),cplcFeFeVZL(3,3),cplcFeFeVZR(3,3)
+Complex(dp),Intent(out) :: cplcFeFehhL(3,3),cplcFeFehhR(3,3),cplcFeFeVZL(3,3),cplcFeFeVZR(3,3),cplcFeFvcVWpL(3,3),& 
+& cplcFeFvcVWpR(3,3)
 
 Integer :: i2, i3, gt1, gt2, gt3, kont 
 Real(dp) :: MAh,MAh2,MFd(3),MFd2(3),MFe(3),MFe2(3),MFu(3),MFu2(3),Mhh,Mhh2,MHp,MHp2,              & 
@@ -198,6 +221,27 @@ Call TreeMasses(MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,MHp2,Mss,      
 ! --- Use the 1-loop mixing matrices calculated at M_SUSY in the vertices --- 
 ZW = ZWinput 
 ZZ = ZZinput 
+If (PoleMassesInLoops) Then 
+! --- Use the pole masses --- 
+MAh = MAhinput 
+MAh2 = MAh2input 
+MFd = MFdinput 
+MFd2 = MFd2input 
+MFe = MFeinput 
+MFe2 = MFe2input 
+MFu = MFuinput 
+MFu2 = MFu2input 
+Mhh = Mhhinput 
+Mhh2 = Mhh2input 
+MHp = MHpinput 
+MHp2 = MHp2input 
+Mss = Mssinput 
+Mss2 = Mss2input 
+MVWp = MVWpinput 
+MVWp2 = MVWp2input 
+MVZ = MVZinput 
+MVZ2 = MVZ2input 
+End if 
 cplcFeFehhL = 0._dp 
 cplcFeFehhR = 0._dp 
 Do gt1 = 1, 3
@@ -213,6 +257,16 @@ cplcFeFeVZR = 0._dp
 Do gt1 = 1, 3
  Do gt2 = 1, 3
 Call CouplingcFeFeVZT(gt1,gt2,g1,g2,TW,cplcFeFeVZL(gt1,gt2),cplcFeFeVZR(gt1,gt2))
+
+ End Do 
+End Do 
+
+
+cplcFeFvcVWpL = 0._dp 
+cplcFeFvcVWpR = 0._dp 
+Do gt1 = 1, 3
+ Do gt2 = 1, 3
+Call CouplingcFeFvcVWpT(gt1,gt2,g2,ZEL,cplcFeFvcVWpL(gt1,gt2),cplcFeFvcVWpR(gt1,gt2))
 
  End Do 
 End Do 
@@ -294,6 +348,27 @@ Call TreeMasses(MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,MHp2,Mss,      
 ! --- Use the 1-loop mixing matrices calculated at M_SUSY in the vertices --- 
 ZW = ZWinput 
 ZZ = ZZinput 
+If (PoleMassesInLoops) Then 
+! --- Use the pole masses --- 
+MAh = MAhinput 
+MAh2 = MAh2input 
+MFd = MFdinput 
+MFd2 = MFd2input 
+MFe = MFeinput 
+MFe2 = MFe2input 
+MFu = MFuinput 
+MFu2 = MFu2input 
+Mhh = Mhhinput 
+Mhh2 = Mhh2input 
+MHp = MHpinput 
+MHp2 = MHp2input 
+Mss = Mssinput 
+Mss2 = Mss2input 
+MVWp = MVWpinput 
+MVWp2 = MVWp2input 
+MVZ = MVZinput 
+MVZ2 = MVZ2input 
+End if 
 cplcFdFdhhL = 0._dp 
 cplcFdFdhhR = 0._dp 
 Do gt1 = 1, 3
@@ -429,6 +504,30 @@ Call TreeMasses(MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,MHp2,Mss,      
 & Mss2,MVWp,MVWp2,MVZ,MVZ2,TW,ZDR,ZER,ZUR,ZDL,ZEL,ZUL,ZW,ZZ,v,g1,g2,g3,LS,               & 
 & LSH,Lam,Yu,Yd,Ye,MS2,mu2,.True.,kont)
 
+! --- Use the 1-loop mixing matrices calculated at M_SUSY in the vertices --- 
+ZW = ZWinput 
+ZZ = ZZinput 
+If (PoleMassesInLoops) Then 
+! --- Use the pole masses --- 
+MAh = MAhinput 
+MAh2 = MAh2input 
+MFd = MFdinput 
+MFd2 = MFd2input 
+MFe = MFeinput 
+MFe2 = MFe2input 
+MFu = MFuinput 
+MFu2 = MFu2input 
+Mhh = Mhhinput 
+Mhh2 = Mhh2input 
+MHp = MHpinput 
+MHp2 = MHp2input 
+Mss = Mssinput 
+Mss2 = Mss2input 
+MVWp = MVWpinput 
+MVWp2 = MVWp2input 
+MVZ = MVZinput 
+MVZ2 = MVZ2input 
+End if 
 cplhhhhhh = 0._dp 
 Call CouplinghhhhhhT(Lam,v,cplhhhhhh)
 
@@ -555,9 +654,6 @@ If (i1.eq.1) Then
 CPL_A_H_Z = 0 
 CPL_H_H_Z = 0._dp 
 End if 
-! --- Use the 1-loop mixing matrices calculated at M_SUSY in the vertices --- 
-ZW = ZWinput 
-ZZ = ZZinput 
 cplhhhhhh = 0._dp 
 Call CouplinghhhhhhT(Lam,v,cplhhhhhh)
 
@@ -689,6 +785,27 @@ Call TreeMasses(MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,MHp2,Mss,      
 ! --- Use the 1-loop mixing matrices calculated at M_SUSY in the vertices --- 
 ZW = ZWinput 
 ZZ = ZZinput 
+If (PoleMassesInLoops) Then 
+! --- Use the pole masses --- 
+MAh = MAhinput 
+MAh2 = MAh2input 
+MFd = MFdinput 
+MFd2 = MFd2input 
+MFe = MFeinput 
+MFe2 = MFe2input 
+MFu = MFuinput 
+MFu2 = MFu2input 
+Mhh = Mhhinput 
+Mhh2 = Mhh2input 
+MHp = MHpinput 
+MHp2 = MHp2input 
+Mss = Mssinput 
+Mss2 = Mss2input 
+MVWp = MVWpinput 
+MVWp2 = MVWp2input 
+MVZ = MVZinput 
+MVZ2 = MVZ2input 
+End if 
 cplcFdFdhhL = 0._dp 
 cplcFdFdhhR = 0._dp 
 Do gt1 = 1, 3
@@ -869,6 +986,27 @@ Call TreeMasses(MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,MHp2,Mss,      
 ! --- Use the 1-loop mixing matrices calculated at M_SUSY in the vertices --- 
 ZW = ZWinput 
 ZZ = ZZinput 
+If (PoleMassesInLoops) Then 
+! --- Use the pole masses --- 
+MAh = MAhinput 
+MAh2 = MAh2input 
+MFd = MFdinput 
+MFd2 = MFd2input 
+MFe = MFeinput 
+MFe2 = MFe2input 
+MFu = MFuinput 
+MFu2 = MFu2input 
+Mhh = Mhhinput 
+Mhh2 = Mhh2input 
+MHp = MHpinput 
+MHp2 = MHp2input 
+Mss = Mssinput 
+Mss2 = Mss2input 
+MVWp = MVWpinput 
+MVWp2 = MVWp2input 
+MVZ = MVZinput 
+MVZ2 = MVZ2input 
+End if 
 cplcFdFdhhL = 0._dp 
 cplcFdFdhhR = 0._dp 
 Do gt1 = 1, 3
@@ -1049,6 +1187,27 @@ Call TreeMasses(MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,MHp2,Mss,      
 ! --- Use the 1-loop mixing matrices calculated at M_SUSY in the vertices --- 
 ZW = ZWinput 
 ZZ = ZZinput 
+If (PoleMassesInLoops) Then 
+! --- Use the pole masses --- 
+MAh = MAhinput 
+MAh2 = MAh2input 
+MFd = MFdinput 
+MFd2 = MFd2input 
+MFe = MFeinput 
+MFe2 = MFe2input 
+MFu = MFuinput 
+MFu2 = MFu2input 
+Mhh = Mhhinput 
+Mhh2 = Mhh2input 
+MHp = MHpinput 
+MHp2 = MHp2input 
+Mss = Mssinput 
+Mss2 = Mss2input 
+MVWp = MVWpinput 
+MVWp2 = MVWp2input 
+MVZ = MVZinput 
+MVZ2 = MVZ2input 
+End if 
 cplcFdFdhhL = 0._dp 
 cplcFdFdhhR = 0._dp 
 Do gt1 = 1, 3
@@ -1173,6 +1332,8 @@ Real(dp), Intent(out) :: g1, g2, g3, vd, vu
 Complex(dp), Intent(out) :: Yu(3,3), Yd(3,3), Ye(3,3)
 Real(dp) :: dt, gSM(14), gSM2(2), gSM3(3), mtopMS,  sinw2, vev, tz, alphaStop 
 Integer :: kont
+
+RunningTopMZ = .false.
 
 Yd = 0._dp
 Ye = 0._dp
@@ -1305,12 +1466,24 @@ sinw2 = g1**2/(g1**2 + g2**2)
 !g1 = g2*Sqrt(sinW2/(1._dp-sinW2)) 
 
 If (GenerationMixing) Then 
-If (TransposedYukawa) Then ! check, if superpotential is Yu Hu u q  or Yu Hu q u
- Yu= Matmul(Transpose(CKM),Transpose(Yu))
-Else 
- Yu=Transpose(Matmul(Transpose(CKM),Transpose(Yu)))
-End if 
-End If
+
+If (YukawaScheme.Eq.1) Then ! CKM into Yu
+ If (TransposedYukawa) Then ! check, if superpotential is Yu Hu u q  or Yu Hu q u
+   Yu= Matmul(Transpose(CKM),Transpose(Yu))
+ Else 
+   Yu=Transpose(Matmul(Transpose(CKM),Transpose(Yu)))
+ End if 
+
+Else ! CKM into Yd 
+ 
+ If (TransposedYukawa) Then ! 
+  Yd= Matmul(Conjg(CKM),Transpose(Yd))
+ Else 
+  Yd=Transpose(Matmul(Conjg(CKM),Transpose(Yd)))
+ End if 
+
+End if ! Yukawa scheme
+End If ! Generatoin mixing
 
 
 End Subroutine RunSM
@@ -1418,10 +1591,11 @@ If (scale_out.gt.sqrt(mz2)) Then
 Else
 
  ! From M_Z down to scale_out
-  tz=Log(scale_out/sqrt(mz2)) 
-  dt=tz/50._dp 
-  Call odeint(gSM,14,0._dp,tz,deltaM,dt,0._dp,rge11_SMa,kont)
-
+  If (abs(scale_out - sqrt(mz2)).gt.1.0E-3_dp) Then 
+   tz=Log(scale_out/sqrt(mz2)) 
+   dt=tz/50._dp 
+   Call odeint(gSM,14,0._dp,tz,deltaM,dt,0._dp,rge11_SMa,kont)
+  End if
 End if
 
 ! Calculating Couplings 
@@ -1454,12 +1628,25 @@ g2=gSM(1)/sqrt(sinW2)
 g1 = g2*Sqrt(sinW2/(1._dp-sinW2)) 
 
 If (GenerationMixing) Then 
-If (TransposedYukawa) Then ! check, if superpotential is Yu Hu u q  or Yu Hu q u
- Yu= Matmul(Transpose(CKM),Transpose(Yu))
-Else 
- Yu=Transpose(Matmul(Transpose(CKM),Transpose(Yu)))
-End if 
-End If
+
+If (YukawaScheme.Eq.1) Then ! CKM into Yu
+ If (TransposedYukawa) Then ! check, if superpotential is Yu Hu u q  or Yu Hu q u
+   Yu= Matmul(Transpose(CKM),Transpose(Yu))
+ Else 
+   Yu=Transpose(Matmul(Transpose(CKM),Transpose(Yu)))
+ End if 
+
+Else ! CKM into Yd 
+ 
+ If (TransposedYukawa) Then ! 
+  Yd= Matmul(Conjg(CKM),Transpose(Yd))
+ Else 
+  Yd=Transpose(Matmul(Conjg(CKM),Transpose(Yd)))
+ End if 
+
+End if ! Yukawa scheme
+End If ! Generation mixing
+
 
 
 End Subroutine RunSMohdm
@@ -1475,6 +1662,8 @@ Integer :: kont
 Yd = 0._dp
 Ye = 0._dp
 Yu = 0._dp
+
+RunningTopMZ = .false.
 
 If (.not.RunningTopMZ) Then
 
