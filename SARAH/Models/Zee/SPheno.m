@@ -19,7 +19,7 @@ MINPAR={{1,Lambda1Input},
 
 RealParameters = {TanBeta};
 
-ParametersToSolveTadpoles = {M112,M222};
+ParametersToSolveTadpoles = {M112,M12};
 
 BoundaryLowScaleInput={
  {Lambda1,Lambda1Input},
