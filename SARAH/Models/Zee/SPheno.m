@@ -12,9 +12,9 @@ MINPAR={{1,Lambda1Input},
 	{9,Lambda9Input},
 	{10,Lambda10Input},
 	{11,LambdahInput},
-        {12,M12input},
+        {12,M122input},
 	(* {12,M222input},*)
-	{13,Mhinput},
+	{13,Mh2input},
 	{14,Muinput},
         {15,TanBeta} };
 
@@ -22,7 +22,7 @@ RealParameters = {TanBeta};
 
 ParametersToSolveTadpoles = {M112,M222};
 
-(* ParametersToSolveTadpoles = {M112,M12};*)
+(* ParametersToSolveTadpoles = {M112,M122};*)
 
 BoundaryLowScaleInput={
  {Lambda1,Lambda1Input},
@@ -36,9 +36,9 @@ BoundaryLowScaleInput={
  {Lambda9,Lambda9Input},
  {Lambda10,Lambda10Input},
  {Lambdah,LambdahInput},
- {M12, M12input},
+ {M122, M122input},
  (* {M222, M222input},*)
- {Mh, Mhinput},
+ {Mh2, Mh2input},
  {Mu, Muinput},
  {v1,vSM*Cos[ArcTan[TanBeta]]},
  {v2,vSM*Sin[ArcTan[TanBeta]]},
@@ -58,4 +58,4 @@ ListDecayParticles = {Fu,Fe,Fd,Fv,hh,Ah,Hm};
 ListDecayParticles3B = {{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"}};
 
 
-DefaultInputValues ={Lambda1Input -> 0.1, Lambda2Input -> 0.13, Lambda3Input -> 1.1, Lambda4Input ->-0.5, Lambda5Input ->0.5,  M12input -> 40000, (*M222input -> 40000,*) Mhinput -> 10000, Muinput -> 100, TanBeta->50};
+DefaultInputValues ={Lambda1Input -> 0.2, Lambda2Input -> 0.26, Lambda3Input -> 1.1, Lambda4Input ->-0.5, Lambda5Input ->0.5,  M122input -> 40000, (*M222input -> 40000,*) Mh2input -> 10000, Muinput -> 100, TanBeta->50};

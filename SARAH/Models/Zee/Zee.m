@@ -44,15 +44,16 @@ DEFINITION[GaugeES][Additional]= {
 	{LagNoHC,{ AddHC->False}}
 };
 
+(* Following Haber-Davidson conventions hep-ph/0504050 *)
 
-LagNoHC = -(M112 conj[H1].H1 + M222 conj[H2].H2 + Lambda1 conj[H1].H1.conj[H1].H1 + \
-		Lambda2 conj[H2].H2.conj[H2].H2 + Lambda3 conj[H2].H2.conj[H1].H1 + \
+LagNoHC = -(M112 conj[H1].H1 + M222 conj[H2].H2 + Lambda1/2 conj[H1].H1.conj[H1].H1 + \
+		Lambda2/2 conj[H2].H2.conj[H2].H2 + Lambda3 conj[H2].H2.conj[H1].H1 + \
 	    Lambda4 conj[H2].H1.conj[H1].H2 + Lambda8 conj[H3].H3.conj[H1].H1 + \
-	    Lambda9 conj[H3].H3.conj[H2].H2 +  Mh conj[H3].H3 + Lambdah conj[H3].H3.conj[H3].H3);
+	    Lambda9 conj[H3].H3.conj[H2].H2 +  Mh2 conj[H3].H3 + Lambdah conj[H3].H3.conj[H3].H3);
 
 
 LagHC = -(Lambda5/2 conj[H2].H1.conj[H2].H1 + Lambda6 conj[H1].H1.conj[H1].H2 + Lambda7 conj[H2].H2.conj[H1].H2 + \
-	  Lambda10 conj[H3].H3.conj[H2].H1 - M12 conj[H1].H2 + Mu conj[H3].conj[H1].conj[H2] + \
+	  Lambda10 conj[H3].H3.conj[H2].H1 - M122 conj[H1].H2 + Mu conj[H3].conj[H1].conj[H2] + \
 	  Ye conj[H1].e.l + Yu H2.u.q + Yd conj[H1].d.q + Yh conj[H3].l.l + \
 	  epsD conj[H2].d.q + epsE conj[H2].e.l + epsU H1.u.q);
 

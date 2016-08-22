@@ -87,13 +87,13 @@ ParameterDefinitions = {
                OutputName -> M222,
                LesHouches -> {HMIX,21}}},
 
-{M12,    {    LaTeX -> "m_{12}",
-               OutputName -> M12,
+{M122,    {    LaTeX -> "m_{12}^2",
+               OutputName -> M122,
 	      Real->True,
                LesHouches -> {HMIX,22}}},
 
-{Mh,     { LaTeX -> "M_h",
-	      OutputName -> Mh,
+{Mh2,     { LaTeX -> "M_h^2",
+	      OutputName -> Mh2,
 	      LesHouches -> {HMIX,23}}},
 
 {Mu,    { LaTeX -> "\\Mu",
