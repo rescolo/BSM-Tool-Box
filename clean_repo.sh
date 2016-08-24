@@ -2,3 +2,4 @@
 #clean all models except:
 ./clean.sh LR+DM
 
+

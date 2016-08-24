@@ -6,6 +6,7 @@ import re
 import pandas as pd
 import sys
 from cmdlike import *
+import pdg_series
 
 #expanda pyslha
 def _init_LHA(blocks=['NAME1','NAME2']):
@@ -60,7 +61,7 @@ def _readSLHAFile_with_comments(spcfile,ignorenomass=False,ignorenobr=True):
     return IF
 
 class model(object):
-    pdg=__import__('pdg')
+    pdg=pdg_series.pdg()
     G_F    =1.166370E-05    # G_F,Fermi constant
     alpha_s=1.187000E-01    #(MZ) SM MSbar
     M_Z    =9.118870E+01    # Z-boson pole mass'
@@ -70,10 +71,10 @@ class model(object):
     m_h0   =125. #Higg mass
     vev    =1./np.sqrt(np.sqrt(2)*G_F)
     #FIX pdgs
-    pdg.h0=25;pdg.H0=35;pdg.A0=36;pdg.Hp=37;pdg.Hm=-37
+    pdg['h0']=25;pdg['H0']=35;pdg['A0']=36;pdg['Hp']=37;pdg['Hm']=-37
     def __init__(self,MODEL='SM',ignorenobr=True,ignorenomass=True,updateSMINPUTS=False,\
                 SPHENO_PATH='../SPHENO',low=False):
-        spcfile='%s/%s/LesHouches.in.%s' %(SPHENO_PATH,MODEL,MODEL)
+        spcfile='%s/%s/Input_Files/LesHouches.in.%s' %(SPHENO_PATH,MODEL,MODEL)
         self.MODEL=MODEL
         self.low=''
         if low:
@@ -168,29 +169,72 @@ class hep(model):
         #print a
         if a.find('Problem')==-1:
             self.LHA_out=pyslha.readSLHAFile('SPheno.spc.%s' %self.MODEL)
+            #with comments but without decays
+            a=commands.getoutput("cat  SPheno.spc.%s | grep -m 1 -i -B1000 '^decay' | grep -vi '^decay' >  SPheno.spc.%s_nodecays.spc" %(self.MODEL,self.MODEL))
+            if os.path.isfile("SPheno.spc.%s_nodecays.spc" %self.MODEL):
+                self.LHA_out_with_comments=_readSLHAFile_with_comments("SPheno.spc.%s_nodecays.spc" %self.MODEL)
+                #PDG for new particles
+                for pid in self.LHA_out_with_comments.blocks['MASS'].entries:
+                    if np.abs(pid)>25:
+                        pvalues=self.LHA_out_with_comments.blocks['MASS'].entries[pid].split('#')
+                        if len(pvalues)==2:
+                            self.pdg[pvalues[1].strip()]=pid
+
+            
         else:
             self.LHA_out=False
+            self.LHA_out_with_comments=False
         return self.LHA_out
         
-    def branchings(self,SPCdecays):
+    def branchings(self,SPCdecays,min_pdg=26):
         "Convert decays blocks into widhts and branchings: Input: SPC.decays"
         for i in SPCdecays.keys():
             self.Br[i]={}
             self.Gamma[i]=SPCdecays[i].totalwidth
             for j in range( len(SPCdecays[i].decays) ):
                 self.Br[i][tuple(SPCdecays[i].decays[j].ids)]=SPCdecays[i].decays[j].br
+                
+        self.Br_names=pd.Series()
+
+
+        for k in self.Br.keys():
+            if np.abs(k)>=min_pdg:
+                if k in self.pdg.pdg_id.index:
+                    brchm='%s -> ' %self.pdg.pdg_id[k]
+                else: 
+                    brchm='%unknown -> '
+                for kd in self.Br[k].keys():
+                    if len(kd)==2:
+                        if kd[0] in self.pdg.pdg_id.index and kd[1] in self.pdg.pdg_id.index:
+                            brch=brchm+' '+self.pdg.pdg_id[kd[0]]+' '+self.pdg.pdg_id[kd[1]]
+                        else:
+                            brch=brchm+' unknown'
+                
+                        self.Br_names[brch]=self.Br[k][kd]
+                    if len(kd)==3:
+                        if kd[0] in self.pdg.pdg_id.index and kd[1] in self.pdg.pdg_id.index and kd[2] in self.pdg.pdg_id.index:
+                            brch=brchm+' '+self.pdg.pdg_id[kd[0]]+' '+self.pdg.pdg_id[kd[1]]+' '+self.pdg.pdg_id[kd[2]]
+                        else:
+                            brch=brchm+' unknown'
+                            
+                        self.Br_names[brch]=self.Br[k][kd]
+        for k in self.Gamma:
+            if k>=min_pdg:
+                self.Br_names['Gamma_%s' %self.pdg.pdg_id[k]]=self.Gamma[k] 
+
         return SPCdecays.keys()
     
-    def micromegas_output(self,mo):
+    def micromegas_output(self,mo,Omega_h2='Omega_h2'):
         self.micromegas=pd.Series()
+        fltchk='^[0-9\.eE\-\+]+$'
         omgf=grep('^Xf=',mo)
         if len(omgf.split('n') )==1:
             omgl=omgf.split('=')
             if len(omgl)==3:
-                if re.search('^[0-9\.eE\-\+]*$',omgl[2]):
-                    self.micromegas['Omega_h2']=eval(omgl[2])
+                if re.search(fltchk,omgl[2]):
+                    self.micromegas[Omega_h2]=eval(omgl[2])
                 else:    
-                    self.micromegas['Omega_h2']=omgl[2]
+                    self.micromegas[Omega_h2]=omgl[2]
                     
         omgf=grep('^\s*[neuprotn]',mo)
         if len(omgf.split('n') )>1:
@@ -200,13 +244,39 @@ class hep(model):
                 ddpornl=re.sub('\s{2,}',' ',ddpornl)
                 ddporn=ddpornl.split(' ') #[ proton|neutron,SI,SI_value,SD,SD_value]
                 if len(ddporn)==5:
-                    self.micromegas[ddporn[0]]=pd.Series()
+                    #self.micromegas[ddporn[0]]=pd.Series()
                     for i in [1,3]:
-                        if re.search('^[0-9\.eE\-\+]*$',ddporn[i+1]):
-                            self.micromegas[ddporn[0]][ddporn[i]]=eval(ddporn[i+1])
+                        if re.search(fltchk,ddporn[i+1]):
+                            self.micromegas['%s_%s' %(ddporn[0],ddporn[i])]=eval(ddporn[i+1])
                         else:
-                            self.micromegas[ddporn[0]][ddporn[i]]=ddporn[i+1]
-        return self.micromegas
+                            self.micromegas['%s_%s' %(ddporn[0],ddporn[i])]=ddporn[i+1]
+
+        omgf=grep('annihilation cross section',mo)
+        idcs=omgf.split(' ')
+        if len(idcs)>1:
+            if re.search(fltchk,idcs[-2]):
+                self.micromegas['sigmav']=eval(idcs[-2])
+         
+        idc=grep('^\s+~.*->.*[0-9]$',mo)
+        if idc:
+            for ch in idc.split('\n'):
+                chnl=re.sub('\s{2,}',':',re.sub('^\s+','',ch)).split(':') #values separated by 2 spaces
+                if len(chnl)==2:
+                    if re.search(fltchk,chnl[1]):
+                        self.micromegas[ 'ID_br:%s' %chnl[0] ]=eval(chnl[1])
+        
+        f='channels.out'
+        if os.path.isfile('channels.out'):
+            f=open(f,'r').read()
+            fvalues=re.sub(r'.*\s+(0\.[0-9]+)',r'\1', re.sub('#.*','',f)).split('\n')
+            if len(fvalues)>0:
+                fvalues=map(float,fvalues[:-1])
+                fkeys=re.sub('.*#\s+','O_chnl:',f).split('\n')[:-1]
+                Omega_channels=pd.Series(data=fvalues,index=fkeys)
+                if Omega_channels.shape[0]>0:
+                    self.micromegas=self.micromegas.append(Omega_channels)
+                    
+        return mo
     
     def run_micromegas(self,func,param={},path='../micromegas',
                   var_min=60,var_max=1000,npoints=1,scale='log',CI=False):
@@ -263,13 +333,10 @@ class hep(model):
             
         oh=commands.getoutput( '%s/%s/%s SPheno.spc.%s' %(path,self.MODEL,ddcmd,self.MODEL) )
         mo=self.micromegas_output(oh)
-        self.to_series()
-        self.Series['Omega_h2']=mo.Omega_h2
-        if Direct_Detection:
-            self.Series['proton_SI']=mo.proton.SI
-            self.Series['neutron_SI']=mo.neutron.SI
+        self.to_series() #Fill to_Series pandas Series
+        self.Series=self.Series.append(self.micromegas)
 
-        return self.Series
+        return mo
 
     def scanmicromegas(self,func,param={},path='../micromegas',
                        var_min=60,var_max=1000,npoints=1,scale='log',CI=False,Direct_Detection=False):
