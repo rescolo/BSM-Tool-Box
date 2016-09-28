@@ -1,8 +1,7 @@
 OnlyLowEnergySPheno = True;
 
 
-MINPAR={
-        {1,lambda1Input},
+MINPAR={{1,lambda1Input},
         {2,lambda2Input},
         {3,lambda3Input},
         {4,lambda4Input},
@@ -13,6 +12,8 @@ MINPAR={
         {9,mEt2Input},
         {10,mu3Input},
         {11,muInput}
+        (* Fermions *)
+        (*Initialize Fermions here*)
        };
 
 
@@ -50,3 +51,8 @@ ListDecayParticles = {Fu,Fd,Fe,Fv,Chi,Nv,hh,XO,etI,XP};
 ListDecayParticles3B = {{Fu,"Fu.f90"},{Fd,"Fd.f90"},{Fe,"Fe.f90"}};
 
 
+DefaultInputValues ={lambda1Input -> 0.274, lambda2Input -> 0.1,  lambda3Input -> 0.,
+		     lambda4Input -> 0.,    lambda5Input -> 0.01, lambda6Input -> 0.1,
+		     lambda7Input -> 1*^-3,  lambda8Input -> 0.1,
+		     mEt2Input -> 1*^4, mu3Input -> 3.135715*^5, muInput -> 0.0,
+		     Yf[a_] -> 1^-8,Y3[a_] -> 1^-8, Yn[a_] -> 1^-7, A -> 2.736048};
