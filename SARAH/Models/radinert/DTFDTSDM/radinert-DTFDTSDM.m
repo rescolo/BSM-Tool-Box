@@ -1,6 +1,6 @@
 cd Off[General::spell]
 
-Model`Name = "DTFDTSDM";
+Model`Name = "radinertDTFDTSDM";
 Model`NameLaTeX ="Doublet Triplet Model";
 Model`Authors = "R. Longas, based in Scotogenic model by A. Vicente";
 Model`Date = "2016-04-10";
