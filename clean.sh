@@ -16,6 +16,8 @@ Zee
 SimplifiedDM+IDM
 SimplifiedDM+SDFDM
 SimplifiedDM+TFDM
+LRmodels+LRSSM
+radinert+RSIII
 "
 Nm=$(echo "$models" | wc -l)
 models=$(echo "$models" |sed 's/+/::/g' | egrep  -v '^'"$MODEL"'$' | sed 's/::/+/g')
