@@ -3,7 +3,7 @@
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 15:10 on 13.10.2016   
+! File created at 19:40 on 18.10.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -195,6 +195,8 @@ lam3 = lambda3Input
 lam4 = lambda4Input
 lam5 = lambda5Input
 mEt2 = mEt2Input
+MTF = MTFIN
+Yn = YnIN
 
  
  ! Setting VEVs used for low energy constraints 
@@ -229,6 +231,8 @@ lam3 = lambda3Input
 lam4 = lambda4Input
 lam5 = lambda5Input
 mEt2 = mEt2Input
+MTF = MTFIN
+Yn = YnIN
 Call SolveTadpoleEquations(g1,g2,g3,lam1,lam2,lam4,lam3,lam5,Yu,Yd,Ye,Yn,             & 
 & MTF,mH2,mEt2,v,(/ ZeroC, ZeroC /))
 

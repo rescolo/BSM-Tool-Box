@@ -129,5 +129,5 @@ DEFINITION[EWSB][GaugeES]=
  Fe2 ->{  0, Fe2}
 };
 
-
+SetOptions[MakeCHep,UseRunningCoupling -> False];
 

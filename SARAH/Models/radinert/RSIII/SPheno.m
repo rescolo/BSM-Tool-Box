@@ -25,8 +25,9 @@ BoundaryLowScaleInput={
  {lambda3,lambda3Input},
  {lambda4,lambda4Input},
  {lambda5,lambda5Input},
- {mEt2,mEt2Input}(*,
- {MTF, MTFInput}*)
+ {mEt2,mEt2Input},
+ {MTF, LHInput[MTF]},
+ {Yn, LHInput[Yn]}
 };
 
 ListDecayParticles = {Fu,Fe,Fd,Fv,VZ,VWp,hh,etR,etI,etp,Ft0,Ftc};
@@ -37,6 +38,8 @@ DefaultInputValues ={
     lambda2Input -> 0.,
     lambda3Input -> 0.,
     lambda4Input -> 0.,
-    lambda5Input -> -10^(-5),
-    mEt2Input -> 100.
+    lambda5Input -> -1*^-5,
+    mEt2Input -> 1*^4,
+    MTF[a_,a_] -> 1000,
+    Yn[a_,a_] -> 1*^-5
     };
