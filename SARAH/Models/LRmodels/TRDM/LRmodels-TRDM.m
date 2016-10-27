@@ -160,7 +160,7 @@ DEFINITION[EWSB][DiracSpinors]={
  Fu ->{  UL, conj[UR]},
  Fv ->{Fv0, conj[Fv0]},
  Fc ->{t10, conj[t10]},
- Fcp ->{ t1m, conj[t1p]}(*,
+ Fcp ->{ t1p, conj[t1m]}(*,
  Fcpp -> {t2pp, conj[t3mm]}*)
  };
 
