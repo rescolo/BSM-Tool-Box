@@ -51,15 +51,36 @@ def _readSLHAFile_with_comments(spcfile,ignorenomass=False,ignorenobr=True):
                     if spaces<0:
                         spaces=lspacesmin
                 
+<<<<<<< HEAD
                     IF.blocks[block].entries[int(entries[0])]='%s%s#%s' %(entries[1],' '*spaces,fline[1])
+=======
+                    IF.blocks[block].entries[int(entries[0])]='%s%s #%s' %(entries[1],' '*spaces,fline[1])
+>>>>>>> master
                 if len(entries)==3:
                     spaces=lspaces-len(entries[2])
                     if spaces<0:
                         spaces=lspacesmin
                     
+<<<<<<< HEAD
                     IF.blocks[block].entries[int(entries[0]),int(entries[1])]='%s%s#%s' %(entries[2],' '*spaces,fline[1])
     return IF
 
+=======
+                    IF.blocks[block].entries[int(entries[0]),int(entries[1])]='%s%s #%s' %(entries[2],' '*spaces,fline[1])
+    return IF
+
+def block_to_series(block):
+    bs={}
+    vk=[ re.sub('\s+','',l).split('#') for l in block.entries.values()]
+    for i in vk:
+        if len(i)>1:
+            key=re.sub('[^A-Za-z0-9]','',i[1])
+            key=re.sub('Input$','',key)
+            bs[key]=eval(i[0])
+
+    return pd.Series(bs)
+
+>>>>>>> master
 class model(object):
     pdg=pdg_series.pdg()
     G_F    =1.166370E-05    # G_F,Fermi constant
@@ -73,8 +94,16 @@ class model(object):
     #FIX pdgs
     pdg['h0']=25;pdg['H0']=35;pdg['A0']=36;pdg['Hp']=37;pdg['Hm']=-37
     def __init__(self,MODEL='SM',ignorenobr=True,ignorenomass=True,updateSMINPUTS=False,\
+<<<<<<< HEAD
                 SPHENO_PATH='../SPHENO',low=False):
         spcfile='%s/%s/Input_Files/LesHouches.in.%s' %(SPHENO_PATH,MODEL,MODEL)
+=======
+                 SPHENO_PATH='../SPHENO',low=False,spc_input_file=None):
+        if spc_input_file:
+            spcfile=spc_input_file
+        else:
+            spcfile='%s/%s/Input_Files/LesHouches.in.%s' %(SPHENO_PATH,MODEL,MODEL)
+>>>>>>> master
         self.MODEL=MODEL
         self.low=''
         if low:
@@ -102,10 +131,19 @@ class model(object):
         if np.abs(self.lambda_sm).max()>8*np.pi:
             perturbativity=False
         return perturbativity
+<<<<<<< HEAD
     def to_series(self):
         bs={}
         for b in self.LHA.blocks.keys():
             if b not in ['MODSEL','SPHENOINPUT']:
+=======
+
+    def to_series(self):
+        bs=pd.Series()
+        for b in self.LHA.blocks.keys():
+            if b not in ['MODSEL','SPHENOINPUT']:
+                bs=bs.append(block_to_series(self.LHA.blocks[b]))
+>>>>>>> master
                 vk=[ re.sub('\s+','',l).split('#') for l in self.LHA.blocks[b].entries.values()]
                 for i in vk:
                     if len(i)>1:
@@ -167,6 +205,13 @@ class hep(model):
             print(a)
         assert os.path.isfile('SPheno.spc.%s' %self.MODEL)
         #print a
+<<<<<<< HEAD
+=======
+        #exceptions
+        if a.find('Problem in OneLoop')>-1:
+            a=a.replace('Problem','No problem')
+
+>>>>>>> master
         if a.find('Problem')==-1:
             self.LHA_out=pyslha.readSLHAFile('SPheno.spc.%s' %self.MODEL)
             #with comments but without decays
@@ -184,6 +229,11 @@ class hep(model):
         else:
             self.LHA_out=False
             self.LHA_out_with_comments=False
+<<<<<<< HEAD
+=======
+
+        self.to_series() #Fill to_Series pandas Series    
+>>>>>>> master
         return self.LHA_out
         
     def branchings(self,SPCdecays,min_pdg=26):
@@ -268,7 +318,11 @@ class hep(model):
         f='channels.out'
         if os.path.isfile('channels.out'):
             f=open(f,'r').read()
+<<<<<<< HEAD
             fvalues=re.sub(r'.*\s+(0\.[0-9]+)',r'\1', re.sub('#.*','',f)).split('\n')
+=======
+            fvalues=re.sub(r'.*\s+([01]\.[0-9]+)',r'\1', re.sub('#.*','',f)).split('\n')
+>>>>>>> master
             if len(fvalues)>0:
                 fvalues=map(float,fvalues[:-1])
                 fkeys=re.sub('.*#\s+','O_chnl:',f).split('\n')[:-1]
@@ -542,7 +596,11 @@ def _neutrino_data(CL=3,IH=False):
 class CasasIbarra(hep):
     '''
     Fill SPhenoInput with Yukawas compatible with neutrino pysics
+<<<<<<< HEAD
     Define a function: func to calculate the Yukawa independent para of the
+=======
+    Define a function: func to calculate the Yukawa independent parameters of the
+>>>>>>> master
     analytical neutrino mass matrix with use a pyslha object as input, e.g
        def _Lambda(LHA_out):
        mH0=LHA.blocks['MASS'][1001]
@@ -612,14 +670,22 @@ class CasasIbarra(hep):
         #Inverse MR masses. M^R_3 -> infty corresponds to zero entry
         
         spc=self.runSPheno()
+<<<<<<< HEAD
         DMR=np.diag(  np.sqrt( np.abs( 1./ self.func(spc) ) ) )
+=======
+        DMR=np.diag(  np.sqrt( np.abs( 1./ self.func(self.LHA_out) ) ) )
+>>>>>>> master
         
         if massless_nulight and not IH:
             DMR[0,0]=0. 
         if massless_nulight and IH:
             DMR[2,2]=0. 
         
+<<<<<<< HEAD
         #print self.func(spc)
+=======
+        #print self.func(self.LHA_out)
+>>>>>>> master
         #print DMR
         #phases of the PMNS matrix
         

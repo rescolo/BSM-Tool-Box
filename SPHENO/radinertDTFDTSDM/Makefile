@@ -56,7 +56,7 @@ ${name}:  ${name}(Model_Data_radinertDTFDTSDM.o)  \
  ${name}(Couplings_radinertDTFDTSDM.o) ${name}(TreeLevelMasses_radinertDTFDTSDM.o) ${name}(TadpoleEquations_radinertDTFDTSDM.o) \
  ${name}(LoopCouplings_radinertDTFDTSDM.o) ${name}(CouplingsForDecays_radinertDTFDTSDM.o) \
  ${name}(TreeLevel_Decays_radinertDTFDTSDM.o) \
- ${name}(Fu.o)  ${name}(Fd.o)  ${name}(Fe.o)  \
+ ${name}(Fu.o)  ${name}(Fd.o)  ${name}(Fe.o)  ${name}(Nv.o)  ${name}(Chi.o)  ${name}(hh.o)  \
 ${name}(AddLoopFunctions.o) ${name}(Kinematics.o) \
  ${name}(LoopMasses_radinertDTFDTSDM.o) \
  ${name}(BranchingRatios_radinertDTFDTSDM.o) ${name}(HiggsCS_radinertDTFDTSDM.o) ${name}(RunSM_radinertDTFDTSDM.o) \

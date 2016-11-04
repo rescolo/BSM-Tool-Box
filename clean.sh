@@ -31,6 +31,11 @@ if [ $Nm -ne $Nmn ] && [ -n "$models" ]; then
 	rm -rf SPHENO/"$m"
 	echo rm -rf micromegas/"$m"
 	rm -rf micromegas/"$m"
+<<<<<<< HEAD
+=======
+	echo rm -rf madgraph/"$m"
+	rm -rf madgraph/"$m"
+>>>>>>> master
     done
 fi
 
