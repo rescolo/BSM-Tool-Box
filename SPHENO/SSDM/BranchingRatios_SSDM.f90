@@ -1,9 +1,9 @@
 ! -----------------------------------------------------------------------------  
-! This file was automatically created by SARAH version 4.8.1 
+! This file was automatically created by SARAH version 4.9.3 
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 17:57 on 4.3.2016   
+! File created at 18:48 on 27.11.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -16,9 +16,10 @@ Use LoopCouplings_SSDM
 Use Fu3Decays_SSDM 
 Use Fe3Decays_SSDM 
 Use Fd3Decays_SSDM 
-Use SUSYDecays_SSDM 
- 
-Contains 
+Use TreeLevelDecays_SSDM 
+
+
+ Contains 
  
 Subroutine CalculateBR(CTBD,fac3,epsI,deltaM,kont,MAh,MAh2,MFd,MFd2,MFe,              & 
 & MFe2,MFu,MFu2,Mhh,Mhh2,MHp,MHp2,Mss,Mss2,MVWp,MVWp2,MVZ,MVZ2,TW,ZDR,ZER,               & 
@@ -39,7 +40,7 @@ Complex(dp),Intent(in) :: ZDR(3,3),ZER(3,3),ZUR(3,3),ZDL(3,3),ZEL(3,3),ZUL(3,3),
 
 Real(dp),Intent(in) :: v
 
-Real(dp),Intent(inout) :: gPFu(3,144),gTFu(3),BRFu(3,144),gPFe(3,141),gTFe(3),BRFe(3,141),gPFd(3,144),          & 
+Real(dp),Intent(inout) :: gPFu(3,144),gTFu(3),BRFu(3,144),gPFe(3,144),gTFe(3),BRFe(3,144),gPFd(3,144),          & 
 & gTFd(3),BRFd(3,144),gPhh(1,35),gThh,BRhh(1,35)
 
 Complex(dp) :: cplHiggsPP,cplHiggsGG,cplPseudoHiggsPP,cplPseudoHiggsGG,cplHiggsZZvirt,               & 
@@ -79,7 +80,7 @@ gTFe = 0._dp
 BRFe = 0._dp 
 Call FeTwoBodyDecay(-1,DeltaM,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,           & 
 & MHp,MHp2,Mss,Mss2,MVWp,MVWp2,MVZ,MVZ2,TW,ZDR,ZER,ZUR,ZDL,ZEL,ZUL,ZW,ZZ,g1,             & 
-& g2,g3,LS,LSH,Lam,Yu,Yd,Ye,MS2,mu2,v,gPFe(:,1:6),gTFe,BRFe(:,1:6))
+& g2,g3,LS,LSH,Lam,Yu,Yd,Ye,MS2,mu2,v,gPFe(:,1:9),gTFe,BRFe(:,1:9))
 
 Do i1=1,3
 gTFe(i1) =Sum(gPFe(i1,:)) 
@@ -143,13 +144,13 @@ If (MaxVal(gTFe).Lt.MaxVal(fac3*Abs(MFe))) Then
 Call FeThreeBodyDecay(-1,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,            & 
 & MHp2,Mss,Mss2,MVWp,MVWp2,MVZ,MVZ2,TW,ZDR,ZER,ZUR,ZDL,ZEL,ZUL,ZW,ZZ,g1,g2,              & 
 & g3,LS,LSH,Lam,Yu,Yd,Ye,MS2,mu2,v,gThh,gTVWp,gTVZ,gFeFecFdFd,gFeFecFeFe,gFeFecFuFu,     & 
-& gFeFecFvFv,gFeFvcFuFd,epsI,deltaM,.False.,gTFe,gPFe(:,7:141),BRFe(:,7:141))
+& gFeFecFvFv,gFeFvcFuFd,epsI,deltaM,.False.,gTFe,gPFe(:,10:144),BRFe(:,10:144))
 
 Else 
 Call FeThreeBodyDecay(-1,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,            & 
 & MHp2,Mss,Mss2,MVWp,MVWp2,MVZ,MVZ2,TW,ZDR,ZER,ZUR,ZDL,ZEL,ZUL,ZW,ZZ,g1,g2,              & 
 & g3,LS,LSH,Lam,Yu,Yd,Ye,MS2,mu2,v,gThh,gTVWp,gTVZ,gFeFecFdFd,gFeFecFeFe,gFeFecFuFu,     & 
-& gFeFecFvFv,gFeFvcFuFd,epsI,deltaM,.True.,gTFe,gPFe(:,7:141),BRFe(:,7:141))
+& gFeFecFvFv,gFeFvcFuFd,epsI,deltaM,.True.,gTFe,gPFe(:,10:144),BRFe(:,10:144))
 
 End If 
  
@@ -158,7 +159,7 @@ Else
 Call FeThreeBodyDecay(-1,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,            & 
 & MHp2,Mss,Mss2,MVWp,MVWp2,MVZ,MVZ2,TW,ZDR,ZER,ZUR,ZDL,ZEL,ZUL,ZW,ZZ,g1,g2,              & 
 & g3,LS,LSH,Lam,Yu,Yd,Ye,MS2,mu2,v,gThh,gTVWp,gTVZ,gFeFecFdFd,gFeFecFeFe,gFeFecFuFu,     & 
-& gFeFecFvFv,gFeFvcFuFd,epsI,deltaM,.False.,gTFe,gPFe(:,7:141),BRFe(:,7:141))
+& gFeFecFvFv,gFeFvcFuFd,epsI,deltaM,.False.,gTFe,gPFe(:,10:144),BRFe(:,10:144))
 
 End If 
 Do i1=1,3

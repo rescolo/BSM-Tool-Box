@@ -1,9 +1,9 @@
 ! -----------------------------------------------------------------------------  
-! This file was automatically created by SARAH version 4.8.5 
+! This file was automatically created by SARAH version 4.9.3 
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 8:42 on 3.5.2016   
+! File created at 3:40 on 29.11.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -16,9 +16,11 @@ Use LoopCouplings_SM
 Use Fu3Decays_SM 
 Use Fe3Decays_SM 
 Use Fd3Decays_SM 
-Use SUSYDecays_SM 
- 
-Contains 
+Use Part(List(List(Fu,"Fu.f90"),List(Fe,"Fe.f90"),List(Fd,"Fd.f90"),Null),4,1)3Decays_SM 
+Use TreeLevelDecays_SM 
+
+
+ Contains 
  
 Subroutine CalculateBR(CTBD,fac3,epsI,deltaM,kont,MAh,MAh2,MFd,MFd2,MFe,              & 
 & MFe2,MFu,MFu2,Mhh,Mhh2,MHp,MHp2,MVWp,MVWp2,MVZ,MVZ2,TW,ZDR,ZER,ZUR,ZDL,ZEL,            & 
@@ -39,7 +41,7 @@ Complex(dp),Intent(in) :: ZDR(3,3),ZER(3,3),ZUR(3,3),ZDL(3,3),ZEL(3,3),ZUL(3,3),
 
 Real(dp),Intent(in) :: v
 
-Real(dp),Intent(inout) :: gPFu(3,144),gTFu(3),BRFu(3,144),gPFe(3,141),gTFe(3),BRFe(3,141),gPFd(3,144),          & 
+Real(dp),Intent(inout) :: gPFu(3,144),gTFu(3),BRFu(3,144),gPFe(3,144),gTFe(3),BRFe(3,144),gPFd(3,144),          & 
 & gTFd(3),BRFd(3,144),gPhh(1,34),gThh,BRhh(1,34)
 
 Complex(dp) :: cplHiggsPP,cplHiggsGG,cplPseudoHiggsPP,cplPseudoHiggsGG,cplHiggsZZvirt,               & 
@@ -49,7 +51,12 @@ Real(dp) :: gTAh
 Real(dp) :: gFuFucFdFd(3,3,3,3),gFuFdcFeFv(3,3,3,3),gFuFucFeFe(3,3,3,3),gFuFucFuFu(3,3,3,3),      & 
 & gFuFucFvFv(3,3,3,3),gFeFecFdFd(3,3,3,3),gFeFecFeFe(3,3,3,3),gFeFecFuFu(3,3,3,3),       & 
 & gFeFecFvFv(3,3,3,3),gFeFvcFuFd(3,3,3,3),gFdFdcFdFd(3,3,3,3),gFdFdcFeFe(3,3,3,3),       & 
-& gFdFdcFuFu(3,3,3,3),gFdFdcFvFv(3,3,3,3),gFdFucFvFe(3,3,3,3)
+& gFdFdcFuFu(3,3,3,3),gFdFdcFvFv(3,3,3,3),gFdFucFvFe(3,3,3,3),FdcFdFd*g*Part(List(List(Fu,Dot(Fu,f90)),List(Fe,Dot(Fe,f90)),List(Fd,Dot(Fd,f90)),Null),4,1)& 
+& (99,3,3,3),FdcFeFe*g*Part(List(List(Fu,Dot(Fu,f90)),List(Fe,Dot(Fe,f90)),List(Fd,Dot(Fd,f90)),Null),4,1)& 
+& (99,3,3,3),FdcFuFu*g*Part(List(List(Fu,Dot(Fu,f90)),List(Fe,Dot(Fe,f90)),List(Fd,Dot(Fd,f90)),Null),4,1)& 
+& (99,3,3,3),FdcFvFv*g*Part(List(List(Fu,Dot(Fu,f90)),List(Fe,Dot(Fe,f90)),List(Fd,Dot(Fd,f90)),Null),4,1)& 
+& (99,3,3,3),FucFvFe*g*Part(List(List(Fu,Dot(Fu,f90)),List(Fe,Dot(Fe,f90)),List(Fd,Dot(Fd,f90)),Null),4,1)& 
+& (99,3,3,3)
 
 Complex(dp) :: coup 
 Real(dp) :: vev 
@@ -79,7 +86,7 @@ gTFe = 0._dp
 BRFe = 0._dp 
 Call FeTwoBodyDecay(-1,DeltaM,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,           & 
 & MHp,MHp2,MVWp,MVWp2,MVZ,MVZ2,TW,ZDR,ZER,ZUR,ZDL,ZEL,ZUL,ZW,ZZ,g1,g2,g3,Lam,            & 
-& Yu,Yd,Ye,Mu,v,gPFe(:,1:6),gTFe,BRFe(:,1:6))
+& Yu,Yd,Ye,Mu,v,gPFe(:,1:9),gTFe,BRFe(:,1:9))
 
 Do i1=1,3
 gTFe(i1) =Sum(gPFe(i1,:)) 
@@ -143,13 +150,13 @@ If (MaxVal(gTFe).Lt.MaxVal(fac3*Abs(MFe))) Then
 Call FeThreeBodyDecay(-1,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,            & 
 & MHp2,MVWp,MVWp2,MVZ,MVZ2,TW,ZDR,ZER,ZUR,ZDL,ZEL,ZUL,ZW,ZZ,g1,g2,g3,Lam,Yu,             & 
 & Yd,Ye,Mu,v,gThh,gTVWp,gTVZ,gFeFecFdFd,gFeFecFeFe,gFeFecFuFu,gFeFecFvFv,gFeFvcFuFd,     & 
-& epsI,deltaM,.False.,gTFe,gPFe(:,7:141),BRFe(:,7:141))
+& epsI,deltaM,.False.,gTFe,gPFe(:,10:144),BRFe(:,10:144))
 
 Else 
 Call FeThreeBodyDecay(-1,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,            & 
 & MHp2,MVWp,MVWp2,MVZ,MVZ2,TW,ZDR,ZER,ZUR,ZDL,ZEL,ZUL,ZW,ZZ,g1,g2,g3,Lam,Yu,             & 
 & Yd,Ye,Mu,v,gThh,gTVWp,gTVZ,gFeFecFdFd,gFeFecFeFe,gFeFecFuFu,gFeFecFvFv,gFeFvcFuFd,     & 
-& epsI,deltaM,.True.,gTFe,gPFe(:,7:141),BRFe(:,7:141))
+& epsI,deltaM,.True.,gTFe,gPFe(:,10:144),BRFe(:,10:144))
 
 End If 
  
@@ -158,7 +165,7 @@ Else
 Call FeThreeBodyDecay(-1,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,            & 
 & MHp2,MVWp,MVWp2,MVZ,MVZ2,TW,ZDR,ZER,ZUR,ZDL,ZEL,ZUL,ZW,ZZ,g1,g2,g3,Lam,Yu,             & 
 & Yd,Ye,Mu,v,gThh,gTVWp,gTVZ,gFeFecFdFd,gFeFecFeFe,gFeFecFuFu,gFeFecFvFv,gFeFvcFuFd,     & 
-& epsI,deltaM,.False.,gTFe,gPFe(:,7:141),BRFe(:,7:141))
+& epsI,deltaM,.False.,gTFe,gPFe(:,10:144),BRFe(:,10:144))
 
 End If 
 Do i1=1,3
