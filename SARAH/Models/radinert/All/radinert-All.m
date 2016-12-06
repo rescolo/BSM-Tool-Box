@@ -33,6 +33,10 @@ FermionFields[[5]] = {e, 3, conj[eR],       1, 1,  1, 1};
 FermionFields[[6]] = {T, 1, {{T0/Sqrt[2],  Tp},{Tm, -T0/Sqrt[2]}},  0, 3,  1,-1};
 FermionFields[[7]] = {rd, 1, {vd,ed},   -1/2, 2,  1,-1};
 FermionFields[[8]] = {ru, 1, {eu,vu},     1/2, 2,  1,-1};
+FermionFields[[9]] = {rsd, 1, esd,  1, 1,  1, -1};
+FermionFields[[10]] = {rsu, 1, esu,  -1, 1,  1, -1};
+
+
 
 ScalarFields[[1]] =  {H,  1,  {Hp, HO},    1/2, 2,  1,  1};
 ScalarFields[[2]] =  {Et, 1,  {etp, etO},  1/2, 2,  1, -1};
@@ -57,6 +61,7 @@ DEFINITION[GaugeES][Additional]= {
         {LagH,     {AddHC->False}},
         {LagEt,    {AddHC->False}},
         {LagHEt,   {AddHC->False}},
+    	{LagSinFer,{AddHC->True}},
 	{VT,{AddHC->False}},
         {VTSM,{AddHC->False}},
         {VTEt,{AddHC->False}},
@@ -66,7 +71,8 @@ DEFINITION[GaugeES][Additional]= {
 
 (* Yn is eta, Yf is f, Y3 is rho, A is pi1 and B is pi2 *)
 
-LagFer   = Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q ;  
+LagFer   = Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q ;
+LagSinFer =  -( MSF rsd.rsu + Ys S.e.rsu );
 LagNV    = - MTF/2 T.T + MDF rd.ru;
 (*LagIFD2 = - A/Sqrt[2] n.H.rd  -  B/Sqrt[2] n.ru.conj[H] + Y3 conj[Et].rd.e + Yf S3.ru.l + Yn Et.n.l;*)   
 LagIFD2 = - A T.H.rd  -  B T.ru.conj[H] + Y3 conj[Et].rd.e + Yf S3.ru.l + Yn Et.T.l;
