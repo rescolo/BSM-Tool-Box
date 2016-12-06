@@ -166,10 +166,10 @@ ParticleDefinitions[GaugeES] = {
 	     ElectricCharge -> 0}},
  
      {Chi,  {  Description -> "Charged fermions",
-	       PDG -> {210000601,210000602},
+	       PDG -> {210000601,210000602,210000603},
                LaTeX ->"\\chi",
 	       OutputName -> "ci",
-	       Mass ->  {LesHouches,LesHouches},
+	       Mass ->  {LesHouches,LesHouches,LesHouches},
 	       ElectricCharge -> -1,
 	       FeynArtsNr -> 10 }}
 
@@ -208,7 +208,10 @@ ParticleDefinitions[GaugeES] = {
    {XO,     {LaTeX -> "X^0" }},
    {T,      {LaTeX -> "\\Sigma" }},  
    {n,      {LaTeX -> "N" }},
-   {nR,     {LaTeX -> "\\nu_R"}}
+   {nR,     {LaTeX -> "\\nu_R"}},
+   {esd,     {LaTeX -> "e_{sd}^+" }},
+   {esu,     {LaTeX -> "e_{su}^-" }}
+
 
         };       
 

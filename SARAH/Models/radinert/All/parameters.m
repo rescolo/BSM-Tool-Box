@@ -148,7 +148,17 @@ ParameterDefinitions = {
 {mu,      {  LaTeX -> "\\mu'",
              OutputName -> mu,
              Real -> True,
-             LesHouches -> {HDM,11}}}
+             LesHouches -> {HDM,11}}},
+    
+{MSF,   {(*Description -> "Triplet-Mass",*)
+         LaTeX -> "M_F",
+	 Real -> True;
+         OutputName->MFS,
+         LesHouches-> {HDM,1} }},
+
+
+{Ys, { LaTeX -> "Y_S",Real->True,LesHouches -> YS, OutputName-> Ys }}
+    
                    
 }; 
  
