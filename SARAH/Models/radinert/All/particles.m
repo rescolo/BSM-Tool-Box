@@ -134,9 +134,9 @@ ParticleDefinitions[GaugeES] = {
               OutputName -> "XP"  }},
 
      {XO,  { Description -> "CP-even eta scalar",
-              PDG -> {1005,1006},
+              PDG -> {1005,1006,1007},
               FeynArtsNr -> 5,
-              Mass -> {LesHouches, LesHouches},
+              Mass -> {LesHouches, LesHouches, LesHouches},
               LaTeX->"\\kappa^0",
               ElectricCharge -> 0,
               OutputName -> "XO"  }},

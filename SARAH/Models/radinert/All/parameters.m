@@ -154,10 +154,22 @@ ParameterDefinitions = {
          LaTeX -> "M_F",
 	 Real -> True;
          OutputName->MFS,
-         LesHouches-> {HDM,1} }},
+         LesHouches-> {HDM,12} }},
 
 
-{Ys, { LaTeX -> "Y_S",Real->True,LesHouches -> YS, OutputName-> Ys }}
+{Ys, { LaTeX -> "Y_S",Real->True,LesHouches -> YS, OutputName-> Ys }},
+
+(* Scalar singlet *)
+
+{MS2,       {Description -> "Softbreaking Up-Higgs Mass",
+             LaTeX -> "M_S^2",
+	     OutputName-> MS2}}, 
+
+{LamSH,     {OutputName ->"LSH",
+             LesHouches -> {HDM,13}}},
+
+{LamS,     {OutputName ->"LS",
+	    LesHouches -> {HDM,14}}}
     
                    
 }; 

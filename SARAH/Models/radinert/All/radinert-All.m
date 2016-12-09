@@ -41,8 +41,8 @@ FermionFields[[10]] = {rsu, 1, esu,  1, 1,  1, -1};
 ScalarFields[[1]] =  {H,  1,  {Hp, HO},    1/2, 2,  1,  1};
 ScalarFields[[2]] =  {Et, 1,  {etp, etO},  1/2, 2,  1, -1};
 ScalarFields[[3]] =  {S3, 1, {{SO/2, Sp/Sqrt[2]},{conj[Sp]/Sqrt[2] , -SO/2}}, 0,  3,  1,-1};
-
-RealScalars = {S3};
+ScalarFields[[4]] =  {S, 1, ss,     0, 1,  1, -1};
+RealScalars = {S3,S};
 
 
 
@@ -66,7 +66,10 @@ DEFINITION[GaugeES][Additional]= {
         {VTSM,{AddHC->False}},
         {VTEt,{AddHC->False}},
         {VTSMEt, {AddHC->True}},
-        {LagHEtHC, {AddHC->True}}
+        {LagHEtHC, {AddHC->True}},
+    	(*{LagHCS,    {AddHC->True}},*)
+	{LagNoHCS,  {AddHC->False}}
+
 };
 
 (* Yn is eta, Yf is f, Y3 is rho, A is pi1 and B is pi2 *)
@@ -84,6 +87,9 @@ VT     = -( mu3 S3.S3 + lambda6/2 S3.S3.S3.S3 );
 VTSM   = -( + lambda7 S3.S3.conj[H].H );
 VTEt   = -( + lambda8 S3.S3.conj[Et].Et);
 VTSMEt = -( + mu conj[H].S3.Et);
+LagNoHCS = -(+ MS2/2 S.S + LamSH S.S.conj[H].H (* + LamS/2 S.S.S.S*));
+(*LagHCS =  -( MSF rsd.rsu + Ys S.e.rsu );*)
+
 
 DEFINITION[EWSB][GaugeSector] =
 { 
@@ -110,7 +116,7 @@ DEFINITION[EWSB][MatterSector]=
      { {T0,vd,vu}, {s1,Q1} },
      { {{Tp,eu,esu}, {Tm,ed,esd}}, {{ch1,Q2},{ch2,Q3}} },
      { {etp,Sp},{XP,ZXP}},
-     { {etR,S0},{XO,ZX0}},
+     { {etR,S0,ss},{XO,ZX0}},
      {{{dL}, {conj[dR]}}, {{DL,Vd}, {DR,Ud}}},
      {{{uL}, {conj[uR]}}, {{UL,Vu}, {UR,Uu}}},
      {{{eL}, {conj[eR]}}, {{EL,Ve}, {ER,Ue}}}
