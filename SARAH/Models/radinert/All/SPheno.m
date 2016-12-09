@@ -13,10 +13,10 @@ MINPAR={{1,lambda1Input},
         {10,mu3Input},
         {11,muInput},
         (* Fermions *)
-	{12,MSFIN}(*,
+	{12,MSFIN},
 	{13,LamSHIN},
-        {14,LamSIN},
-        {15,MS2Input}*)
+        (*{14,LamSIN},*)
+        {15,MS2Input}
        };
 
 
@@ -54,10 +54,10 @@ BoundaryLowScaleInput={
   *)   
  {A,LHInput[A]},
  {B,LHInput[B]},
- {Ys,LHInput[Ys]}(*,
+ {Ys,LHInput[Ys]},
  {LamSH,LamSHIN},
- {LamS,LamSIN},
- {MS2, MS2Input}*)   
+ (*{LamS,LamSIN},*)   
+ {MS2, MS2Input}
 };
 
 ListDecayParticles = {Fu,Fd,Fe,Fv,Chi,Nv,hh,XO,etI,XP};

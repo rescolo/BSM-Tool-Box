@@ -67,7 +67,6 @@ DEFINITION[GaugeES][Additional]= {
         {VTEt,{AddHC->False}},
         {VTSMEt, {AddHC->True}},
         {LagHEtHC, {AddHC->True}},
-    	(*{LagHCS,    {AddHC->True}},*)
 	{LagNoHCS,  {AddHC->False}}
 
 };
@@ -88,7 +87,6 @@ VTSM   = -( + lambda7 S3.S3.conj[H].H );
 VTEt   = -( + lambda8 S3.S3.conj[Et].Et);
 VTSMEt = -( + mu conj[H].S3.Et);
 LagNoHCS = -(+ MS2/2 S.S + LamSH S.S.conj[H].H (* + LamS/2 S.S.S.S*));
-(*LagHCS =  -( MSF rsd.rsu + Ys S.e.rsu );*)
 
 
 DEFINITION[EWSB][GaugeSector] =
