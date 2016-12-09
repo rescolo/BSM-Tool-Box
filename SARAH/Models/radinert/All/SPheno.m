@@ -15,7 +15,7 @@ MINPAR={{1,lambda1Input},
         (* Fermions *)
 	{12,MSFIN},
 	{13,LamSHIN},
-        (*{14,LamSIN},*)
+        {14,LamSIN},
         {15,MS2Input}
        };
 
@@ -56,7 +56,7 @@ BoundaryLowScaleInput={
  {B,LHInput[B]},
  {Ys,LHInput[Ys]},
  {LamSH,LamSHIN},
- (*{LamS,LamSIN},*)   
+ {LamS,LamSIN},   
  {MS2, MS2Input}
 };
 

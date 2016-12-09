@@ -86,7 +86,7 @@ VT     = -( mu3 S3.S3 + lambda6/2 S3.S3.S3.S3 );
 VTSM   = -( + lambda7 S3.S3.conj[H].H );
 VTEt   = -( + lambda8 S3.S3.conj[Et].Et);
 VTSMEt = -( + mu conj[H].S3.Et);
-LagNoHCS = -(+ MS2/2 S.S + LamSH S.S.conj[H].H (* + LamS/2 S.S.S.S*));
+LagNoHCS = -(+ MS2/2 S.S + LamSH S.S.conj[H].H + LamS/2 S.S.S.S);
 
 
 DEFINITION[EWSB][GaugeSector] =
