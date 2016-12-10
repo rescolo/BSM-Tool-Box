@@ -16,7 +16,10 @@ MINPAR={{1,lambda1Input},
 	{12,MSFIN},
 	{13,LamSHIN},
         {14,LamSIN},
-        {15,MS2Input}
+        {15,MS2Input},
+	{13,LamScHIN},
+        {14,LamScIN},
+        {15,MSc2Input}
        };
 
 
@@ -57,7 +60,11 @@ BoundaryLowScaleInput={
  {Ys,LHInput[Ys]},
  {LamSH,LamSHIN},
  {LamS,LamSIN},   
- {MS2, MS2Input}
+ {MS2, MS2Input},
+ {LamScH,LamScHIN},
+ {LamSc,LamScIN},   
+ {MSc2, MSc2Input}
+
 };
 
 ListDecayParticles = {Fu,Fd,Fe,Fv,Chi,Nv,hh,XO,etI,XP};
