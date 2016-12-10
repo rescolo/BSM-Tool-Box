@@ -169,7 +169,18 @@ ParameterDefinitions = {
              LesHouches -> {HDM,13}}},
 
 {LamS,     {OutputName ->"LS",
-	    LesHouches -> {HDM,14}}}
+	    LesHouches -> {HDM,14}}},
+    
+{MSc2,       {Description -> "Softbreaking Up-Higgs Mass",
+             LaTeX -> "M_S^{+2}",
+	     OutputName-> MSc2}}, 
+
+{LamScH,     {OutputName ->"LScH",
+             LesHouches -> {HDM,15}}},
+
+{LamSc,     {OutputName ->"LSc",
+	    LesHouches -> {HDM,16}}}
+
     
                    
 }; 

@@ -42,6 +42,7 @@ ScalarFields[[1]] =  {H,  1,  {Hp, HO},    1/2, 2,  1,  1};
 ScalarFields[[2]] =  {Et, 1,  {etp, etO},  1/2, 2,  1, -1};
 ScalarFields[[3]] =  {S3, 1, {{SO/2, Sp/Sqrt[2]},{conj[Sp]/Sqrt[2] , -SO/2}}, 0,  3,  1,-1};
 ScalarFields[[4]] =  {S, 1, ss,     0, 1,  1, -1};
+ScalarFields[[5]] =  {Sc, 1, sc,     1, 1,  1, -1};
 RealScalars = {S3,S};
 
 
@@ -67,7 +68,8 @@ DEFINITION[GaugeES][Additional]= {
         {VTEt,{AddHC->False}},
         {VTSMEt, {AddHC->True}},
         {LagHEtHC, {AddHC->True}},
-	{LagNoHCS,  {AddHC->False}}
+        {LagNoHCS,  {AddHC->False}},
+    	{LagNoHCSc,  {AddHC->False}}
 
 };
 
@@ -87,6 +89,7 @@ VTSM   = -( + lambda7 S3.S3.conj[H].H );
 VTEt   = -( + lambda8 S3.S3.conj[Et].Et);
 VTSMEt = -( + mu conj[H].S3.Et);
 LagNoHCS = -(+ MS2/2 S.S + LamSH S.S.conj[H].H + LamS/2 S.S.S.S);
+(*LagNoHCSc = -(+ MSc2/2 conj[Sc].Sc + LamScH conj[Sc].Sc.conj[H].H + LamSc/2 conj[Sc].Sc.conj[Sc].Sc);*)
 
 
 DEFINITION[EWSB][GaugeSector] =
@@ -113,7 +116,7 @@ DEFINITION[EWSB][MatterSector]=
   {  {{vL},{VL,Vv}},
      { {T0,vd,vu}, {s1,Q1} },
      { {{Tp,eu,esu}, {Tm,ed,esd}}, {{ch1,Q2},{ch2,Q3}} },
-     { {etp,Sp},{XP,ZXP}},
+     { {etp,Sp,sc},{XP,ZXP}},
      { {etR,S0,ss},{XO,ZX0}},
      {{{dL}, {conj[dR]}}, {{DL,Vd}, {DR,Ud}}},
      {{{uL}, {conj[uR]}}, {{UL,Vu}, {UR,Uu}}},

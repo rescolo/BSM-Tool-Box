@@ -126,15 +126,15 @@ ParticleDefinitions[GaugeES] = {
 	       OutputName -> "Hp" }},
 
      {XP,  {  Description -> "Charged eta scalar",
-              PDG -> {1003,1004},
+              PDG -> {1003,1004,1005},
               FeynArtsNr -> 7,
-              Mass -> {LesHouches, LesHouches},
+              Mass -> {LesHouches, LesHouches, LesHouches},
               LaTeX->"\\kappa^+",
               ElectricCharge -> 1,
               OutputName -> "XP"  }},
 
      {XO,  { Description -> "CP-even eta scalar",
-              PDG -> {1005,1006,1007},
+              PDG -> {1007,1008,1009},
               FeynArtsNr -> 5,
               Mass -> {LesHouches, LesHouches, LesHouches},
               LaTeX->"\\kappa^0",
