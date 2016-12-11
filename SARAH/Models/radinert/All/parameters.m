@@ -159,6 +159,8 @@ ParameterDefinitions = {
 
 {Ys, { LaTeX -> "Y_S",Real->True,LesHouches -> YS, OutputName-> Ys }},
 
+{Yfr, { LaTeX -> "Y_{S_c}",Real->True,LesHouches -> YFR, OutputName-> Yfr }},
+
 (* Scalar singlet *)
 
 {MS2,       {Description -> "Softbreaking Up-Higgs Mass",
