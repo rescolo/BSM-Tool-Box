@@ -1,9 +1,9 @@
 ! -----------------------------------------------------------------------------  
-! This file was automatically created by SARAH version 4.9.1 
+! This file was automatically created by SARAH version 4.9.3 
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 15:03 on 14.10.2016   
+! File created at 10:05 on 7.12.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -28,6 +28,7 @@ Logical :: CalculateTwoLoopHiggsMassesSave = .True.
 Logical, Save :: CalculateLowEnergy = .True. 
 Logical, Save :: WriteParametersAtQ = .False. 
 Logical, Save :: OutputForMO = .False. 
+Logical, Save :: OutputForMG = .False. 
 Logical, Save :: TwoLoopRGE=.True.
 Logical, Save :: OneLoopDecays=.False.
 Logical, Save :: SMrunningLowScaleInput=.False.

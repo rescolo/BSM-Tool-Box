@@ -1,9 +1,9 @@
 ! -----------------------------------------------------------------------------  
-! This file was automatically created by SARAH version 4.8.1 
+! This file was automatically created by SARAH version 4.9.3 
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 15:44 on 13.4.2016   
+! File created at 21:28 on 7.12.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -12,12 +12,13 @@ Module LoopMasses_Scotogenic
 Use Control 
 Use Couplings_Scotogenic 
 Use LoopFunctions 
+Use AddLoopFunctions 
 Use Mathematics 
 Use MathematicsQP 
 Use Model_Data_Scotogenic 
 Use StandardModel 
 Use Tadpoles_Scotogenic 
- Use SusyMasses_Scotogenic 
+ Use TreeLevelMasses_Scotogenic 
  
 Real(dp), Private :: MChi_1L(3), MChi2_1L(3)  
 Complex(dp), Private :: ZX_1L(3,3)  
@@ -31,7 +32,6 @@ Real(dp), Private :: MetI_1L, MetI2_1L
 Real(dp), Private :: MetR_1L, MetR2_1L  
 Real(dp), Private :: MVZ_1L, MVZ2_1L  
 Real(dp), Private :: MVWp_1L, MVWp2_1L  
-Real(dp), save :: rMS = 1._dp 
 Contains 
  
 Subroutine OneLoopMasses(MAh,MAh2,MChi,MChi2,MetI,MetI2,Metp,Metp2,MetR,              & 
@@ -95,7 +95,7 @@ Complex(dp) :: cplUFvFeVWpL(3,3),cplUFvFeVWpR(3,3),cplUFvFvVZL(3,3),cplUFvFvVZR(
 Integer , Intent(inout):: kont 
 Integer :: i1,i2,i3,i4,j1, j2, j3, j4, il, i_count, ierr 
 Complex(dp) :: Tad1Loop(2), dmz2  
-Real(dp) :: comp(1), tanbQ, vev2
+Real(dp) :: comp(1), tanbQ, vev2, vSM
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopMasses' 
  
@@ -107,6 +107,10 @@ RXiG = RXi
 RXiP = RXi 
 RXiWp = RXi 
 RXiZ = RXi 
+
+ ! Running angles 
+
+ 
 Call TreeMasses(MAh,MAh2,MChi,MChi2,MetI,MetI2,Metp,Metp2,MetR,MetR2,MFd,             & 
 & MFd2,MFe,MFe2,MFu,MFu2,MFv,MFv2,Mhh,Mhh2,MHp,MHp2,MVWp,MVWp2,MVZ,MVZ2,TW,              & 
 & ZDR,ZER,ZUR,ZDL,ZEL,ZUL,UV,ZW,ZX,ZZ,v,g1,g2,g3,lam1,lam2,lam4,lam3,lam5,               & 
@@ -138,7 +142,7 @@ Call Pi1LoopVZ(mZ2,Mhh,Mhh2,MAh,MAh2,MetR,MetR2,MetI,MetI2,Metp,Metp2,MFd,      
 & kont,dmZ2)
 
 vev2=4._dp*Real(mZ2+dmz2,dp)/(g1**2+g2**2) -0 
-v= sqrt(vev2)
+vSM=sqrt(vev2) 
 Call SolveTadpoleEquations(g1,g2,g3,lam1,lam2,lam4,lam3,lam5,Yn,Yu,Yd,Ye,             & 
 & Mn,mH2,mEt2,v,(/ ZeroC, ZeroC /))
 
@@ -2358,7 +2362,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopHp'
@@ -2710,7 +2714,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopetp'
@@ -2999,7 +3003,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopAh'
@@ -3307,7 +3311,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoophh'
@@ -3685,7 +3689,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopetI'
@@ -3940,7 +3944,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopetR'
@@ -4197,7 +4201,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopVZ'
@@ -4530,7 +4534,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopVWp'

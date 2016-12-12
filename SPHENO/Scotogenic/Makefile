@@ -3,6 +3,7 @@ PreDef = -DGENERATIONMIXING -DONLYDOUBLE
 # setting various paths  
 InDir = ../include
 Mdir = ${InDir}
+VPATH = 3-Body-Decays:LoopDecays:TwoLoopMasses:Observables
 name = ../lib/libSPhenoScotogenic.a
  
 # check if SARAH module and SPheno are compatibel  
@@ -52,12 +53,13 @@ ifeq (${cVersion},1)
 	 rm SPhenoScotogenic.o  
 ${name}:  ${name}(Model_Data_Scotogenic.o)  \
  ${name}(RGEs_Scotogenic.o)   \
- ${name}(Couplings_Scotogenic.o) ${name}(SusyMasses_Scotogenic.o) ${name}(TadpoleEquations_Scotogenic.o) \
+ ${name}(Couplings_Scotogenic.o) ${name}(TreeLevelMasses_Scotogenic.o) ${name}(TadpoleEquations_Scotogenic.o) \
  ${name}(LoopCouplings_Scotogenic.o) ${name}(CouplingsForDecays_Scotogenic.o) \
- ${name}(SusyDecays_Scotogenic.o) \
+ ${name}(TreeLevel_Decays_Scotogenic.o) \
  ${name}(Fu.o)  ${name}(Fe.o)  ${name}(Fd.o)  \
- ${name}(BranchingRatios_Scotogenic.o) ${name}(LoopMasses_Scotogenic.o) \
- ${name}(HiggsCS_Scotogenic.o) ${name}(RunSM_Scotogenic.o) \
+${name}(AddLoopFunctions.o) ${name}(Kinematics.o) \
+ ${name}(LoopMasses_Scotogenic.o) \
+ ${name}(BranchingRatios_Scotogenic.o) ${name}(HiggsCS_Scotogenic.o) ${name}(RunSM_Scotogenic.o) \
  ${name}(LowEnergy_Scotogenic.o) \
 ${name}(FlavorKit_LFV_Scotogenic.o) ${name}(FlavorKit_QFV_Scotogenic.o) ${name}(FlavorKit_Observables_Scotogenic.o)\
 ${name}(InputOutput_Scotogenic.o) 

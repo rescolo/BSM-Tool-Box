@@ -1,9 +1,9 @@
 ! -----------------------------------------------------------------------------  
-! This file was automatically created by SARAH version 4.8.1 
+! This file was automatically created by SARAH version 4.9.3 
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 15:44 on 13.4.2016   
+! File created at 21:28 on 7.12.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -16,9 +16,10 @@ Use LoopCouplings_Scotogenic
 Use Fu3Decays_Scotogenic 
 Use Fe3Decays_Scotogenic 
 Use Fd3Decays_Scotogenic 
-Use SUSYDecays_Scotogenic 
- 
-Contains 
+Use TreeLevelDecays_Scotogenic 
+
+
+ Contains 
  
 Subroutine CalculateBR(CTBD,fac3,epsI,deltaM,kont,MAh,MAh2,MChi,MChi2,MetI,           & 
 & MetI2,Metp,Metp2,MetR,MetR2,MFd,MFd2,MFe,MFe2,MFu,MFu2,MFv,MFv2,Mhh,Mhh2,              & 

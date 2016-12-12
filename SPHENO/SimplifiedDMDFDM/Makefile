@@ -3,6 +3,7 @@ PreDef = -DGENERATIONMIXING -DONLYDOUBLE
 # setting various paths  
 InDir = ../include
 Mdir = ${InDir}
+VPATH = 3-Body-Decays:LoopDecays:TwoLoopMasses:Observables
 name = ../lib/libSPhenoSimplifiedDMDFDM.a
  
 # check if SARAH module and SPheno are compatibel  
@@ -52,12 +53,13 @@ ifeq (${cVersion},1)
 	 rm SPhenoSimplifiedDMDFDM.o  
 ${name}:  ${name}(Model_Data_SimplifiedDMDFDM.o)  \
  ${name}(RGEs_SimplifiedDMDFDM.o)   \
- ${name}(Couplings_SimplifiedDMDFDM.o) ${name}(SusyMasses_SimplifiedDMDFDM.o) ${name}(TadpoleEquations_SimplifiedDMDFDM.o) \
+ ${name}(Couplings_SimplifiedDMDFDM.o) ${name}(TreeLevelMasses_SimplifiedDMDFDM.o) ${name}(TadpoleEquations_SimplifiedDMDFDM.o) \
  ${name}(LoopCouplings_SimplifiedDMDFDM.o) ${name}(CouplingsForDecays_SimplifiedDMDFDM.o) \
- ${name}(SusyDecays_SimplifiedDMDFDM.o) \
+ ${name}(TreeLevel_Decays_SimplifiedDMDFDM.o) \
  ${name}(Fu.o)  ${name}(Fe.o)  ${name}(Fd.o)  ${name}(Chi.o)  ${name}(Fre.o)  \
- ${name}(BranchingRatios_SimplifiedDMDFDM.o) ${name}(LoopMasses_SimplifiedDMDFDM.o) \
- ${name}(HiggsCS_SimplifiedDMDFDM.o) ${name}(RunSM_SimplifiedDMDFDM.o) \
+${name}(AddLoopFunctions.o) ${name}(Kinematics.o) \
+ ${name}(LoopMasses_SimplifiedDMDFDM.o) \
+ ${name}(BranchingRatios_SimplifiedDMDFDM.o) ${name}(HiggsCS_SimplifiedDMDFDM.o) ${name}(RunSM_SimplifiedDMDFDM.o) \
  ${name}(LowEnergy_SimplifiedDMDFDM.o) \
 ${name}(FlavorKit_LFV_SimplifiedDMDFDM.o) ${name}(FlavorKit_QFV_SimplifiedDMDFDM.o) ${name}(FlavorKit_Observables_SimplifiedDMDFDM.o)\
 ${name}(InputOutput_SimplifiedDMDFDM.o) 

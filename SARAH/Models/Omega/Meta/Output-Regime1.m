@@ -1,7 +1,7 @@
 Mathematica 9.0 for Linux x86 (64-bit)
-Copyright 1988-2013 Wolfram Research, Inc.
+Copyright 1988-2012 Wolfram Research, Inc.
 
-In[1]:= SARAH (Private Version)
+In[1]:= SARAH 4.9.3
 by Florian Staub, 2015
 contributions by M. D. Goodsell, K. Nickel
 
@@ -19,7 +19,7 @@ e.g. Start["MSSM"] or Start["NMSSM","CKM"]
 To get a list with all installed models, use ShowModels
 
 In[2]:= Preparing arrays
- ... checking Directory: /home/fnstaub/Documents/Uni/SARAH/sarah4/Models/
+ ... checking Directory: /home/restrepo/prog/toolbox/toolbox/SARAH/Models/
 Model file for the Omega Model (Regime-3) loaded
 Model files loaded   
   Model    : Omega
@@ -178,7 +178,7 @@ Numerical calculations (if necessary)
 Checking for CP even and odd scalars
 
 All Done. Omega is ready!
-(Model initialized in 239.906s)
+(Model initialized in 233.504s)
 
 
 Are you unfamiliar with SARAH? Use SARAH`FirstSteps
@@ -211,6 +211,15 @@ Performing necessary calculations
  ... can't extract tree level contributions to delta(rho) because gauge group\
  
 >   'left' or 'hypercharge' not defined; assuming zero
+
+Matching::NotDefined: 
+   No matching conditions defined: The ones for a THDM type-II are used by
+    default. 
+
+Part::partw: Part 2 of Transpose[MINPAR] does not exist.
+
+Join::heads: Heads Part and List at positions 1 and 2
+     are expected to be the same.
 Checking model for missing definitions
 
 CheckModelFiles::MissingParticle: 
@@ -286,10 +295,10 @@ Calculate Beta Functions for VEVs
  
 >   Dynamic[DynamicCoupProgess[VEV]])
 
-Finished with the calculation of the RGEs. Time needed: 269.444s
-The results are saved in /home/fnstaub/Documents/Uni/SARAH/sarah4/Output/Omeg\
+Finished with the calculation of the RGEs. Time needed: 282.196s
+The results are saved in /home/restrepo/prog/toolbox/toolbox/SARAH/Output/Ome\
  
->    a-Regime-1/RGEs/
+>    ga-Regime-1/RGEs/
 
 Preparing SPheno code
   Build parameter lists
@@ -319,15 +328,15 @@ Writing SPheno Shifts for Parameters
 --------------------------------------
 Subroutine for Shifts up and dowm
 
-Finished! SPheno code generated in 514.801s
-Output saved in /home/fnstaub/Documents/Uni/SARAH/sarah4/Output/Omega-Regime-\
+Finished! SPheno code generated in 495.82s
+Output saved in /home/restrepo/prog/toolbox/toolbox/SARAH/Output/Omega-Regime\
  
->    1/EWSB/SPheno/
+>    -1/EWSB/SPheno/
 
 The following steps are now necessary to implement the model in SPheno: 
   1. Copy the created files to a new subdirectory "/Omega" of your SPheno\
  
->    3.3.6 (or later) installation
+>    3.3.8 (or later) installation
   2. Compile the model by using 
         make Model=Omega
      in the main directory of SPheno

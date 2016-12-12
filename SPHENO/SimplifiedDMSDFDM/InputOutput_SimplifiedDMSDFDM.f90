@@ -1,9 +1,9 @@
 ! -----------------------------------------------------------------------------  
-! This file was automatically created by SARAH version 4.9.1 
+! This file was automatically created by SARAH version 4.9.3 
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 15:05 on 14.10.2016   
+! File created at 10:07 on 7.12.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -17,7 +17,7 @@ Use StandardModel
 Use LoopCouplings_SimplifiedDMSDFDM 
  
 Logical,Save::LesHouches_Format
-Character(len=8),Save,Private::versionSARAH="4.9.1"
+Character(len=8),Save,Private::versionSARAH="4.9.3"
 Integer,Private::i_cpv=0
 Integer,Save,Private::in_kont(2)
 Logical,Save::Add_Rparity= .False. 
@@ -941,6 +941,11 @@ End Subroutine Read_EXTPAR
         OutputForMO = .True.  
         RotateNegativeFermionMasses = .false.
       End if
+      
+     Case(78) ! Use conventions for MG
+      If (wert.Eq.1) Then 
+        OutputForMG = .True.  
+      End if      
 
 
      Case(80) ! exit for sure with non-zero value if a problem occurs
@@ -1245,10 +1250,11 @@ Write(io_L,100) "#   F. Staub; Comput. Phys. Commun. 185 (2014)  1773-1790; arXi
 Write(io_L,100) "# Including the calculation of flavor observables based on the FlavorKit "
 Write(io_L,100) "#   W. Porod, F. Staub, A. Vicente; Eur.Phys.J. C74 (2014) 8, 2992; arXiv:1405.1434 "
 Write(io_L,100) "# Two-loop masss corrections to Higgs fields based on "
-Write(io_L,100) "#   M. D. Goodsell, K. Nickel, F. Staub; arXiv:1411.0675 "
-Write(io_L,100) "#   M. D. Goodsell, K. Nickel, F. Staub; arXiv:1503.03098"
+Write(io_L,100) "#   M. D. Goodsell, K. Nickel, F. Staub; Eur.Phys.J. C75 (2015) no.6, 290; arXiv:1411.0675 "
+Write(io_L,100) "#   M. D. Goodsell, K. Nickel, F. Staub; Eur.Phys.J. C75 (2015) no.1, 32; arXiv:1503.03098"
+Write(io_L,100) "#   M. D. Goodsell, F. Staub; arXiv:1511.01904"
 Write(io_L,100) "#  "
-Write(io_L,100) "# in case of problems send email to florian.staub@cern.ch and goodsell@lpthe.jussieu.fr "
+Write(io_L,100) "# in case of problems send email to florian.staub@kit.edu and goodsell@lpthe.jussieu.fr "
 Write(io_L,100) "# ----------------------------------------------------------------------" 
 Write(io_L,100) "# Created: "//Datum(7:8)//"."//Datum(5:6)//"."//Datum(1:4)&
 &//",  "//Zeit(1:2)//":"//Zeit(3:4)
@@ -1310,14 +1316,13 @@ Write(io_L,102) 6,mf_u(3),"# m_t(pole)"
 Write(io_L,102) 7,mf_l(3),"# m_tau(pole)"
  
 WriteNextBlock = .false. 
+If (OutputForMG) WriteNextBlock = .True. 
 Write(io_L,106) "Block GAUGE Q=",Q,"# (Renormalization Scale)" 
 Write(io_L,104) 1,Real(g1,dp), "# g1" 
 Write(io_L,104) 2,Real(g2,dp), "# g2" 
 Write(io_L,104) 3,Real(g3,dp), "# g3" 
-If(WriteNextBlock) Then 
-Write(io_L,106) "Block IMGAUGE Q=",Q,"# (Renormalization Scale)" 
-End if 
 WriteNextBlock = .false. 
+If (OutputForMG) WriteNextBlock = .True. 
 Write(io_L,106) "Block HDM Q=",Q,"# (Renormalization Scale)" 
 Write(io_L,104) 2,Real(lam1,dp), "# lam1" 
 If (Abs(Aimag(lam1)).gt.0._dp) WriteNextBlock = .True. 
@@ -1326,13 +1331,12 @@ Write(io_L,106) "Block IMHDM Q=",Q,"# (Renormalization Scale)"
 Write(io_L,104) 2,Aimag(lam1), "# lam1" 
 End if 
 WriteNextBlock = .false. 
+If (OutputForMG) WriteNextBlock = .True. 
 Write(io_L,106) "Block FDMMIX Q=",Q,"# (Renormalization Scale)" 
 Write(io_L,104) 1,Real(lamd,dp), "# lamd" 
 Write(io_L,104) 2,Real(lamu,dp), "# lamu" 
-If(WriteNextBlock) Then 
-Write(io_L,106) "Block IMFDMMIX Q=",Q,"# (Renormalization Scale)" 
-End if 
 WriteNextBlock = .false. 
+If (OutputForMG) WriteNextBlock = .True. 
 Write(io_L,106) "Block MN Q=",Q,"# (Renormalization Scale)" 
 Write(io_L,104) 1,Real(Mn,dp), "# Mn" 
 If (Abs(Aimag(Mn)).gt.0._dp) WriteNextBlock = .True. 
@@ -1341,12 +1345,11 @@ Write(io_L,106) "Block IMMN Q=",Q,"# (Renormalization Scale)"
 Write(io_L,104) 1,Aimag(Mn), "# Mn" 
 End if 
 WriteNextBlock = .false. 
+If (OutputForMG) WriteNextBlock = .True. 
 Write(io_L,106) "Block FDM Q=",Q,"# (Renormalization Scale)" 
 Write(io_L,104) 1,Real(MDF,dp), "# MDF" 
-If(WriteNextBlock) Then 
-Write(io_L,106) "Block IMFDM Q=",Q,"# (Renormalization Scale)" 
-End if 
 WriteNextBlock = .false. 
+If (OutputForMG) WriteNextBlock = .True. 
 Write(io_L,106) "Block SM Q=",Q,"# (Renormalization Scale)" 
 Write(io_L,104) 3,Real(mH2,dp), "# mH2" 
 If (Abs(Aimag(mH2)).gt.0._dp) WriteNextBlock = .True. 
@@ -1355,14 +1358,13 @@ Write(io_L,106) "Block IMSM Q=",Q,"# (Renormalization Scale)"
 Write(io_L,104) 3,Aimag(mH2), "# mH2" 
 End if 
 WriteNextBlock = .false. 
+If (OutputForMG) WriteNextBlock = .True. 
 Write(io_L,106) "Block HMIX Q=",Q,"# (Renormalization Scale)" 
 Write(io_L,104) 3,Real(v,dp), "# v" 
-If(WriteNextBlock) Then 
-Write(io_L,106) "Block IMHMIX Q=",Q,"# (Renormalization Scale)" 
-End if 
 If (WriteTreeLevelTadpoleParameters) Then 
 If (HighScaleModel.Eq."LOW") Then 
 WriteNextBlock = .false. 
+If (OutputForMG) WriteNextBlock = .True. 
 Write(io_L,106) "Block TREESM Q=",Q,"# (Renormalization Scale)" 
 Write(io_L,104) 3,Real(mH2Tree,dp), "# mH2" 
 If (Abs(Aimag(mH2Tree)).gt.0._dp) WriteNextBlock = .True. 
@@ -1371,6 +1373,7 @@ Write(io_L,106) "Block TREEIMSM Q=",Q,"# (Renormalization Scale)"
 Write(io_L,104) 3,Aimag(mH2Tree), "# mH2" 
 End if 
 WriteNextBlock = .false. 
+If (OutputForMG) WriteNextBlock = .True. 
 Write(io_L,106) "Block LOOPSM Q=",Q,"# (Renormalization Scale)" 
 Write(io_L,104) 3,Real(mH21L,dp), "# mH2" 
 If (Abs(Aimag(mH21L)).gt.0._dp) WriteNextBlock = .True. 
@@ -1380,6 +1383,7 @@ Write(io_L,104) 3,Aimag(mH21L), "# mH2"
 End if 
 Else 
 WriteNextBlock = .false. 
+If (OutputForMG) WriteNextBlock = .True. 
 Write(io_L,106) "Block TREESM Q=",Q,"# (Renormalization Scale)" 
 Write(io_L,104) 3,Real(mH2Tree,dp), "# mH2" 
 If (Abs(Aimag(mH2Tree)).gt.0._dp) WriteNextBlock = .True. 
@@ -1388,6 +1392,7 @@ Write(io_L,106) "Block TREEIMSM Q=",Q,"# (Renormalization Scale)"
 Write(io_L,104) 3,Aimag(mH2Tree), "# mH2" 
 End if 
 WriteNextBlock = .false. 
+If (OutputForMG) WriteNextBlock = .True. 
 Write(io_L,106) "Block LOOPSM Q=",Q,"# (Renormalization Scale)" 
 Write(io_L,104) 3,Real(mH21L,dp), "# mH2" 
 If (Abs(Aimag(mH21L)).gt.0._dp) WriteNextBlock = .True. 
@@ -1407,7 +1412,7 @@ Write(io_L,107)2,3,Real(Yu(2,3),dp), "# Real(Yu(2,3),dp)"
 Write(io_L,107)3,1,Real(Yu(3,1),dp), "# Real(Yu(3,1),dp)" 
 Write(io_L,107)3,2,Real(Yu(3,2),dp), "# Real(Yu(3,2),dp)" 
 Write(io_L,107)3,3,Real(Yu(3,3),dp), "# Real(Yu(3,3),dp)" 
-If (MaxVal(Abs(AImag(Yu))).gt.0._dp) Then 
+If ((MaxVal(Abs(AImag(Yu))).gt.0._dp).OR.(OutputForMG)) Then 
 Write(io_L,106) "Block IMYu Q=",Q,"# (Renormalization Scale)" 
 Write(io_L,107)1,1,Aimag(Yu(1,1)), "# Aimag(Yu(1,1))" 
 Write(io_L,107)1,2,Aimag(Yu(1,2)), "# Aimag(Yu(1,2))" 
@@ -1430,7 +1435,7 @@ Write(io_L,107)2,3,Real(Yd(2,3),dp), "# Real(Yd(2,3),dp)"
 Write(io_L,107)3,1,Real(Yd(3,1),dp), "# Real(Yd(3,1),dp)" 
 Write(io_L,107)3,2,Real(Yd(3,2),dp), "# Real(Yd(3,2),dp)" 
 Write(io_L,107)3,3,Real(Yd(3,3),dp), "# Real(Yd(3,3),dp)" 
-If (MaxVal(Abs(AImag(Yd))).gt.0._dp) Then 
+If ((MaxVal(Abs(AImag(Yd))).gt.0._dp).OR.(OutputForMG)) Then 
 Write(io_L,106) "Block IMYd Q=",Q,"# (Renormalization Scale)" 
 Write(io_L,107)1,1,Aimag(Yd(1,1)), "# Aimag(Yd(1,1))" 
 Write(io_L,107)1,2,Aimag(Yd(1,2)), "# Aimag(Yd(1,2))" 
@@ -1453,7 +1458,7 @@ Write(io_L,107)2,3,Real(Ye(2,3),dp), "# Real(Ye(2,3),dp)"
 Write(io_L,107)3,1,Real(Ye(3,1),dp), "# Real(Ye(3,1),dp)" 
 Write(io_L,107)3,2,Real(Ye(3,2),dp), "# Real(Ye(3,2),dp)" 
 Write(io_L,107)3,3,Real(Ye(3,3),dp), "# Real(Ye(3,3),dp)" 
-If (MaxVal(Abs(AImag(Ye))).gt.0._dp) Then 
+If ((MaxVal(Abs(AImag(Ye))).gt.0._dp).OR.(OutputForMG)) Then 
 Write(io_L,106) "Block IMYe Q=",Q,"# (Renormalization Scale)" 
 Write(io_L,107)1,1,Aimag(Ye(1,1)), "# Aimag(Ye(1,1))" 
 Write(io_L,107)1,2,Aimag(Ye(1,2)), "# Aimag(Ye(1,2))" 
@@ -1492,7 +1497,7 @@ Write(io_L,107)2,3,Real(YuGUT(2,3),dp), "# Real(YuGUT(2,3),dp)"
 Write(io_L,107)3,1,Real(YuGUT(3,1),dp), "# Real(YuGUT(3,1),dp)" 
 Write(io_L,107)3,2,Real(YuGUT(3,2),dp), "# Real(YuGUT(3,2),dp)" 
 Write(io_L,107)3,3,Real(YuGUT(3,3),dp), "# Real(YuGUT(3,3),dp)" 
-If (MaxVal(Abs(AImag(YuGUT))).gt.0._dp) Then 
+If ((MaxVal(Abs(AImag(YuGUT))).gt.0._dp).OR.(OutputForMG)) Then 
 Write(io_L,106) "Block IMYuGUT Q=",M_GUT,"# (GUT Scale)" 
 Write(io_L,107)1,1,Aimag(YuGUT(1,1)), "# Aimag(YuGUT(1,1))" 
 Write(io_L,107)1,2,Aimag(YuGUT(1,2)), "# Aimag(YuGUT(1,2))" 
@@ -1515,7 +1520,7 @@ Write(io_L,107)2,3,Real(YdGUT(2,3),dp), "# Real(YdGUT(2,3),dp)"
 Write(io_L,107)3,1,Real(YdGUT(3,1),dp), "# Real(YdGUT(3,1),dp)" 
 Write(io_L,107)3,2,Real(YdGUT(3,2),dp), "# Real(YdGUT(3,2),dp)" 
 Write(io_L,107)3,3,Real(YdGUT(3,3),dp), "# Real(YdGUT(3,3),dp)" 
-If (MaxVal(Abs(AImag(YdGUT))).gt.0._dp) Then 
+If ((MaxVal(Abs(AImag(YdGUT))).gt.0._dp).OR.(OutputForMG)) Then 
 Write(io_L,106) "Block IMYdGUT Q=",M_GUT,"# (GUT Scale)" 
 Write(io_L,107)1,1,Aimag(YdGUT(1,1)), "# Aimag(YdGUT(1,1))" 
 Write(io_L,107)1,2,Aimag(YdGUT(1,2)), "# Aimag(YdGUT(1,2))" 
@@ -1538,7 +1543,7 @@ Write(io_L,107)2,3,Real(YeGUT(2,3),dp), "# Real(YeGUT(2,3),dp)"
 Write(io_L,107)3,1,Real(YeGUT(3,1),dp), "# Real(YeGUT(3,1),dp)" 
 Write(io_L,107)3,2,Real(YeGUT(3,2),dp), "# Real(YeGUT(3,2),dp)" 
 Write(io_L,107)3,3,Real(YeGUT(3,3),dp), "# Real(YeGUT(3,3),dp)" 
-If (MaxVal(Abs(AImag(YeGUT))).gt.0._dp) Then 
+If ((MaxVal(Abs(AImag(YeGUT))).gt.0._dp).OR.(OutputForMG)) Then 
 Write(io_L,106) "Block IMYeGUT Q=",M_GUT,"# (GUT Scale)" 
 Write(io_L,107)1,1,Aimag(YeGUT(1,1)), "# Aimag(YeGUT(1,1))" 
 Write(io_L,107)1,2,Aimag(YeGUT(1,2)), "# Aimag(YeGUT(1,2))" 
@@ -1628,7 +1633,7 @@ Write(io_L,107)2,3,Real(ZDL(2,3),dp), "# Real(ZDL(2,3),dp)"
 Write(io_L,107)3,1,Real(ZDL(3,1),dp), "# Real(ZDL(3,1),dp)" 
 Write(io_L,107)3,2,Real(ZDL(3,2),dp), "# Real(ZDL(3,2),dp)" 
 Write(io_L,107)3,3,Real(ZDL(3,3),dp), "# Real(ZDL(3,3),dp)" 
-If (MaxVal(Abs(AImag(ZDL))).gt.0._dp) Then 
+If ((MaxVal(Abs(AImag(ZDL))).gt.0._dp).OR.(OutputForMG)) Then 
 Write(io_L,106) "Block IMUDLMIX Q=",Q,"# ()" 
 Write(io_L,107)1,1,Aimag(ZDL(1,1)), "# Aimag(ZDL(1,1))" 
 Write(io_L,107)1,2,Aimag(ZDL(1,2)), "# Aimag(ZDL(1,2))" 
@@ -1651,7 +1656,7 @@ Write(io_L,107)2,3,Real(ZDR(2,3),dp), "# Real(ZDR(2,3),dp)"
 Write(io_L,107)3,1,Real(ZDR(3,1),dp), "# Real(ZDR(3,1),dp)" 
 Write(io_L,107)3,2,Real(ZDR(3,2),dp), "# Real(ZDR(3,2),dp)" 
 Write(io_L,107)3,3,Real(ZDR(3,3),dp), "# Real(ZDR(3,3),dp)" 
-If (MaxVal(Abs(AImag(ZDR))).gt.0._dp) Then 
+If ((MaxVal(Abs(AImag(ZDR))).gt.0._dp).OR.(OutputForMG)) Then 
 Write(io_L,106) "Block IMUDRMIX Q=",Q,"# ()" 
 Write(io_L,107)1,1,Aimag(ZDR(1,1)), "# Aimag(ZDR(1,1))" 
 Write(io_L,107)1,2,Aimag(ZDR(1,2)), "# Aimag(ZDR(1,2))" 
@@ -1674,7 +1679,7 @@ Write(io_L,107)2,3,Real(ZUL(2,3),dp), "# Real(ZUL(2,3),dp)"
 Write(io_L,107)3,1,Real(ZUL(3,1),dp), "# Real(ZUL(3,1),dp)" 
 Write(io_L,107)3,2,Real(ZUL(3,2),dp), "# Real(ZUL(3,2),dp)" 
 Write(io_L,107)3,3,Real(ZUL(3,3),dp), "# Real(ZUL(3,3),dp)" 
-If (MaxVal(Abs(AImag(ZUL))).gt.0._dp) Then 
+If ((MaxVal(Abs(AImag(ZUL))).gt.0._dp).OR.(OutputForMG)) Then 
 Write(io_L,106) "Block IMUULMIX Q=",Q,"# ()" 
 Write(io_L,107)1,1,Aimag(ZUL(1,1)), "# Aimag(ZUL(1,1))" 
 Write(io_L,107)1,2,Aimag(ZUL(1,2)), "# Aimag(ZUL(1,2))" 
@@ -1697,7 +1702,7 @@ Write(io_L,107)2,3,Real(ZUR(2,3),dp), "# Real(ZUR(2,3),dp)"
 Write(io_L,107)3,1,Real(ZUR(3,1),dp), "# Real(ZUR(3,1),dp)" 
 Write(io_L,107)3,2,Real(ZUR(3,2),dp), "# Real(ZUR(3,2),dp)" 
 Write(io_L,107)3,3,Real(ZUR(3,3),dp), "# Real(ZUR(3,3),dp)" 
-If (MaxVal(Abs(AImag(ZUR))).gt.0._dp) Then 
+If ((MaxVal(Abs(AImag(ZUR))).gt.0._dp).OR.(OutputForMG)) Then 
 Write(io_L,106) "Block IMUURMIX Q=",Q,"# ()" 
 Write(io_L,107)1,1,Aimag(ZUR(1,1)), "# Aimag(ZUR(1,1))" 
 Write(io_L,107)1,2,Aimag(ZUR(1,2)), "# Aimag(ZUR(1,2))" 
@@ -1720,7 +1725,7 @@ Write(io_L,107)2,3,Real(ZEL(2,3),dp), "# Real(ZEL(2,3),dp)"
 Write(io_L,107)3,1,Real(ZEL(3,1),dp), "# Real(ZEL(3,1),dp)" 
 Write(io_L,107)3,2,Real(ZEL(3,2),dp), "# Real(ZEL(3,2),dp)" 
 Write(io_L,107)3,3,Real(ZEL(3,3),dp), "# Real(ZEL(3,3),dp)" 
-If (MaxVal(Abs(AImag(ZEL))).gt.0._dp) Then 
+If ((MaxVal(Abs(AImag(ZEL))).gt.0._dp).OR.(OutputForMG)) Then 
 Write(io_L,106) "Block IMUELMIX Q=",Q,"# ()" 
 Write(io_L,107)1,1,Aimag(ZEL(1,1)), "# Aimag(ZEL(1,1))" 
 Write(io_L,107)1,2,Aimag(ZEL(1,2)), "# Aimag(ZEL(1,2))" 
@@ -1743,7 +1748,7 @@ Write(io_L,107)2,3,Real(ZER(2,3),dp), "# Real(ZER(2,3),dp)"
 Write(io_L,107)3,1,Real(ZER(3,1),dp), "# Real(ZER(3,1),dp)" 
 Write(io_L,107)3,2,Real(ZER(3,2),dp), "# Real(ZER(3,2),dp)" 
 Write(io_L,107)3,3,Real(ZER(3,3),dp), "# Real(ZER(3,3),dp)" 
-If (MaxVal(Abs(AImag(ZER))).gt.0._dp) Then 
+If ((MaxVal(Abs(AImag(ZER))).gt.0._dp).OR.(OutputForMG)) Then 
 Write(io_L,106) "Block IMUERMIX Q=",Q,"# ()" 
 Write(io_L,107)1,1,Aimag(ZER(1,1)), "# Aimag(ZER(1,1))" 
 Write(io_L,107)1,2,Aimag(ZER(1,2)), "# Aimag(ZER(1,2))" 
@@ -1766,7 +1771,7 @@ Write(io_L,107)2,3,Real(ZX(2,3),dp), "# Real(ZX(2,3),dp)"
 Write(io_L,107)3,1,Real(ZX(3,1),dp), "# Real(ZX(3,1),dp)" 
 Write(io_L,107)3,2,Real(ZX(3,2),dp), "# Real(ZX(3,2),dp)" 
 Write(io_L,107)3,3,Real(ZX(3,3),dp), "# Real(ZX(3,3),dp)" 
-If (MaxVal(Abs(AImag(ZX))).gt.0._dp) Then 
+If ((MaxVal(Abs(AImag(ZX))).gt.0._dp).OR.(OutputForMG)) Then 
 Write(io_L,106) "Block IMZXMIX Q=",Q,"# ()" 
 Write(io_L,107)1,1,Aimag(ZX(1,1)), "# Aimag(ZX(1,1))" 
 Write(io_L,107)1,2,Aimag(ZX(1,2)), "# Aimag(ZX(1,2))" 

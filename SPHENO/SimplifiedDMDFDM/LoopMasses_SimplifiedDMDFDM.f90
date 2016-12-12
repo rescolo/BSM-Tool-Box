@@ -1,9 +1,9 @@
 ! -----------------------------------------------------------------------------  
-! This file was automatically created by SARAH version 4.8.5 
+! This file was automatically created by SARAH version 4.9.3 
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 18:12 on 20.6.2016   
+! File created at 10:08 on 7.12.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -12,12 +12,13 @@ Module LoopMasses_SimplifiedDMDFDM
 Use Control 
 Use Couplings_SimplifiedDMDFDM 
 Use LoopFunctions 
+Use AddLoopFunctions 
 Use Mathematics 
 Use MathematicsQP 
 Use Model_Data_SimplifiedDMDFDM 
 Use StandardModel 
 Use Tadpoles_SimplifiedDMDFDM 
- Use SusyMasses_SimplifiedDMDFDM 
+ Use TreeLevelMasses_SimplifiedDMDFDM 
  
 Real(dp), Private :: MFre_1L, MFre2_1L  
 Real(dp), Private :: MChi_1L, MChi2_1L  
@@ -26,7 +27,6 @@ Real(dp), Private :: MAh_1L, MAh2_1L
 Real(dp), Private :: Mhh_1L, Mhh2_1L  
 Real(dp), Private :: MVZ_1L, MVZ2_1L  
 Real(dp), Private :: MVWp_1L, MVWp2_1L  
-Real(dp), save :: rMS = 1._dp 
 Contains 
  
 Subroutine OneLoopMasses(MAh,MAh2,MChi,MChi2,MFd,MFd2,MFe,MFe2,MFre,MFre2,            & 
@@ -76,7 +76,7 @@ Complex(dp) :: cplAhAhAhAh,cplAhAhcVWpVWp,cplAhAhhh,cplAhAhhhhh,cplAhAhHpcHp,cpl
 Integer , Intent(inout):: kont 
 Integer :: i1,i2,i3,i4,j1, j2, j3, j4, il, i_count, ierr 
 Complex(dp) :: Tad1Loop(1), dmz2  
-Real(dp) :: comp(1), tanbQ, vev2
+Real(dp) :: comp(1), tanbQ, vev2, vSM
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopMasses' 
  
@@ -88,6 +88,10 @@ RXiG = RXi
 RXiP = RXi 
 RXiWp = RXi 
 RXiZ = RXi 
+
+ ! Running angles 
+
+ 
 Call TreeMasses(MAh,MAh2,MChi,MChi2,MFd,MFd2,MFe,MFe2,MFre,MFre2,MFu,MFu2,            & 
 & Mhh,Mhh2,MHp,MHp2,MVWp,MVWp2,MVZ,MVZ2,TW,ZDR,ZER,ZUR,ZDL,ZEL,ZUL,ZW,ZZ,v,              & 
 & g1,g2,g3,lam1,Yu,Yd,Ye,MDF,mH2,GenerationMixing,kont)
@@ -117,7 +121,7 @@ Call Pi1LoopVZ(mZ2,Mhh,Mhh2,MAh,MAh2,MChi,MChi2,MFd,MFd2,MFe,MFe2,MFre,         
 & cplcVWpVWpVZVZ1,cplcVWpVWpVZVZ2,cplcVWpVWpVZVZ3,kont,dmZ2)
 
 vev2=4._dp*Real(mZ2+dmz2,dp)/(g1**2+g2**2) -0 
-v= sqrt(vev2)
+vSM=sqrt(vev2) 
 Call SolveTadpoleEquations(g1,g2,g3,lam1,Yu,Yd,Ye,MDF,mH2,v,(/ ZeroC /))
 
 Call TreeMasses(MAh,MAh2,MChi,MChi2,MFd,MFd2,MFe,MFe2,MFre,MFre2,MFu,MFu2,            & 
@@ -1491,7 +1495,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopFre'
@@ -1500,11 +1504,14 @@ mi = MFre
 
  
 p2 = MFre2
-sig = ZeroC 
+sigL = ZeroC 
+sigR = ZeroC 
+sigS = ZeroC 
 Call Sigma1LoopFre(p2,MVWp,MVWp2,MChi,MChi2,MFre,MFre2,MVZ,MVZ2,cplcFreChicVWpL,      & 
-& cplcFreChicVWpR,cplcFreFreVPL,cplcFreFreVPR,cplcFreFreVZL,cplcFreFreVZR,sig)
+& cplcFreChicVWpR,cplcFreFreVPL,cplcFreFreVPR,cplcFreFreVZL,cplcFreFreVZR,               & 
+& sigL,sigR,sigS)
 
-mass = mi - sig 
+mass = mi - sigS-MFre*(SigR+SigL) 
 mass2= mass**2 
 i_count = 0 
 Do  
@@ -1513,9 +1520,10 @@ test_m2 = mass2
 p2 =  mass2 
 sig = ZeroC 
 Call Sigma1LoopFre(p2,MVWp,MVWp2,MChi,MChi2,MFre,MFre2,MVZ,MVZ2,cplcFreChicVWpL,      & 
-& cplcFreChicVWpR,cplcFreFreVPL,cplcFreFreVPR,cplcFreFreVZL,cplcFreFreVZR,sig)
+& cplcFreChicVWpR,cplcFreFreVPL,cplcFreFreVPR,cplcFreFreVZL,cplcFreFreVZR,               & 
+& sigL,sigR,sigS)
 
-mass = mi - sig 
+mass = mi - sigS-MFre*(SigR+SigL) 
 mass2= mass**2 
  If (test_m2.Ne.0._dp) Then 
     test_m2 = Abs(test_m2 - mass2) / test_m2 
@@ -1549,7 +1557,8 @@ End Subroutine OneLoopFre
  
  
 Subroutine Sigma1LoopFre(p2,MVWp,MVWp2,MChi,MChi2,MFre,MFre2,MVZ,MVZ2,cplcFreChicVWpL,& 
-& cplcFreChicVWpR,cplcFreFreVPL,cplcFreFreVPR,cplcFreFreVZL,cplcFreFreVZR,sig)
+& cplcFreChicVWpR,cplcFreFreVPL,cplcFreFreVPR,cplcFreFreVZL,cplcFreFreVZR,               & 
+& sigL,sigR,sigS)
 
 Implicit None 
 Real(dp), Intent(in) :: MVWp,MVWp2,MChi,MChi2,MFre,MFre2,MVZ,MVZ2
@@ -1557,7 +1566,7 @@ Real(dp), Intent(in) :: MVWp,MVWp2,MChi,MChi2,MFre,MFre2,MVZ,MVZ2
 Complex(dp), Intent(in) :: cplcFreChicVWpL,cplcFreChicVWpR,cplcFreFreVPL,cplcFreFreVPR,cplcFreFreVZL,            & 
 & cplcFreFreVZR
 
-Complex(dp), Intent(out) :: Sig 
+Complex(dp), Intent(out) :: SigL, SigR, SigS 
 Complex(dp) :: coupL1, coupR1, coupL2,coupR2, coup1,coup2,temp, sumL, sumR, sumS 
 Real(dp) :: B0m2, F0m2, G0m2,B1m2, m1, m2 
 Real(dp), Intent(in) :: p2 
@@ -1565,7 +1574,9 @@ Complex(dp) :: A0m2
 Integer :: i1,i2,i3,i4, gO1, gO2, ierr 
  
  
-Sig = Cmplx(0._dp,0._dp,dp) 
+SigL = Cmplx(0._dp,0._dp,dp) 
+SigR = Cmplx(0._dp,0._dp,dp) 
+SigS = Cmplx(0._dp,0._dp,dp) 
 !------------------------ 
 ! conj[VWp], Chi 
 !------------------------ 
@@ -1581,7 +1592,9 @@ coupR2 =  Conjg(cplcFreChicVWpR)
 SumS = coupL1*coupR2*B0m2 
 sumR = coupL1*coupL2*B1m2 
 sumL = coupR1*coupR2*B1m2 
-Sig = Sig +1._dp*(sumS + MFre*(sumL+sumR))
+SigL = SigL +1._dp*sumL 
+SigR = SigR +1._dp*sumR 
+SigS = SigS +1._dp*sumS 
 !------------------------ 
 ! VP, Fre 
 !------------------------ 
@@ -1597,7 +1610,9 @@ coupR2 =  Conjg(cplcFreFreVPR)
 SumS = coupL1*coupR2*B0m2 
 sumR = coupL1*coupL2*B1m2 
 sumL = coupR1*coupR2*B1m2 
-Sig = Sig +1._dp*(sumS + MFre*(sumL+sumR))
+SigL = SigL +1._dp*sumL 
+SigR = SigR +1._dp*sumR 
+SigS = SigS +1._dp*sumS 
 !------------------------ 
 ! VZ, Fre 
 !------------------------ 
@@ -1613,10 +1628,16 @@ coupR2 =  Conjg(cplcFreFreVZR)
 SumS = coupL1*coupR2*B0m2 
 sumR = coupL1*coupL2*B1m2 
 sumL = coupR1*coupR2*B1m2 
-Sig = Sig +1._dp*(sumS + MFre*(sumL+sumR))
+SigL = SigL +1._dp*sumL 
+SigR = SigR +1._dp*sumR 
+SigS = SigS +1._dp*sumS 
 
 
-Sig = oo16pi2*Sig 
+SigS = oo16pi2*SigS 
+ 
+SigR = oo16pi2*SigR 
+ 
+SigL = oo16pi2*SigL 
  
 End Subroutine Sigma1LoopFre 
  
@@ -1633,7 +1654,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopChi'
@@ -1642,11 +1663,13 @@ mi = MChi
 
  
 p2 = MChi2
-sig = ZeroC 
+sigL = ZeroC 
+sigR = ZeroC 
+sigS = ZeroC 
 Call Sigma1LoopChi(p2,MVZ,MVZ2,MChi,MChi2,MVWp,MVWp2,MFre,MFre2,cplcChiChiVZL,        & 
-& cplcChiChiVZR,cplcChiFreVWpL,cplcChiFreVWpR,sig)
+& cplcChiChiVZR,cplcChiFreVWpL,cplcChiFreVWpR,sigL,sigR,sigS)
 
-mass = mi - sig 
+mass = mi - sigS-MChi*(SigR+SigL) 
 mass2= mass**2 
 i_count = 0 
 Do  
@@ -1655,9 +1678,9 @@ test_m2 = mass2
 p2 =  mass2 
 sig = ZeroC 
 Call Sigma1LoopChi(p2,MVZ,MVZ2,MChi,MChi2,MVWp,MVWp2,MFre,MFre2,cplcChiChiVZL,        & 
-& cplcChiChiVZR,cplcChiFreVWpL,cplcChiFreVWpR,sig)
+& cplcChiChiVZR,cplcChiFreVWpL,cplcChiFreVWpR,sigL,sigR,sigS)
 
-mass = mi - sig 
+mass = mi - sigS-MChi*(SigR+SigL) 
 mass2= mass**2 
  If (test_m2.Ne.0._dp) Then 
     test_m2 = Abs(test_m2 - mass2) / test_m2 
@@ -1691,14 +1714,14 @@ End Subroutine OneLoopChi
  
  
 Subroutine Sigma1LoopChi(p2,MVZ,MVZ2,MChi,MChi2,MVWp,MVWp2,MFre,MFre2,cplcChiChiVZL,  & 
-& cplcChiChiVZR,cplcChiFreVWpL,cplcChiFreVWpR,sig)
+& cplcChiChiVZR,cplcChiFreVWpL,cplcChiFreVWpR,sigL,sigR,sigS)
 
 Implicit None 
 Real(dp), Intent(in) :: MVZ,MVZ2,MChi,MChi2,MVWp,MVWp2,MFre,MFre2
 
 Complex(dp), Intent(in) :: cplcChiChiVZL,cplcChiChiVZR,cplcChiFreVWpL,cplcChiFreVWpR
 
-Complex(dp), Intent(out) :: Sig 
+Complex(dp), Intent(out) :: SigL, SigR, SigS 
 Complex(dp) :: coupL1, coupR1, coupL2,coupR2, coup1,coup2,temp, sumL, sumR, sumS 
 Real(dp) :: B0m2, F0m2, G0m2,B1m2, m1, m2 
 Real(dp), Intent(in) :: p2 
@@ -1706,7 +1729,9 @@ Complex(dp) :: A0m2
 Integer :: i1,i2,i3,i4, gO1, gO2, ierr 
  
  
-Sig = Cmplx(0._dp,0._dp,dp) 
+SigL = Cmplx(0._dp,0._dp,dp) 
+SigR = Cmplx(0._dp,0._dp,dp) 
+SigS = Cmplx(0._dp,0._dp,dp) 
 !------------------------ 
 ! VZ, Chi 
 !------------------------ 
@@ -1722,7 +1747,9 @@ coupR2 =  Conjg(cplcChiChiVZR)
 SumS = coupL1*coupR2*B0m2 
 sumR = coupL1*coupL2*B1m2 
 sumL = coupR1*coupR2*B1m2 
-Sig = Sig +1._dp*(sumS + MChi*(sumL+sumR))
+SigL = SigL +1._dp*sumL 
+SigR = SigR +1._dp*sumR 
+SigS = SigS +1._dp*sumS 
 !------------------------ 
 ! VWp, Fre 
 !------------------------ 
@@ -1738,10 +1765,16 @@ coupR2 =  Conjg(cplcChiFreVWpR)
 SumS = coupL1*coupR2*B0m2 
 sumR = coupL1*coupL2*B1m2 
 sumL = coupR1*coupR2*B1m2 
-Sig = Sig +1._dp*(sumS + MChi*(sumL+sumR))
+SigL = SigL +1._dp*sumL 
+SigR = SigR +1._dp*sumR 
+SigS = SigS +1._dp*sumS 
 
 
-Sig = oo16pi2*Sig 
+SigS = oo16pi2*SigS 
+ 
+SigR = oo16pi2*SigR 
+ 
+SigL = oo16pi2*SigL 
  
 End Subroutine Sigma1LoopChi 
  
@@ -1768,7 +1801,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopHp'
@@ -2064,7 +2097,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopAh'
@@ -2326,7 +2359,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoophh'
@@ -2643,7 +2676,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopVZ'
@@ -2954,7 +2987,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopVWp'
