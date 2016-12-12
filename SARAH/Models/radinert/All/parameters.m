@@ -161,6 +161,7 @@ ParameterDefinitions = {
 
 {Yfr, { LaTeX -> "Y_{S_c}",Real->True,LesHouches -> YFR, OutputName-> Yfr }},
 
+    
 (* Scalar singlet *)
 
 {MS2,       {Description -> "Softbreaking Up-Higgs Mass",
@@ -189,7 +190,10 @@ ParameterDefinitions = {
 	     LesHouches -> {HDM,16}}},
 
 {LamScH,     {OutputName ->"LScET",
-             LesHouches -> {HDM,17}}}
+	      LesHouches -> {HDM,17}}},
+    
+{Pi1,     {OutputName ->"Pi1",
+             LesHouches -> {HDM,18}}}
     
 
     

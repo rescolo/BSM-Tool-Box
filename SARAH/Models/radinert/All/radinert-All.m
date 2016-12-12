@@ -79,7 +79,8 @@ DEFINITION[GaugeES][Additional]= {
 LagFer   = Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q ;
 LagSinFer =  -( MSF rsd.rsu + Ys S.e.conj[rsu] );
 LagNV    = - MTF/2 T.T + MDF rd.ru;
-(*LagIFD2 = - A/Sqrt[2] n.H.rd  -  B/Sqrt[2] n.ru.conj[H] + Y3 conj[Et].rd.e + Yf S3.ru.l + Yn Et.n.l;*)   
+(*LagIFD2 = - A/Sqrt[2] n.H.rd  -  B/Sqrt[2] n.ru.conj[H] + Y3 conj[Et].rd.e + Yf S3.ru.l + Yn Et.n.l;*)
+(*T12A: \rho_i -> Y3, Pi ->*)
 LagIFD2 = - A T.H.rd  -  B T.ru.conj[H] + Y3 conj[Et].rd.e + Yf S3.ru.l + Yn Et.T.l;
 LagH     = -(- mH2 conj[H].H + lambda1/2  conj[H].H.conj[H].H );
 LagEt    = -( + mEt2 conj[Et].Et + lambda2/2 conj[Et].Et.conj[Et].Et);
@@ -91,7 +92,7 @@ VTEt   = -( + lambda8 S3.S3.conj[Et].Et);
 VTSMEt = -( + mu conj[H].S3.Et);
 LagNoHCS = -(+ MS2/2 S.S + LamSH S.S.conj[H].H + LamS/2 S.S.S.S);
 LagNoHCSc = -(+ MSc2/2 conj[Sc].Sc + LamScH conj[Sc].Sc.conj[H].H + LamSc/2 conj[Sc].Sc.conj[Sc].Sc  + LamScEt conj[Sc].Sc.conj[Et].Et );
-LagSc =  -( + musc H.Et.conj[Sc] +  Yfr l.rd.Sc )
+LagSc =  -( + musc H.Et.conj[Sc] +  Yfr l.rd.Sc - Pi1 rsu.conj[H].rd - Pi2 rsd.ru.H );
 
 DEFINITION[EWSB][GaugeSector] =
 { 
