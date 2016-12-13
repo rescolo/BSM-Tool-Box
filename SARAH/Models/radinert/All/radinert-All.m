@@ -92,7 +92,7 @@ VTEt   = -( + lambda8 S3.S3.conj[Et].Et);
 VTSMEt = -( + mu conj[H].S3.Et);
 LagNoHCS = -(+ MS2/2 S.S + LamSH S.S.conj[H].H + LamS/2 S.S.S.S);
 LagNoHCSc = -(+ MSc2/2 conj[Sc].Sc + LamScH conj[Sc].Sc.conj[H].H + LamSc/2 conj[Sc].Sc.conj[Sc].Sc  + LamScEt conj[Sc].Sc.conj[Et].Et );
-LagSc =  -( + musc H.Et.conj[Sc] +  Yfr l.rd.Sc - Pi1 rsu.conj[H].rd (*- Pi2 rsd.ru.H*) );
+LagSc =  -( + musc H.Et.conj[Sc] +  Yfr l.rd.Sc - Pi1 rsu.conj[H].rd - Qir conj[rsd].conj[H].conj[ru] );
 
 DEFINITION[EWSB][GaugeSector] =
 { 
