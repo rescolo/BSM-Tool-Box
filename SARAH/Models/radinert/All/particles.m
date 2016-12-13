@@ -158,11 +158,11 @@ ParticleDefinitions[GaugeES] = {
       {Fv,   { Description -> "Neutrinos" }},
 
       {Nv,  {  Description -> "Neutral fermions",
-	     PDG -> {310000601,310000602,310000603},
+	     PDG -> {310000601,310000602,310000603,310000604},
 	     LaTeX ->"N",
 	     OutputName -> "Nv",
 	     FeynArtsNr -> 9,
-	     Mass -> {LesHouches,LesHouches,LesHouches},
+	     Mass -> {LesHouches,LesHouches,LesHouches,LesHouches},
 	     ElectricCharge -> 0}},
  
      {Chi,  {  Description -> "Charged fermions",
@@ -208,6 +208,7 @@ ParticleDefinitions[GaugeES] = {
    {XO,     {LaTeX -> "X^0" }},
    {T,      {LaTeX -> "\\Sigma" }},  
    {n,      {LaTeX -> "N" }},
+   {nR,     {LaTeX -> "N_R" }},  
    {nR,     {LaTeX -> "\\nu_R"}},
    {esd,     {LaTeX -> "e_{sd}^+" }},
    {esu,     {LaTeX -> "e_{su}^-" }}

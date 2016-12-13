@@ -35,7 +35,7 @@ FermionFields[[7]] = {rd, 1, {vd,ed},   -1/2, 2,  1,-1};
 FermionFields[[8]] = {ru, 1, {eu,vu},     1/2, 2,  1,-1};
 FermionFields[[9]] = {rsd, 1, esd,  -1, 1,  1, -1};
 FermionFields[[10]] = {rsu, 1, esu,  1, 1,  1, -1};
-
+FermionFields[[11]] = {n, 1, nR,             0, 1,  1,-1};
 
 
 ScalarFields[[1]] =  {H,  1,  {Hp, HO},    1/2, 2,  1,  1};
@@ -92,7 +92,7 @@ VTEt   = -( + lambda8 S3.S3.conj[Et].Et);
 VTSMEt = -( + mu conj[H].S3.Et);
 LagNoHCS = -(+ MS2/2 S.S + LamSH S.S.conj[H].H + LamS/2 S.S.S.S);
 LagNoHCSc = -(+ MSc2/2 conj[Sc].Sc + LamScH conj[Sc].Sc.conj[H].H + LamSc/2 conj[Sc].Sc.conj[Sc].Sc  + LamScEt conj[Sc].Sc.conj[Et].Et );
-LagSc =  -( + musc H.Et.conj[Sc] +  Yfr l.rd.Sc - Piu rsu.conj[H].rd - Pid rsd.H.ru + Yet rsu.conj[Et].l );
+LagSc =  -( + musc H.Et.conj[Sc] +  Yfr l.rd.Sc - Piu rsu.conj[H].rd - Pid rsd.H.ru + Yet rsu.conj[Et].l + YR1 ru.l.S);
 
 DEFINITION[EWSB][GaugeSector] =
 { 
@@ -116,7 +116,7 @@ DEFINITION[EWSB][VEVs]=
 
 DEFINITION[EWSB][MatterSector]= 
   {  {{vL},{VL,Vv}},
-     { {T0,vd,vu}, {s1,Q1} },
+     { {T0,vd,vu,nR}, {s1,Q1} },
      { {{Tp,eu,esu}, {Tm,ed,esd}}, {{ch1,Q2},{ch2,Q3}} },
      { {etp,Sp,sc},{XP,ZXP}},
      { {etR,S0,ss},{XO,ZX0}},
