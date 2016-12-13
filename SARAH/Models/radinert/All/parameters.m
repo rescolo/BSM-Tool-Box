@@ -192,7 +192,7 @@ ParameterDefinitions = {
 {LamScH,     {OutputName ->"LScET",
 	      LesHouches -> {HDM,17}}},
     
-{Pi1,     {OutputName ->"Pi1",
+{Piu,     {OutputName ->"Piu",
              LesHouches -> {HDM,18}}},
 
 {Pid,     {OutputName ->"Pid",
