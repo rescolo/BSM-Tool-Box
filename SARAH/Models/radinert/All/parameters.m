@@ -193,7 +193,10 @@ ParameterDefinitions = {
 	      LesHouches -> {HDM,17}}},
     
 {Pi1,     {OutputName ->"Pi1",
-             LesHouches -> {HDM,18}}}
+             LesHouches -> {HDM,18}}},
+
+{Pi2,     {OutputName ->"Pi2",
+             LesHouches -> {HDM,19}}}
     
 
     
