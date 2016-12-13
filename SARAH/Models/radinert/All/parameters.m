@@ -195,7 +195,7 @@ ParameterDefinitions = {
 {Pi1,     {OutputName ->"Pi1",
              LesHouches -> {HDM,18}}},
 
-{Pi2,     {OutputName ->"Pi2",
+{Pid,     {OutputName ->"Pid",
              LesHouches -> {HDM,19}}}
     
 
