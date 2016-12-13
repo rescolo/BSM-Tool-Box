@@ -163,6 +163,21 @@ ParameterDefinitions = {
 
 {Yet, { LaTeX -> "Y_{\\eta}",Real->True,LesHouches -> Yet, OutputName-> Yet }},    
 
+{YR1,        { LaTeX -> "Y_R^1",
+             LesHouches -> YR1,
+      Real->True,
+             OutputName-> YR1 }}, 
+
+{YR3,        { LaTeX -> "Y_R^3",
+      Real->True,       
+      LesHouches -> YR3,
+             OutputName-> YR3 }}, 
+
+{YR4,        { LaTeX -> "Y_R^4",
+      Real->True,       
+      LesHouches -> YR4,
+             OutputName-> YR4 }}, 
+    
     
 (* Scalar singlet *)
 
