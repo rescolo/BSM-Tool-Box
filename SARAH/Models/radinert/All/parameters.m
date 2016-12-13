@@ -161,6 +161,8 @@ ParameterDefinitions = {
 
 {Yfr, { LaTeX -> "Y_{S_c}",Real->True,LesHouches -> YFR, OutputName-> Yfr }},
 
+{Yet, { LaTeX -> "Y_{\\eta}",Real->True,LesHouches -> Yet, OutputName-> Yet }},    
+
     
 (* Scalar singlet *)
 

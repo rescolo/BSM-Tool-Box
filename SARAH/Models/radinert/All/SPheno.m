@@ -61,6 +61,7 @@ BoundaryLowScaleInput={
  {B,LHInput[B]},
  {Ys,LHInput[Ys]},
  {Yfr,LHInput[Yfr]},
+ {Yet,LHInput[Yet]},
  {LamSH,LamSHIN},
  {LamS,LamSIN},   
  {MS2, MS2Input},
@@ -83,4 +84,4 @@ DefaultInputValues ={lambda1Input -> 0.274, lambda2Input -> 0.1,  lambda3Input -
 	     LamSHIN -> 0., LamSIN -> 0, MS2Input -> 200^2,
 	     LamScHIN -> 0., LamScIN -> 0, MSc2Input -> 200^2, PiuInput->1*^-7, PidInput->1*^-7,
 		     Yf[a_] -> 1*^-8,Y3[a_] -> 1*^-8, Yn[a_] -> 1*^-7,
-		    Ys[a_] -> 1*^-7,Yfr[a_] -> 1*^-7};
+		    Ys[a_] -> 1*^-7,Yfr[a_] -> 1*^-7,Yet[a_] -> 1*^-7};
