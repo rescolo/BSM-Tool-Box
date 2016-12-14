@@ -21,7 +21,9 @@ MINPAR={{1,lambda1Input},
         {14,LamScIN},
         {15,MSc2Input},
 	{16,PiuInput},
-	{17,PidInput}
+	{17,PidInput},
+	{YR3,YR3Input},
+	{YR4,YR4Input}
        };
 
 
@@ -52,6 +54,7 @@ BoundaryLowScaleInput={
  {MDF,LHInput[MDF]},
  {Y3,LHInput[Y3]},
  {Yf,LHInput[Yf]},
+ {YR1,LHInput[YR1]},
  (*A and D must be moved from here to MINPAR and just add:
  {A,MDFInput},
  {B,MTFInput}
@@ -69,7 +72,9 @@ BoundaryLowScaleInput={
  {LamSc,LamScIN},   
  {MSc2, MSc2Input},
  {Piu,PiuInput},
- {Pid,PidInput}  
+ {Pid,PidInput},
+ {YR3,YR3Input},
+ {YR4,YR4Input}  
 };
 
 ListDecayParticles = {Fu,Fd,Fe,Fv,Chi,Nv,hh,XO,etI,XP};
@@ -83,5 +88,6 @@ DefaultInputValues ={lambda1Input -> 0.274, lambda2Input -> 0.1,  lambda3Input -
 		     mEt2Input -> 1*^4, mu3Input -> 3.135715*^5, muInput -> 0.0, MSFIN -> 200,
 	     LamSHIN -> 0., LamSIN -> 0, MS2Input -> 200^2,
 	     LamScHIN -> 0., LamScIN -> 0, MSc2Input -> 200^2, PiuInput->1*^-7, PidInput->1*^-7,
+	     YR3->1*^-7,YR4->1*^-7,
 		     Yf[a_] -> 1*^-8,Y3[a_] -> 1*^-8, Yn[a_] -> 1*^-7,
-		    Ys[a_] -> 1*^-7,Yfr[a_] -> 1*^-7,Yet[a_] -> 1*^-7};
+		    Ys[a_] -> 1*^-7,Yfr[a_] -> 1*^-7,Yet[a_] -> 1*^-7,YR1[a_]->1*^-7};

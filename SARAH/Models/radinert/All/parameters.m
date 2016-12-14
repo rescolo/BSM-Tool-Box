@@ -170,12 +170,12 @@ ParameterDefinitions = {
 
 {YR3,        { LaTeX -> "Y_R^3",
       Real->True,       
-      LesHouches -> YR3,
+      (*LesHouches -> YR3,*)
              OutputName-> YR3 }}, 
 
 {YR4,        { LaTeX -> "Y_R^4",
       Real->True,       
-      LesHouches -> YR4,
+      (*LesHouches -> YR4,*)
              OutputName-> YR4 }}, 
     
     
