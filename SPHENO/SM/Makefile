@@ -56,7 +56,7 @@ ${name}:  ${name}(Model_Data_SM.o)  \
  ${name}(Couplings_SM.o) ${name}(TreeLevelMasses_SM.o) ${name}(TadpoleEquations_SM.o) \
  ${name}(LoopCouplings_SM.o) ${name}(CouplingsForDecays_SM.o) \
  ${name}(TreeLevel_Decays_SM.o) \
- ${name}(Fu.o)  ${name}(Fe.o)  ${name}(Fd.o)  ${name}({{Fu, Fu.f90}, {Fe, Fe.f90}, {Fd, Fd.f90}, Null}[[4.o)  \
+ ${name}(Fu.o)  ${name}(Fe.o)  ${name}(Fd.o)  \
 ${name}(AddLoopFunctions.o) ${name}(Kinematics.o) \
  ${name}(LoopMasses_SM.o) \
  ${name}(BranchingRatios_SM.o) ${name}(HiggsCS_SM.o) ${name}(RunSM_SM.o) \

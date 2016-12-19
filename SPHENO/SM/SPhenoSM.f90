@@ -3,7 +3,7 @@
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 3:42 on 29.11.2016   
+! File created at 18:00 on 15.12.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -183,7 +183,6 @@ g1 = g1SM
 g2 = g2SM
 g3 = g3SM
 Lam = LambdaIN
-Part(List(List(v,vSM),List(Ye,YeSM),List(Yd,YdSM),List(Yu,YuSM),List(g1,g1SM),List(g2,g2SM),List(g3,g3SM),List(Lam,LambdaIN),Null),9,1) = Part(List(List(v,vSM),List(Ye,YeSM),List(Yd,YdSM),List(Yu,YuSM),List(g1,g1SM),List(g2,g2SM),List(g3,g3SM),List(Lam,LambdaIN),Null),9,2)
 
  
  ! Setting VEVs used for low energy constraints 
@@ -213,7 +212,6 @@ g1 = g1SM
 g2 = g2SM
 g3 = g3SM
 Lam = LambdaIN
-Part(List(List(v,vSM),List(Ye,YeSM),List(Yd,YdSM),List(Yu,YuSM),List(g1,g1SM),List(g2,g2SM),List(g3,g3SM),List(Lam,LambdaIN),Null),9,1) = Part(List(List(v,vSM),List(Ye,YeSM),List(Yd,YdSM),List(Yu,YuSM),List(g1,g1SM),List(g2,g2SM),List(g3,g3SM),List(Lam,LambdaIN),Null),9,2)
 Call SolveTadpoleEquations(g1,g2,g3,Lam,Yu,Yd,Ye,Mu,v,(/ ZeroC /))
 
 Call OneLoopMasses(MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,MHp2,             & 

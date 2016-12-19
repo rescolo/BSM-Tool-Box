@@ -3,7 +3,7 @@
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 3:42 on 29.11.2016   
+! File created at 18:00 on 15.12.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -440,7 +440,6 @@ Yu=YuSM
 g1=g1SM
 g2=g2SM
 g3=g3SM
-Part(List(List(v,vSM),List(Ye,YeSM),List(Yd,YdSM),List(Yu,YuSM),List(g1,g1SM),List(g2,g2SM),List(g3,g3SM),List(Lam,LambdaIN),Null),9,1)=Part(List(List(v,vSM),List(Ye,YeSM),List(Yd,YdSM),List(Yu,YuSM),List(g1,g1SM),List(g2,g2SM),List(g3,g3SM),List(Lam,LambdaIN),Null),9,2)
 ! Run always SM gauge couplings if present 
 ! alphaS(mH/2) for NLO corrections to diphoton rate 
 Call RunSMgauge(m_in/2._dp,deltaM, g1,g2,g3) 
@@ -1211,195 +1210,6 @@ End Do
 Iname = Iname - 1 
  
 End subroutine CouplingsFor_Fd_decays_3B
- 
-Subroutine CouplingsFor_Part(List(List(Fu,"Fu.f90"),List(Fe,"Fe.f90"),List(Fd,"Fd.f90")& 
-& ,Null),4,1)_decays_3B(m_in,i1,MAhinput,MAh2input,MFdinput,MFd2input,MFeinput,          & 
-& MFe2input,MFuinput,MFu2input,Mhhinput,Mhh2input,MHpinput,MHp2input,MVWpinput,          & 
-& MVWp2input,MVZinput,MVZ2input,TWinput,ZDRinput,ZERinput,ZURinput,ZDLinput,             & 
-& ZELinput,ZULinput,ZWinput,ZZinput,g1input,g2input,g3input,Laminput,Yuinput,            & 
-& Ydinput,Yeinput,Muinput,vinput,cplcFdFdhhL,cplcFdFdhhR,cplcFdFdVZL,cplcFdFdVZR,        & 
-& cplcFdFucVWpL,cplcFdFucVWpR,cplcFeFehhL,cplcFeFehhR,cplcFeFeVZL,cplcFeFeVZR,           & 
-& cplcFuFdVWpL,cplcFuFdVWpR,cplcFuFuhhL,cplcFuFuhhR,cplcFuFuVZL,cplcFuFuVZR,             & 
-& cplcFvFeVWpL,cplcFvFeVWpR,cplcFvFvVZL,cplcFvFvVZR,deltaM)
-
-Implicit None 
-
-Real(dp), Intent(in) :: m_in 
-Real(dp), Intent(in) :: deltaM 
-Integer, Intent(in) :: i1 
-Real(dp),Intent(in) :: g1input,g2input,g3input,vinput
-
-Complex(dp),Intent(in) :: Laminput,Yuinput(3,3),Ydinput(3,3),Yeinput(3,3),Muinput
-
-Real(dp),Intent(in) :: MAhinput,MAh2input,MFdinput(3),MFd2input(3),MFeinput(3),MFe2input(3),MFuinput(3),     & 
-& MFu2input(3),Mhhinput,Mhh2input,MHpinput,MHp2input,MVWpinput,MVWp2input,               & 
-& MVZinput,MVZ2input,TWinput,ZZinput(2,2)
-
-Complex(dp),Intent(in) :: ZDRinput(3,3),ZERinput(3,3),ZURinput(3,3),ZDLinput(3,3),ZELinput(3,3),ZULinput(3,3),  & 
-& ZWinput(2,2)
-
-Real(dp) :: g1,g2,g3,v
-
-Complex(dp) :: Lam,Yu(3,3),Yd(3,3),Ye(3,3),Mu
-
-Complex(dp),Intent(out) :: cplcFdFdhhL(3,3),cplcFdFdhhR(3,3),cplcFdFdVZL(3,3),cplcFdFdVZR(3,3),cplcFdFucVWpL(3,3),& 
-& cplcFdFucVWpR(3,3),cplcFeFehhL(3,3),cplcFeFehhR(3,3),cplcFeFeVZL(3,3),cplcFeFeVZR(3,3),& 
-& cplcFuFdVWpL(3,3),cplcFuFdVWpR(3,3),cplcFuFuhhL(3,3),cplcFuFuhhR(3,3),cplcFuFuVZL(3,3),& 
-& cplcFuFuVZR(3,3),cplcFvFeVWpL(3,3),cplcFvFeVWpR(3,3),cplcFvFvVZL(3,3),cplcFvFvVZR(3,3)
-
-Integer :: i2, i3, gt1, gt2, gt3, kont 
-Real(dp) :: MAh,MAh2,MFd(3),MFd2(3),MFe(3),MFe2(3),MFu(3),MFu2(3),Mhh,Mhh2,MHp,MHp2,              & 
-& MVWp,MVWp2,MVZ,MVZ2,TW,ZZ(2,2)
-
-Complex(dp) :: ZDR(3,3),ZER(3,3),ZUR(3,3),ZDL(3,3),ZEL(3,3),ZUL(3,3),ZW(2,2)
-
-Real(dp) :: gSM(11), sinW2, dt, tz, Qin 
-Iname = Iname + 1 
-NameOfUnit(Iname) = 'Couplings_Part(List(List(Fu,"Fu.f90"),List(Fe,"Fe.f90"),List(Fd,"Fd.f90"),Null),4,1)_3B'
- 
-sinW2=1._dp-mW2/mZ2 
-g1 = g1input 
-g2 = g2input 
-g3 = g3input 
-Lam = Laminput 
-Yu = Yuinput 
-Yd = Ydinput 
-Ye = Yeinput 
-Mu = Muinput 
-v = vinput 
-Qin=sqrt(getRenormalizationScale()) 
-Call SolveTadpoleEquations(g1,g2,g3,Lam,Yu,Yd,Ye,Mu,v,(/ ZeroC /))
-
-! --- Calculate running tree-level masses for loop induced couplings and Quark mixing matrices --- 
-Call TreeMasses(MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,MHp2,MVWp,           & 
-& MVWp2,MVZ,MVZ2,TW,ZDR,ZER,ZUR,ZDL,ZEL,ZUL,ZW,ZZ,v,g1,g2,g3,Lam,Yu,Yd,Ye,               & 
-& Mu,.True.,kont)
-
-! --- Use the 1-loop mixing matrices calculated at M_SUSY in the vertices --- 
-ZW = ZWinput 
-ZZ = ZZinput 
-If (PoleMassesInLoops) Then 
-! --- Use the pole masses --- 
-MAh = MAhinput 
-MAh2 = MAh2input 
-MFd = MFdinput 
-MFd2 = MFd2input 
-MFe = MFeinput 
-MFe2 = MFe2input 
-MFu = MFuinput 
-MFu2 = MFu2input 
-Mhh = Mhhinput 
-Mhh2 = Mhh2input 
-MHp = MHpinput 
-MHp2 = MHp2input 
-MVWp = MVWpinput 
-MVWp2 = MVWp2input 
-MVZ = MVZinput 
-MVZ2 = MVZ2input 
-End if 
-cplcFdFdhhL = 0._dp 
-cplcFdFdhhR = 0._dp 
-Do gt1 = 1, 3
- Do gt2 = 1, 3
-Call CouplingcFdFdhhT(gt1,gt2,Yd,ZDL,ZDR,cplcFdFdhhL(gt1,gt2),cplcFdFdhhR(gt1,gt2))
-
- End Do 
-End Do 
-
-
-cplcFeFehhL = 0._dp 
-cplcFeFehhR = 0._dp 
-Do gt1 = 1, 3
- Do gt2 = 1, 3
-Call CouplingcFeFehhT(gt1,gt2,Ye,ZEL,ZER,cplcFeFehhL(gt1,gt2),cplcFeFehhR(gt1,gt2))
-
- End Do 
-End Do 
-
-
-cplcFuFuhhL = 0._dp 
-cplcFuFuhhR = 0._dp 
-Do gt1 = 1, 3
- Do gt2 = 1, 3
-Call CouplingcFuFuhhT(gt1,gt2,Yu,ZUL,ZUR,cplcFuFuhhL(gt1,gt2),cplcFuFuhhR(gt1,gt2))
-
- End Do 
-End Do 
-
-
-cplcFuFdVWpL = 0._dp 
-cplcFuFdVWpR = 0._dp 
-Do gt1 = 1, 3
- Do gt2 = 1, 3
-Call CouplingcFuFdVWpT(gt1,gt2,g2,ZDL,ZUL,cplcFuFdVWpL(gt1,gt2),cplcFuFdVWpR(gt1,gt2))
-
- End Do 
-End Do 
-
-
-cplcFdFdVZL = 0._dp 
-cplcFdFdVZR = 0._dp 
-Do gt1 = 1, 3
- Do gt2 = 1, 3
-Call CouplingcFdFdVZT(gt1,gt2,g1,g2,TW,cplcFdFdVZL(gt1,gt2),cplcFdFdVZR(gt1,gt2))
-
- End Do 
-End Do 
-
-
-cplcFvFeVWpL = 0._dp 
-cplcFvFeVWpR = 0._dp 
-Do gt1 = 1, 3
- Do gt2 = 1, 3
-Call CouplingcFvFeVWpT(gt1,gt2,g2,ZEL,cplcFvFeVWpL(gt1,gt2),cplcFvFeVWpR(gt1,gt2))
-
- End Do 
-End Do 
-
-
-cplcFeFeVZL = 0._dp 
-cplcFeFeVZR = 0._dp 
-Do gt1 = 1, 3
- Do gt2 = 1, 3
-Call CouplingcFeFeVZT(gt1,gt2,g1,g2,TW,cplcFeFeVZL(gt1,gt2),cplcFeFeVZR(gt1,gt2))
-
- End Do 
-End Do 
-
-
-cplcFuFuVZL = 0._dp 
-cplcFuFuVZR = 0._dp 
-Do gt1 = 1, 3
- Do gt2 = 1, 3
-Call CouplingcFuFuVZT(gt1,gt2,g1,g2,TW,cplcFuFuVZL(gt1,gt2),cplcFuFuVZR(gt1,gt2))
-
- End Do 
-End Do 
-
-
-cplcFdFucVWpL = 0._dp 
-cplcFdFucVWpR = 0._dp 
-Do gt1 = 1, 3
- Do gt2 = 1, 3
-Call CouplingcFdFucVWpT(gt1,gt2,g2,ZDL,ZUL,cplcFdFucVWpL(gt1,gt2),cplcFdFucVWpR(gt1,gt2))
-
- End Do 
-End Do 
-
-
-cplcFvFvVZL = 0._dp 
-cplcFvFvVZR = 0._dp 
-Do gt1 = 1, 3
- Do gt2 = 1, 3
-Call CouplingcFvFvVZT(gt1,gt2,g1,g2,TW,cplcFvFvVZL(gt1,gt2),cplcFvFvVZR(gt1,gt2))
-
- End Do 
-End Do 
-
-
-Iname = Iname - 1 
- 
-End subroutine CouplingsFor_Part(List(List(Fu,"Fu.f90"),List(Fe,"Fe.f90"),List(Fd,"Fd.f90"),Null),4,1)_decays_3B
  
 Function NFlav(m_in) 
 Implicit None 

@@ -3,7 +3,7 @@
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 3:40 on 29.11.2016   
+! File created at 17:55 on 15.12.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -347,22 +347,6 @@ Real(dp), save :: RXiP = 1._dp
 Real(dp), save :: RXiWp = 1._dp 
 Real(dp), save :: RXiZ = 1._dp 
 Complex(dp) :: temporaryValue 
-Complex(dp) :: g1SM
-Complex(dp) :: g1SMIN
-Complex(dp) :: g2SM
-Complex(dp) :: g2SMIN
-Complex(dp) :: g3SM
-Complex(dp) :: g3SMIN
-Real(dp) :: Null(99, 3, 3, 3)
-Real(dp) :: NullIN(99, 3, 3, 3)
-Complex(dp) :: vSM
-Complex(dp) :: vSMIN
-Complex(dp) :: YdSM
-Complex(dp) :: YdSMIN
-Complex(dp) :: YeSM
-Complex(dp) :: YeSMIN
-Complex(dp) :: YuSM
-Complex(dp) :: YuSMIN
 Complex(dp) :: LambdaIN
 Real(dp) :: vMZ 
 Real(dp) :: vSUSY 

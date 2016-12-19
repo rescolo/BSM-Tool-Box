@@ -3,7 +3,7 @@
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 3:40 on 29.11.2016   
+! File created at 17:55 on 15.12.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -16,7 +16,6 @@ Use LoopCouplings_SM
 Use Fu3Decays_SM 
 Use Fe3Decays_SM 
 Use Fd3Decays_SM 
-Use Part(List(List(Fu,"Fu.f90"),List(Fe,"Fe.f90"),List(Fd,"Fd.f90"),Null),4,1)3Decays_SM 
 Use TreeLevelDecays_SM 
 
 
@@ -51,12 +50,7 @@ Real(dp) :: gTAh
 Real(dp) :: gFuFucFdFd(3,3,3,3),gFuFdcFeFv(3,3,3,3),gFuFucFeFe(3,3,3,3),gFuFucFuFu(3,3,3,3),      & 
 & gFuFucFvFv(3,3,3,3),gFeFecFdFd(3,3,3,3),gFeFecFeFe(3,3,3,3),gFeFecFuFu(3,3,3,3),       & 
 & gFeFecFvFv(3,3,3,3),gFeFvcFuFd(3,3,3,3),gFdFdcFdFd(3,3,3,3),gFdFdcFeFe(3,3,3,3),       & 
-& gFdFdcFuFu(3,3,3,3),gFdFdcFvFv(3,3,3,3),gFdFucFvFe(3,3,3,3),FdcFdFd*g*Part(List(List(Fu,Dot(Fu,f90)),List(Fe,Dot(Fe,f90)),List(Fd,Dot(Fd,f90)),Null),4,1)& 
-& (99,3,3,3),FdcFeFe*g*Part(List(List(Fu,Dot(Fu,f90)),List(Fe,Dot(Fe,f90)),List(Fd,Dot(Fd,f90)),Null),4,1)& 
-& (99,3,3,3),FdcFuFu*g*Part(List(List(Fu,Dot(Fu,f90)),List(Fe,Dot(Fe,f90)),List(Fd,Dot(Fd,f90)),Null),4,1)& 
-& (99,3,3,3),FdcFvFv*g*Part(List(List(Fu,Dot(Fu,f90)),List(Fe,Dot(Fe,f90)),List(Fd,Dot(Fd,f90)),Null),4,1)& 
-& (99,3,3,3),FucFvFe*g*Part(List(List(Fu,Dot(Fu,f90)),List(Fe,Dot(Fe,f90)),List(Fd,Dot(Fd,f90)),Null),4,1)& 
-& (99,3,3,3)
+& gFdFdcFuFu(3,3,3,3),gFdFdcFvFv(3,3,3,3),gFdFucFvFe(3,3,3,3)
 
 Complex(dp) :: coup 
 Real(dp) :: vev 
