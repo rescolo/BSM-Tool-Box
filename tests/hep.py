@@ -535,7 +535,6 @@ class THDM(model):
         pass    
 
 def neutrino_data(CL=3,IH=False,mnu1in=1E-5*1E-9):
-    import numpy as np
     '''From arxiv:1611.01514 (Table 1)
     and asumming a Normal Hierarchy:
     Output:
@@ -544,6 +543,7 @@ def neutrino_data(CL=3,IH=False,mnu1in=1E-5*1E-9):
     Dm3l_2: \Delta m^2_{l3}: l=1 or l=3
     theta12,theta23,theta13: in radians
     '''
+    import numpy as np
     to_rad=np.pi/180.
     Dm21_2_bfp=7.50e-5; Dm3l_2_bfp=2.524e-3; theta12_bfp=33.56
     theta23_bfp=41.6; theta13_bfp=8.46; delta_bfp=261.
