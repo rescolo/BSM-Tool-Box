@@ -40,7 +40,7 @@ def _readSLHAFile_with_comments(spcfile,ignorenomass=False,ignorenobr=True):
     import os
     import re
     import sys
-    
+
     if os.path.exists(spcfile):
        with open(spcfile, 'r') as f:
            try:
@@ -266,6 +266,86 @@ class hep(model):
                 self.Br_names['Gamma_%s' %self.pdg.pdg_id[k]]=self.Gamma[k] 
 
         return SPCdecays.keys()
+
+    def readSSP(self,LHA=None,SSP=False,DEBUG=False):
+        """
+        Set self.config for PATHS. 
+        Using defatull SARAH Toolbox SPHENO command. 
+        Return back a pyslha.Doc object for LHA model.
+        Designed to change for other MODEL easily
+        Set self.config['SPHENO_PATH']. 
+        Self self.config['SPHENO_COMMAND'] if not using 
+        default SARAH SPHENO executable
+        """
+        assert os.path.isfile('SPheno.spc.%s' %self.MODEL)
+
+
+
+        self.LHA_out=pyslha.readSLHAFile('SPheno.spc.%s' %self.MODEL)
+        #with comments but without decays
+        a=commands.getoutput("cat  SPheno.spc.%s | grep -m 1 -i -B1000 '^decay' | grep -vi '^decay' >  SPheno.spc.%s_nodecays.spc" %(self.MODEL,self.MODEL))
+        
+
+        if os.path.isfile("SPheno.spc.%s_nodecays.spc" %self.MODEL):
+            a=commands.getoutput("grep -i -A100000 '^DECAY' SPheno.spc.%s | grep -i -A100000 '^BLOCK'" %self.MODEL) #check for blocks after decays
+            if a:
+                af=open("SPheno.spc.%s_nodecays.spc" %self.MODEL,'a')
+                af.write(a)
+                af.close()
+
+            self.LHA_out_with_comments=_readSLHAFile_with_comments("SPheno.spc.%s_nodecays.spc" %self.MODEL)
+            #PDG for new particles
+            for pid in self.LHA_out_with_comments.blocks['MASS'].entries:
+                if np.abs(pid)>25:
+                    pvalues=self.LHA_out_with_comments.blocks['MASS'].entries[pid].split('#')
+                    if len(pvalues)==2:
+                        self.pdg[pvalues[1].strip()]=pid
+
+            
+
+
+        self.to_series() #Fill to_Series pandas Series    
+        return self.LHA_out
+        
+    def branchings(self,SPCdecays,min_pdg=26):
+        "Convert decays blocks into widhts and branchings: Input: SPC.decays"
+        for i in SPCdecays.keys():
+            self.Br[i]={}
+            self.Gamma[i]=SPCdecays[i].totalwidth
+            for j in range( len(SPCdecays[i].decays) ):
+                self.Br[i][tuple(SPCdecays[i].decays[j].ids)]=SPCdecays[i].decays[j].br
+                
+        self.Br_names=pd.Series()
+
+
+        for k in self.Br.keys():
+            if np.abs(k)>=min_pdg:
+                if k in self.pdg.pdg_id.index:
+                    brchm='%s -> ' %self.pdg.pdg_id[k]
+                else: 
+                    brchm='%unknown -> '
+                for kd in self.Br[k].keys():
+                    if len(kd)==2:
+                        if kd[0] in self.pdg.pdg_id.index and kd[1] in self.pdg.pdg_id.index:
+                            brch=brchm+' '+self.pdg.pdg_id[kd[0]]+' '+self.pdg.pdg_id[kd[1]]
+                        else:
+                            brch=brchm+' unknown'
+                
+                        self.Br_names[brch]=self.Br[k][kd]
+                    if len(kd)==3:
+                        if kd[0] in self.pdg.pdg_id.index and kd[1] in self.pdg.pdg_id.index and kd[2] in self.pdg.pdg_id.index:
+                            brch=brchm+' '+self.pdg.pdg_id[kd[0]]+' '+self.pdg.pdg_id[kd[1]]+' '+self.pdg.pdg_id[kd[2]]
+                        else:
+                            brch=brchm+' unknown'
+                            
+                        self.Br_names[brch]=self.Br[k][kd]
+        for k in self.Gamma:
+            if k>=min_pdg:
+                self.Br_names['Gamma_%s' %self.pdg.pdg_id[k]]=self.Gamma[k] 
+
+        return SPCdecays.keys()
+
+
     
     def micromegas_output(self,mo,Omega_h2='Omega_h2'):
         self.micromegas=pd.Series()
@@ -535,6 +615,7 @@ class THDM(model):
         pass    
 
 def neutrino_data(CL=3,IH=False,mnu1in=1E-5*1E-9):
+    import numpy as np
     '''From arxiv:1611.01514 (Table 1)
     and asumming a Normal Hierarchy:
     Output:
@@ -543,7 +624,6 @@ def neutrino_data(CL=3,IH=False,mnu1in=1E-5*1E-9):
     Dm3l_2: \Delta m^2_{l3}: l=1 or l=3
     theta12,theta23,theta13: in radians
     '''
-    import numpy as np
     to_rad=np.pi/180.
     Dm21_2_bfp=7.50e-5; Dm3l_2_bfp=2.524e-3; theta12_bfp=33.56
     theta23_bfp=41.6; theta13_bfp=8.46; delta_bfp=261.
@@ -553,7 +633,7 @@ def neutrino_data(CL=3,IH=False,mnu1in=1E-5*1E-9):
         Dm21_2=np.array([7.03e-5, Dm21_2_bfp, 8.09e-5])*1e-18 # In GeV
         Dm3l_2=np.array([2.407e-3, Dm3l_2_bfp, 2.643e-3])*1e-18 # In GeV
         if IH:
-            Dm3l_2=np.array([2.399e-3,  Dm3l_2_bfp_IH, 2.635e-3])*1e-18 # In GeV
+            Dm3l_2=-np.array([2.399e-3,  Dm3l_2_bfp_IH, 2.635e-3])*1e-18 # In GeV
         #input real values:
         #
         theta12 = np.array([31.38,  theta12_bfp,  35.99])*to_rad 
@@ -571,7 +651,7 @@ def neutrino_data(CL=3,IH=False,mnu1in=1E-5*1E-9):
         Dm21_2=np.array([Dm21_2_bfp-0.17e-5,Dm21_2_bfp,Dm21_2_bfp+0.19e-5 ])*1e-18 # In GeV
         Dm3l_2=np.array([Dm3l_2_bfp-0.040e-3,Dm3l_2_bfp,Dm3l_2_bfp+0.039e-3 ])*1e-18 # In GeV
         if IH:
-            Dm3l_2=np.array([Dm3l_2_bfp_IH-0.041e-3,Dm3l_2_bfp_IH, Dm3l_2_bfp_IH+0.038e-3])*1e-18 # In GeV
+            Dm3l_2=-np.array([2.476e-3,  Dm3l_2_bfp_IH, 2.555e-3])*1e-18 # In GeV
         #input real values:
         #
         theta12 = np.array([theta12_bfp-0.75,theta12_bfp,theta12_bfp+0.77])*to_rad 
