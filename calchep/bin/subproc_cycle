@@ -1,5 +1,5 @@
 : 
-  CALCHEP=/home/restrepo/prog/toolbox/toolbox/calchep 
+  CALCHEP=/home/restrepo/tmp/BSM/calchep 
 #---------------
 #======================================
 bin=$CALCHEP/bin
