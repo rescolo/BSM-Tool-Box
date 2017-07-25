@@ -1,9 +1,9 @@
 ! -----------------------------------------------------------------------------  
-! This file was automatically created by SARAH version 4.8.5 
+! This file was automatically created by SARAH version 4.9.3 
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 8:43 on 3.5.2016   
+! File created at 3:42 on 29.11.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -93,7 +93,12 @@ AlphaS_out = g3SM**2/(4._dp*Pi)
 Else 
 
 ! Don't run SM RGEs separately 
-Call FermionMass(Yu,1._dp,test,dummy,CKMout,kont) 
+If (YukawaScheme.Eq.1) Then 
+  Call FermionMass(Yu,1._dp,test,dummy,CKMout,kont) 
+Else 
+  Call FermionMass(Yd,1._dp,test,dummy,CKMout,kont) 
+  CKMout=Conjg(Transpose(CKMout)) 
+End if 
 sinW2_out = g1**2/(g1**2+g2**2) 
 Alpha_out = sinW2_out*g2**2/(4._dp*Pi) 
 AlphaS_out = g3**2/(4._dp*Pi) 

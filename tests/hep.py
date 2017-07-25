@@ -8,6 +8,20 @@ import sys
 from cmdlike import *
 import pdg_series
 
+def _append_ssp(spcfile='SPheno.spc.radinert',sspfile='SPheno.ssp.radinert',):
+    try: 
+        f=open(spcfile, 'r')
+    except : # whatever reader errors you care about
+        sys.exit('LesHouches file not found')
+    fspc=f.readlines()
+    if os.path.exists(sspfile):
+        fssp=open(sspfile, 'a')
+    else:
+        fssp=open(sspfile, 'w')
+    fssp.writelines(fspc)
+    fssp.write('ENDOFPARAMETERFILE\n')
+    fssp.close()
+    f.close()
 #expanda pyslha
 def _init_LHA(blocks=['NAME1','NAME2']):
     dblocks=pyslha._dict('Blocks')
@@ -26,7 +40,7 @@ def _readSLHAFile_with_comments(spcfile,ignorenomass=False,ignorenobr=True):
     import os
     import re
     import sys
-    
+
     if os.path.exists(spcfile):
        with open(spcfile, 'r') as f:
            try:
@@ -60,13 +74,16 @@ def _readSLHAFile_with_comments(spcfile,ignorenomass=False,ignorenobr=True):
                     IF.blocks[block].entries[int(entries[0]),int(entries[1])]='%s%s #%s' %(entries[2],' '*spaces,fline[1])
     return IF
 
-def block_to_series(block):
+def block_to_series(block,simplify_key=True):
     bs={}
     vk=[ re.sub('\s+','',l).split('#') for l in block.entries.values()]
     for i in vk:
         if len(i)>1:
-            key=re.sub('[^A-Za-z0-9]','',i[1])
-            key=re.sub('Input$','',key)
+            key=i[1]
+            if simplify_key:
+                key=re.sub('[^A-Za-z0-9]','',key)
+                key=re.sub('Input$','',key)
+                
             bs[key]=eval(i[0])
 
     return pd.Series(bs)
@@ -156,7 +173,7 @@ class hep(model):
         self.Br={} #branchings
         
 
-    def runSPheno(self,LHA=None,DEBUG=False):
+    def runSPheno(self,LHA=None,SSP=False,DEBUG=False):
         """
         Set self.config for PATHS. 
         Using defatull SARAH Toolbox SPHENO command. 
@@ -205,6 +222,10 @@ class hep(model):
             self.LHA_out=False
             self.LHA_out_with_comments=False
 
+        #CREATES SSP file: TODO: add new block in micromegas_output()
+        if SSP:
+            _append_ssp('SPheno.spc.%s' %self.MODEL,'SPheno.ssp.%s' %self.MODEL)
+            
         self.to_series() #Fill to_Series pandas Series    
         return self.LHA_out
         
@@ -245,6 +266,86 @@ class hep(model):
                 self.Br_names['Gamma_%s' %self.pdg.pdg_id[k]]=self.Gamma[k] 
 
         return SPCdecays.keys()
+
+    def readSSP(self,LHA=None,SSP=False,DEBUG=False):
+        """
+        Set self.config for PATHS. 
+        Using defatull SARAH Toolbox SPHENO command. 
+        Return back a pyslha.Doc object for LHA model.
+        Designed to change for other MODEL easily
+        Set self.config['SPHENO_PATH']. 
+        Self self.config['SPHENO_COMMAND'] if not using 
+        default SARAH SPHENO executable
+        """
+        assert os.path.isfile('SPheno.spc.%s' %self.MODEL)
+
+
+
+        self.LHA_out=pyslha.readSLHAFile('SPheno.spc.%s' %self.MODEL)
+        #with comments but without decays
+        a=commands.getoutput("cat  SPheno.spc.%s | grep -m 1 -i -B1000 '^decay' | grep -vi '^decay' >  SPheno.spc.%s_nodecays.spc" %(self.MODEL,self.MODEL))
+        
+
+        if os.path.isfile("SPheno.spc.%s_nodecays.spc" %self.MODEL):
+            a=commands.getoutput("grep -i -A100000 '^DECAY' SPheno.spc.%s | grep -i -A100000 '^BLOCK'" %self.MODEL) #check for blocks after decays
+            if a:
+                af=open("SPheno.spc.%s_nodecays.spc" %self.MODEL,'a')
+                af.write(a)
+                af.close()
+
+            self.LHA_out_with_comments=_readSLHAFile_with_comments("SPheno.spc.%s_nodecays.spc" %self.MODEL)
+            #PDG for new particles
+            for pid in self.LHA_out_with_comments.blocks['MASS'].entries:
+                if np.abs(pid)>25:
+                    pvalues=self.LHA_out_with_comments.blocks['MASS'].entries[pid].split('#')
+                    if len(pvalues)==2:
+                        self.pdg[pvalues[1].strip()]=pid
+
+            
+
+
+        self.to_series() #Fill to_Series pandas Series    
+        return self.LHA_out
+        
+    def branchings(self,SPCdecays,min_pdg=26):
+        "Convert decays blocks into widhts and branchings: Input: SPC.decays"
+        for i in SPCdecays.keys():
+            self.Br[i]={}
+            self.Gamma[i]=SPCdecays[i].totalwidth
+            for j in range( len(SPCdecays[i].decays) ):
+                self.Br[i][tuple(SPCdecays[i].decays[j].ids)]=SPCdecays[i].decays[j].br
+                
+        self.Br_names=pd.Series()
+
+
+        for k in self.Br.keys():
+            if np.abs(k)>=min_pdg:
+                if k in self.pdg.pdg_id.index:
+                    brchm='%s -> ' %self.pdg.pdg_id[k]
+                else: 
+                    brchm='%unknown -> '
+                for kd in self.Br[k].keys():
+                    if len(kd)==2:
+                        if kd[0] in self.pdg.pdg_id.index and kd[1] in self.pdg.pdg_id.index:
+                            brch=brchm+' '+self.pdg.pdg_id[kd[0]]+' '+self.pdg.pdg_id[kd[1]]
+                        else:
+                            brch=brchm+' unknown'
+                
+                        self.Br_names[brch]=self.Br[k][kd]
+                    if len(kd)==3:
+                        if kd[0] in self.pdg.pdg_id.index and kd[1] in self.pdg.pdg_id.index and kd[2] in self.pdg.pdg_id.index:
+                            brch=brchm+' '+self.pdg.pdg_id[kd[0]]+' '+self.pdg.pdg_id[kd[1]]+' '+self.pdg.pdg_id[kd[2]]
+                        else:
+                            brch=brchm+' unknown'
+                            
+                        self.Br_names[brch]=self.Br[k][kd]
+        for k in self.Gamma:
+            if k>=min_pdg:
+                self.Br_names['Gamma_%s' %self.pdg.pdg_id[k]]=self.Gamma[k] 
+
+        return SPCdecays.keys()
+
+
     
     def micromegas_output(self,mo,Omega_h2='Omega_h2'):
         self.micromegas=pd.Series()
@@ -513,53 +614,74 @@ class THDM(model):
     def test_higgs_to_phys(self):
         pass    
 
-def _neutrino_data(CL=3,IH=False):
+def neutrino_data(CL=3,IH=False,mnu1in=1E-5*1E-9):
     import numpy as np
-    '''From arxiv:1405.7540 (table I)
+    '''From arxiv:1611.01514 (Table 1)
     and asumming a Normal Hierarchy:
     Output:
-    mnu1in: laightest neutrino mass
-    Dms2: \Delta m^2_{12}
-    Dma2: \Delta m^2_{13}
-    ThetSol,ThetAtm,ThetRec: in radians
+    mnulin: lightest neutrino mass: l=1 or l=3
+    Dm21_2: \Delta m^2_{12}
+    Dm3l_2: \Delta m^2_{l3}: l=1 or l=3
+    theta12,theta23,theta13: in radians
     '''
+    to_rad=np.pi/180.
+    Dm21_2_bfp=7.50e-5; Dm3l_2_bfp=2.524e-3; theta12_bfp=33.56
+    theta23_bfp=41.6; theta13_bfp=8.46; delta_bfp=261.
+    Dm3l_2_bfp_IH=2.514e-3; theta23_bfp_IH=50.
+    theta13_bfp_IH=8.49; delta_bfp_IH=277.
     if CL==3:
-        Dms2=np.array([7.11e-5, 7.60e-5, 8.18e-5])*1e-18 # In GeV
-        Dma2=np.array([2.30e-3, 2.48e-3, 2.65e-3])*1e-18 # In GeV
+        Dm21_2=np.array([7.03e-5, Dm21_2_bfp, 8.09e-5])*1e-18 # In GeV
+        Dm3l_2=np.array([2.407e-3, Dm3l_2_bfp, 2.643e-3])*1e-18 # In GeV
         if IH:
-            Dma2=np.array([2.20e-3, 2.38e-3, 2.54e-3])*1e-18 # In GeV
+            Dm3l_2=-np.array([2.399e-3,  Dm3l_2_bfp_IH, 2.635e-3])*1e-18 # In GeV
         #input real values:
         #
-        ThetSol = np.array([0.278,  0.323,  0.375]) 
-        ThetAtm = np.array([0.393,  0.567,  0.643])
+        theta12 = np.array([31.38,  theta12_bfp,  35.99])*to_rad 
+        theta23 = np.array([38.4,  theta23_bfp,  52.8])*to_rad
         if IH:
-            ThetAtm = np.array([0.403,  0.573,  0.640])
-        ThetRec = np.array([0.0190, 0.0226, 0.0262])
+            theta23 = np.array([38.8,  theta23_bfp_IH,  53.1])*to_rad
+        theta13 = np.array([7.99, theta13_bfp, 8.90])*to_rad
         if IH:
-            ThetRec = np.array([0.0193, 0.0229, 0.0265])
+            theta13 = np.array([8.03, theta13_bfp_IH, 8.93])*to_rad
             
-        delta=np.array([0,np.pi,2.*np.pi])
-    elif CL==1:
-        Dms2=np.array([7.42e-5, 7.60e-5, 7.79e-5])*1e-18 # In GeV
-        Dma2=np.array([2.41e-3, 2.48e-3, 2.53e-3])*1e-18 # In GeV
+        delta=np.array([0.,delta_bfp,360.])*to_rad
         if IH:
-            Dma2=np.array([2.32e-3, 2.38e-3, 2.43e-3])*1e-18 # In GeV
+            delta=np.array([145.,delta_bfp_IH,391.])*to_rad
+    elif CL==1:
+        Dm21_2=np.array([Dm21_2_bfp-0.17e-5,Dm21_2_bfp,Dm21_2_bfp+0.19e-5 ])*1e-18 # In GeV
+        Dm3l_2=np.array([Dm3l_2_bfp-0.040e-3,Dm3l_2_bfp,Dm3l_2_bfp+0.039e-3 ])*1e-18 # In GeV
+        if IH:
+            Dm3l_2=-np.array([2.476e-3,  Dm3l_2_bfp_IH, 2.555e-3])*1e-18 # In GeV
         #input real values:
         #
-        ThetSol = np.array([0.307,  0.323,  0.339]) 
-        ThetAtm = np.array([0.443,  0.567,  0.599])
+        theta12 = np.array([theta12_bfp-0.75,theta12_bfp,theta12_bfp+0.77])*to_rad 
+        theta23 = np.array([theta23_bfp-1.2,theta23_bfp,theta23_bfp+1.5])*to_rad
         if IH:
-            ThetAtm = np.array([0.534,  0.573,  0.598])
-        ThetRec = np.array([0.0214, 0.0226, 0.0238])
+            theta23 = np.array([theta23_bfp_IH-1.4,theta23_bfp_IH,theta23_bfp_IH+1.1])*to_rad
+        theta13 = np.array([theta13_bfp-0.15, theta13_bfp, theta13_bfp+0.15])*to_rad
         if IH:
-            ThetRec = np.array([0.0217, 0.0229, 0.0241])
-        delta=np.array([1.01*np.pi,1.41*np.pi,1.96*np.pi])
+            theta13 = np.array([theta13_bfp_IH-0.15, theta13_bfp_IH, theta13_bfp_IH+0.15])*to_rad
+        delta=np.array([delta_bfp-59,delta_bfp,delta_bfp+51])*to_rad
         if IH:
-            delta=np.array([1.17*np.pi,1.48*np.pi,1.79*np.pi])
-    mnu1in=1E-5*1E-9
+            delta=np.array([delta_bfp_IH-46,delta_bfp_IH,delta_bfp_IH+40])*to_rad
+    
 
-    return mnu1in,Dms2,Dma2,ThetSol,ThetAtm,ThetRec,delta
+    return mnu1in,Dm21_2,Dm3l_2,theta12,theta23,theta13,delta
 
+def UPMNS(t12=33.56*np.pi/180.,t13=8.46*np.pi/180.,t23=41.6*np.pi/180.,delta=0,eta1=0,eta2=0):
+    """
+    UPMS matrix with default values from normal ordering of 1611.01514
+    """
+    U12 = np.array([ [np.cos(t12),np.sin(t12),0], [-np.sin(t12),np.cos(t12),0], [0,0,1.0] ])
+    U13 = np.array([ [np.cos(t13),0,np.sin(t13)*np.exp(-delta*1j)], [0,1.0,0],\
+                         [-np.sin(t13)*np.exp(delta*1j),0,np.cos(t13)] ])
+    if delta==0:
+        U13=np.real(U13)
+    U23 = np.array([ [1.0,0,0], [0,np.cos(t23),np.sin(t23)], [0,-np.sin(t23),np.cos(t23)] ])
+    Uphases = np.diag([1.,np.exp(eta1*1j/2.),np.exp(eta2*1j/2.)])
+    if eta1==0 and eta2==0:
+        Uphases=np.real(Uphases)
+    return ((U23.dot(U13)).dot(U12)).dot(Uphases)
 
 class CasasIbarra(hep):
     '''
@@ -628,7 +750,7 @@ class CasasIbarra(hep):
             
             
         
-        ignore,Dms2,Dma2,ThetSol,ThetAtm,ThetRec,deltaD=_neutrino_data(CL=CL,IH=IH) 
+        ignore,Dms2,Dma2,ThetSol,ThetAtm,ThetRec,deltaD=neutrino_data(CL=CL,IH=IH) 
      
         
         #Inverse MR masses. M^R_3 -> infty corresponds to zero entry
@@ -684,12 +806,7 @@ class CasasIbarra(hep):
         
         #Building PMNS matrix: http://pdg.lbl.gov/2014/reviews/rpp2014-rev-neutrino-mixing.pdf
         
-        U12 = np.array([ [np.cos(t12),np.sin(t12),0], [-np.sin(t12),np.cos(t12),0], [0,0,1.0] ])
-        U13 = np.array([ [np.cos(t13),0,np.sin(t13)*np.exp(-delta*1j)], [0,1.0,0],\
-                         [-np.sin(t13)*np.exp(delta*1j),0,np.cos(t13)] ])
-        U23 = np.array([ [1.0,0,0], [0,np.cos(t23),np.sin(t23)], [0,-np.sin(t23),np.cos(t23)] ])
-        Uphases = np.diag([1.,np.exp(eta1*1j/2.),np.exp(eta2*1j/2.)])
-        U=((U23.dot(U13)).dot(U12)).dot(Uphases)
+        U=UPMNS(t12,t13,t23,delta,eta1,eta2)
         #print U-np.dot(U23,np.dot(U13,np.dot(U12,Uphases)))
         #Building R matrix of the Casas-Ibarra parametrization
         

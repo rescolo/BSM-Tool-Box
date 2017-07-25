@@ -3,6 +3,7 @@ PreDef = -DGENERATIONMIXING -DONLYDOUBLE
 # setting various paths  
 InDir = ../include
 Mdir = ${InDir}
+VPATH = 3-Body-Decays:LoopDecays:TwoLoopMasses:Observables
 name = ../lib/libSPhenoSM.a
  
 # check if SARAH module and SPheno are compatibel  
@@ -52,12 +53,13 @@ ifeq (${cVersion},1)
 	 rm SPhenoSM.o  
 ${name}:  ${name}(Model_Data_SM.o)  \
  ${name}(RGEs_SM.o)   \
- ${name}(Couplings_SM.o) ${name}(SusyMasses_SM.o) ${name}(TadpoleEquations_SM.o) \
+ ${name}(Couplings_SM.o) ${name}(TreeLevelMasses_SM.o) ${name}(TadpoleEquations_SM.o) \
  ${name}(LoopCouplings_SM.o) ${name}(CouplingsForDecays_SM.o) \
- ${name}(SusyDecays_SM.o) \
- ${name}(Fu.o)  ${name}(Fe.o)  ${name}(Fd.o)  \
- ${name}(BranchingRatios_SM.o) ${name}(LoopMasses_SM.o) \
- ${name}(HiggsCS_SM.o) ${name}(RunSM_SM.o) \
+ ${name}(TreeLevel_Decays_SM.o) \
+ ${name}(Fu.o)  ${name}(Fe.o)  ${name}(Fd.o)  ${name}({{Fu, Fu.f90}, {Fe, Fe.f90}, {Fd, Fd.f90}, Null}[[4.o)  \
+${name}(AddLoopFunctions.o) ${name}(Kinematics.o) \
+ ${name}(LoopMasses_SM.o) \
+ ${name}(BranchingRatios_SM.o) ${name}(HiggsCS_SM.o) ${name}(RunSM_SM.o) \
  ${name}(LowEnergy_SM.o) \
 ${name}(FlavorKit_LFV_SM.o) ${name}(FlavorKit_QFV_SM.o) ${name}(FlavorKit_Observables_SM.o)\
 ${name}(InputOutput_SM.o) 

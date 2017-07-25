@@ -1,9 +1,9 @@
 ! -----------------------------------------------------------------------------  
-! This file was automatically created by SARAH version 4.8.5 
+! This file was automatically created by SARAH version 4.9.3 
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 8:42 on 3.5.2016   
+! File created at 3:40 on 29.11.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -12,19 +12,19 @@ Module LoopMasses_SM
 Use Control 
 Use Couplings_SM 
 Use LoopFunctions 
+Use AddLoopFunctions 
 Use Mathematics 
 Use MathematicsQP 
 Use Model_Data_SM 
 Use StandardModel 
 Use Tadpoles_SM 
- Use SusyMasses_SM 
+ Use TreeLevelMasses_SM 
  
 Real(dp), Private :: MHp_1L, MHp2_1L  
 Real(dp), Private :: MAh_1L, MAh2_1L  
 Real(dp), Private :: Mhh_1L, Mhh2_1L  
 Real(dp), Private :: MVZ_1L, MVZ2_1L  
 Real(dp), Private :: MVWp_1L, MVWp2_1L  
-Real(dp), save :: rMS = 1._dp 
 Contains 
  
 Subroutine OneLoopMasses(MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,            & 
@@ -73,7 +73,7 @@ Complex(dp) :: cplAhAhAhAh,cplAhAhcVWpVWp,cplAhAhhh,cplAhAhhhhh,cplAhAhHpcHp,cpl
 Integer , Intent(inout):: kont 
 Integer :: i1,i2,i3,i4,j1, j2, j3, j4, il, i_count, ierr 
 Complex(dp) :: Tad1Loop(1), dmz2  
-Real(dp) :: comp(1), tanbQ, vev2
+Real(dp) :: comp(1), tanbQ, vev2, vSM
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopMasses' 
  
@@ -85,6 +85,10 @@ RXiG = RXi
 RXiP = RXi 
 RXiWp = RXi 
 RXiZ = RXi 
+
+ ! Running angles 
+
+ 
 Call TreeMasses(MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,MHp2,MVWp,           & 
 & MVWp2,MVZ,MVZ2,TW,ZDR,ZER,ZUR,ZDL,ZEL,ZUL,ZW,ZZ,v,g1,g2,g3,Lam,Yu,Yd,Ye,               & 
 & Mu,GenerationMixing,kont)
@@ -111,7 +115,7 @@ Call Pi1LoopVZ(mZ2,Mhh,Mhh2,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,MVZ,MVZ2,       
 & cplcVWpVWpVZVZ1,cplcVWpVWpVZVZ2,cplcVWpVWpVZVZ3,kont,dmZ2)
 
 vev2=4._dp*Real(mZ2+dmz2,dp)/(g1**2+g2**2) -0 
-v= sqrt(vev2)
+vSM=sqrt(vev2) 
 Call SolveTadpoleEquations(g1,g2,g3,Lam,Yu,Yd,Ye,Mu,v,(/ ZeroC /))
 
 Call TreeMasses(MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,Mhh,Mhh2,MHp,MHp2,MVWp,           & 
@@ -1479,7 +1483,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopHp'
@@ -1775,7 +1779,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopAh'
@@ -2037,7 +2041,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoophh'
@@ -2352,7 +2356,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopVZ'
@@ -2633,7 +2637,7 @@ Integer , Intent(inout):: kont
 Integer :: i1,i2,i3,i4,j1,j2,j3,j4,il,i_count, ierr 
 Real(dp), Intent(in) :: delta 
 Real(dp) :: mi, mi2, p2, test_m2 
-Complex(dp) :: PiSf, sig 
+Complex(dp) :: PiSf, SigL, SigR, SigS 
 Real(dp), Intent(out) :: mass, mass2 
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'OneLoopVWp'
