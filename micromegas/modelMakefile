@@ -34,7 +34,7 @@ endif
 
 all: $(main) libs
   ifeq (.cpp,$(suffix $(main)))
-	$(DLSET) $(CXX) $(CXXFLAGS) -o $(main:.cpp=) $(main)  $(SSS)  $(lDL)  -lm -lpthread
+	$(DLSET) $(CXX) -std=c++98 $(CXXFLAGS) -o $(main:.cpp=) $(main)  $(SSS)  $(lDL)  -lm -lpthread
   else  
     ifeq (.c,$(suffix $(main)))
 	$(DLSET) $(CC)  $(CFLAGS) -o $(main:.c=) $(main)  $(SSS) $(lDL)  -lm -lpthread
